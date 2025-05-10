@@ -45,14 +45,14 @@ class LoginScreen extends StatelessWidget {
                   children: [
                     Text('مرحبًا بعودتك',
                         style: Theme.of(context).textTheme.headlineMedium),
-                    verticalSpace(16),
+                    const VerticalSpace(16),
                     const UsernameAndPassword(),
-                    verticalSpace(24),
+                    const VerticalSpace(24),
                     CustomButton(
                       text: 'دخول',
                       onPressed: () => _validateThenLogin(context),
                     ),
-                    verticalSpace(24),
+                    const VerticalSpace(24),
                     const LoginBlocListener(),
                   ],
                 ),
