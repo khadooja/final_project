@@ -1,0 +1,110 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:new_project/Core/commn_widgets/custom_text_field.dart';
+import 'package:new_project/Core/theme/colors.dart';
+import 'package:new_project/features/auth/logic/cubit/login_cubit.dart';
+/*
+class UsernameAndPassword extends StatelessWidget {
+  const UsernameAndPassword({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<LoginCubit>();
+
+    return Form(
+      key: cubit.formKey,
+      child: Column(
+        children: [
+          CustomInputField(
+            label: 'اسم المستخدم',
+            controller: cubit.usernameController,
+            validator: (value) => value == null || value.isEmpty
+                ? 'الرجاء إدخال اسم المستخدم'
+                : null,
+          ),
+          verticalSpace(16),
+          BlocBuilder<LoginCubit, LoginState>(
+            buildWhen: (prev, curr) => curr is PasswordVisibilityChanged,
+            builder: (context, state) {
+              final cubit = context.read<LoginCubit>(); // نقل القراءة هنا
+              return CustomInputField(
+                label: 'كلمة المرور',
+                controller: cubit.passwordController,
+                obscureText: cubit.isObscureText,
+                prefixIcon: IconButton(
+                  icon: Icon(
+                    cubit.isObscureText
+                        ? Icons.visibility_off
+                        : Icons.visibility, // التبديل بين الأيقونة
+
+                    color: AppColors.primaryColor,
+                  ),
+                  onPressed: () {
+                    cubit.togglePasswordVisibility();
+                    debugPrint(
+                        "تم الضغط، الحالة الجديدة: ${cubit.isObscureText}");
+                  },
+                ),
+                validator: (value) => value == null || value.isEmpty
+                    ? 'الرجاء إدخال كلمة المرور'
+                    : null,
+              );
+            },
+          )
+        ],
+      ),
+    );
+  }
+}*/
+
+class UsernameAndPassword extends StatefulWidget {
+  const UsernameAndPassword({super.key});
+
+  @override
+  _UsernameAndPasswordState createState() => _UsernameAndPasswordState();
+}
+
+class _UsernameAndPasswordState extends State<UsernameAndPassword> {
+  bool isObscureText = true; // الحالة الافتراضية لإخفاء كلمة المرور
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<LoginCubit>();
+    return Form(
+      key: cubit.formKey,
+      child: Column(
+        children: [
+          // اسم المستخدم
+          CustomInputField(
+            label: 'اسم المستخدم',
+            validator: (value) => value == null || value.isEmpty
+                ? 'الرجاء إدخال اسم المستخدم'
+                : null,
+          ),
+          const SizedBox(height: 16),
+          // كلمة المرور
+          CustomInputField(
+            controller: passwordController,
+            isObscureText: isObscureText,
+            label: 'كلمة المرور',
+            prefixIcon: IconButton(
+              icon: Icon(
+                isObscureText ? Icons.visibility_off : Icons.visibility,
+                color: AppColors.primaryColor,
+              ),
+              onPressed: () {
+                setState(() {
+                  isObscureText = !isObscureText;
+                });
+              },
+            ),
+            validator: (value) => value == null || value.isEmpty
+                ? 'الرجاء إدخال كلمة المرور'
+                : null,
+          ),
+        ],
+      ),
+    );
+  }
+}

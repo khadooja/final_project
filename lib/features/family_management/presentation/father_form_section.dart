@@ -1,0 +1,124 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:new_project/features/family_management/logic/father_cubit.dart';
+
+class FatherFormSection extends StatelessWidget {
+  const FatherFormSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<FatherCubit>();
+
+    return SingleChildScrollView(
+      child: Form(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: cubit.firstNameController,
+                    decoration: const InputDecoration(labelText: 'الاسم الأول'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: TextFormField(
+                    controller: cubit.lastNameController,
+                    decoration:
+                        const InputDecoration(labelText: 'الاسم الأخير'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: cubit.identityController,
+                    decoration: const InputDecoration(labelText: 'رقم الهوية'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: TextFormField(
+                    controller: cubit.birthDateController,
+                    decoration:
+                        const InputDecoration(labelText: 'تاريخ الميلاد'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: cubit.phoneController,
+                    decoration: const InputDecoration(labelText: 'رقم الهاتف'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: TextFormField(
+                    controller: cubit.emailController,
+                    decoration:
+                        const InputDecoration(labelText: 'البريد الإلكتروني'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: cubit.addressController,
+              decoration: const InputDecoration(labelText: 'العنوان'),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Text('الجنس:'),
+                Radio<int>(
+                  value: 1,
+                  groupValue: int.tryParse(cubit.selectedGender ?? ''),
+                  onChanged: (value) {
+                    cubit.selectedGender = value.toString();
+                  },
+                ),
+                const Text('ذكر'),
+                Radio<int>(
+                  value: 2,
+                  groupValue: int.tryParse(cubit.selectedGender ?? ''),
+                  onChanged: (value) {
+                    cubit.selectedGender = value.toString();
+                  },
+                ),
+                const Text('أنثى'),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // Add Dropdowns for Nationality, City, Area here
+            Row(
+              children: [
+                const Text('هل الأب متوفى؟'),
+                Switch(
+                  value: cubit.isDead,
+                  onChanged: (value) {
+                    cubit.isDead = value;
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                cubit.submitFather();
+              },
+              child: const Text('إرسال البيانات'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
