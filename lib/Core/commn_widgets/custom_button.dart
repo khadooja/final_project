@@ -60,19 +60,3 @@ class CustomButton extends StatelessWidget {
     );
   }
 }
-/*child: isLoading
-            ? SizedBox(
-                width: 24.w,
-                height: 24.w,
-                child: const CircularProgressIndicator(
-                  strokeWidth: 3,
-                  color: AppColors.white,
-                ),
-              )
-            : Text(
-                text,
-                style: AppTextStyles.button?.copyWith(
-                  color: AppColors.white,
-                  fontSize: 4.sp,
-                ),
-              ),*/

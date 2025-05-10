@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_project/Core/commn_widgets/custom_button.dart';
+import 'package:new_project/core/helpers/spacing.dart';
 import 'package:new_project/features/auth/presentation/login_bloc_listener.dart';
 import 'package:new_project/features/auth/presentation/username_and_password.dart';
-import '../../../../core/helpers/spacing.dart';
 import '../logic/cubit/login_cubit.dart';
 
 class LoginScreen extends StatelessWidget {

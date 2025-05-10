@@ -16,7 +16,7 @@ class ApiServiceManual {
   final Dio _dio;
 
   ApiServiceManual({required Dio dio}) : _dio = dio;
-
+  //ApiServiceManual({required Dio dio}) : _dio = dio;
   // Auth
   Future<LoginResponse> login(LoginRequestBody loginRequestBody) async {
     final response = await _dio.post(

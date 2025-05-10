@@ -38,13 +38,13 @@ class DioFactory {
         'X-Center-ID': centerId,
       };
     } else {
-      // يمكن إضافة معالجة إذا لم يكن هناك توكن أو centerId مخزنين
       dio?.options.headers = {
         'Accept': 'application/json',
       };
     }
   }
 
+  //تستخدم فقط بعد تسجيل الدخول لإعادة ضبط الهيدر بالتوكن الجديد.
   static void setTokenIntoHeaderAfterLogin(String token, String centerId) {
     dio?.options.headers = {
       'Authorization': 'Bearer $token',
