@@ -1,8 +1,5 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:new_project/Core/networking/api_error_handler.dart';
 
-part 'api_error_model.g.dart';
-
-@JsonSerializable()
 class ApiErrorModel {
   final String? message;
   final int? code;
@@ -12,8 +9,16 @@ class ApiErrorModel {
     this.code,
   });
 
-  factory ApiErrorModel.fromJson(Map<String, dynamic> json) =>
-      _$ApiErrorModelFromJson(json);
+  factory ApiErrorModel.fromJson(Map<String, dynamic> json) {
+    return ApiErrorModel(
+      code: json['code'] ?? ResponseCode.BAD_REQUEST,
+      message: json['message'] ?? ResponseMessage.DEFAULT,
+    );
+  }
 
-  Map<String, dynamic> toJson() => _$ApiErrorModelToJson(this);
+  Map<String, dynamic> _$ApiErrorModelToJson(ApiErrorModel instance) =>
+      <String, dynamic>{
+        'message': instance.message,
+        'code': instance.code,
+      };
 }

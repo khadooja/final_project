@@ -14,14 +14,7 @@ class LoginBlocListener extends StatelessWidget {
       listener: (context, state) {
         state.whenOrNull(
           success: (_, role) {
-            // تحقق من الدور واختار الصفحة المناسبة
-            if (role == 'admin') {
-              context.pushReplacementNamed(Routes.adminDashboard);
-            } else if (role == 'user') {
-              context.pushReplacementNamed(Routes.adminDashboard);
-            } else {
-              context.pushReplacementNamed(Routes.adminDashboard);
-            }
+            context.pushReplacementNamed(Routes.adminDashboard);
           },
           error: (message) {
             ScaffoldMessenger.of(context).showSnackBar(

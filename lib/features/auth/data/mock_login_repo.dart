@@ -26,7 +26,7 @@ class MockLoginRepo implements LoginRepo {
           tokenType: 'Bearer',
           userName: 'Test User',
           role: 'admin',
-          userId: 'user_123',
+          userId: 123,
         ),
       );
     } else {

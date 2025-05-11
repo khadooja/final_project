@@ -17,10 +17,10 @@ class LoginResponse {
   final String? role;
 
   @JsonKey(name: 'userId')
-  final String? userId;
+  final int? userId;
 
   @JsonKey(name: 'centerId')
-  final String? centerId;
+  final int? centerId;
 
   final String? message;
   final bool? status;

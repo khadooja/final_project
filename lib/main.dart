@@ -5,55 +5,59 @@ import 'package:get_it/get_it.dart';
 import 'package:new_project/Core/di/auth_service_locator.dart';
 import 'package:new_project/Core/di/child_service_locator.dart';
 import 'package:new_project/Core/di/family_service_locator.dart';
+import 'package:new_project/Core/di/guardian_service_locator.dart';
+import 'package:new_project/Core/di/person_service_locator.dart';
 import 'package:new_project/Core/di/service_locator.dart';
-import 'package:new_project/Core/routing/app_router.dart';
-import 'package:new_project/features/auth/logic/cubit/login_cubit.dart';
 import 'package:new_project/features/auth/logic/cubit/login_state.dart';
+import 'package:new_project/features/auth/presentation/login_screen.dart';
+import 'package:new_project/features/dashboard/presentation/screens/admin_dashboard_screen.dart';
 import 'package:new_project/features/family_management/logic/father_cubit.dart';
 import 'package:new_project/features/family_management/logic/mother_cubit.dart';
 import 'package:new_project/features/guardian_management.dart/logic/guardian_cubit.dart';
 import 'package:new_project/features/personal_management/logic/personal_cubit.dart';
-import 'Core/di/person_service_locator.dart';
-import 'Core/di/guardian_service_locator.dart';
-import 'features/auth/presentation/login_screen.dart';
-import 'features/dashboard/presentation/screens/admin_dashboard_screen.dart';
+
+import 'Core/routing/app_router.dart';
+import 'features/auth/logic/cubit/login_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // تهيئة ScreenUtil بحجم التصميم الأساسي
-  await ScreenUtil.ensureScreenSize();
-  print("object..................................................");
-  await _initializeApp();
-  print("App initialization completed..........................");
-  runApp(const MyApp());
+  runApp(const AppBootstrapper());
 }
 
-Future<void> _initializeApp() async {
-  WidgetsFlutterBinding.ensureInitialized();
+class AppBootstrapper extends StatelessWidget {
+  const AppBootstrapper({super.key});
 
-  try {
-    setupServiceLocator();
-    print("Service locator setup completed.....................");
-    print("Dio setup completed..................................");
-
-    await setupAuthServiceLocator(useMock: true);
-
-    print("Auth service locator setup completed.................");
-
+  Future<void> _initializeApp() async {
+    await ScreenUtil.ensureScreenSize();
+    await setupServiceLocator();
+    await setupAuthServiceLocator(useMock: false);
     await setupPersonServiceLocatorInject();
-    print("Person service locator setup completed...............");
-
     await setupFamilyServiceLocator();
-
     await setupGuardianServiceLocator();
-
     await initChildManagementDependencies();
+  }
 
-    print("All service locators completed.......................");
-  } catch (e, stack) {
-    print("Error during app initialization: $e");
-    print(stack);
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _initializeApp(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return const MyApp(); // ✅ جاهز بعد التسجيل
+        } else if (snapshot.hasError) {
+          return MaterialApp(
+            home: Scaffold(
+              body: Center(child: Text('خطأ في التهيئة: ${snapshot.error}')),
+            ),
+          );
+        }
+        return const MaterialApp(
+          home: Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -82,14 +86,13 @@ class MyApp extends StatelessWidget {
 }
 
 List<BlocProvider> _getBlocProviders() {
+  final di = GetIt.I;
   return [
-    BlocProvider<LoginCubit>(
-      create: (_) => GetIt.I<LoginCubit>(),
-    ),
-    BlocProvider<FatherCubit>(create: (_) => GetIt.I<FatherCubit>()),
-    BlocProvider<MotherCubit>(create: (_) => GetIt.I<MotherCubit>()),
-    BlocProvider<PersonCubit>(create: (_) => GetIt.I<PersonCubit>()),
-    BlocProvider<GuardianCubit>(create: (_) => GetIt.I<GuardianCubit>()),
+    BlocProvider<LoginCubit>(create: (_) => di<LoginCubit>()),
+    BlocProvider<FatherCubit>(create: (_) => di<FatherCubit>()),
+    BlocProvider<MotherCubit>(create: (_) => di<MotherCubit>()),
+    BlocProvider<PersonCubit>(create: (_) => di<PersonCubit>()),
+    BlocProvider<GuardianCubit>(create: (_) => di<GuardianCubit>()),
   ];
 }
 
@@ -100,14 +103,11 @@ Widget _getHomeScreen() {
         builder: (context, state) {
           if (state is Success) {
             final role = state.role.toLowerCase();
-
-            if (role == 'admin') {
-              return const AdminDashboardScreen();
-            } else if (role == 'staff') {
+            if (role == 'admin' || role == 'staff') {
               return const AdminDashboardScreen();
             }
           }
-          return const LoginScreen(); // افتراضيًا أو إذا فشل التسجيل
+          return const LoginScreen(); // إذا لم يكن مسجلاً
         },
       );
     },

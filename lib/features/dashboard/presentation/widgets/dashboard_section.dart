@@ -4,7 +4,7 @@ import 'package:new_project/Core/helpers/extension.dart';
 import 'package:new_project/Core/routing/routes.dart';
 
 class DashboardSection extends StatelessWidget {
-  const DashboardSection({super.key});
+  const DashboardSection({super.key, required String role});
 
   @override
   Widget build(BuildContext context) {

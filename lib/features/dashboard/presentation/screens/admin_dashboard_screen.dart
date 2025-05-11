@@ -178,29 +178,24 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   Future<LoginResponse> _loadUserData() async {
     try {
-      final savedData = await StorageHelper.getSavedUserData();
-      return savedData;
+      return await StorageHelper.getSavedUserData();
     } catch (e) {
+      // في حال الخطأ، يمكنك إعادة مستخدم افتراضي أو عرض رسالة
       return LoginResponse(
         userName: 'محمد خالد',
-        role: 'مدير نظام',
+        role: 'admin', // افتراضي للعرض فقط
       );
     }
   }
 
-  // دالة لمعالجة نقر العناصر في القائمة الجانبية
   void _handleMenuItemTap(String routeName) {
-    // هنا يمكنك تنفيذ منطق التنقل أو أي شيء آخر
-    // على سبيل المثال:
     if (routeName == '/logout') {
       _logout();
     } else {
-      // التنقل إلى الشاشات المختلفة بناءً على routeName
       context.pushNamed(routeName);
     }
   }
 
-  // دالة لتسجيل الخروج
   void _logout() async {
     await StorageHelper.removeData(SharedPrefKeys.userToken);
     await StorageHelper.removeData(SharedPrefKeys.userId);
@@ -231,8 +226,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               userName: userData.userName ?? 'اسم المستخدم',
               userRole: userData.role ?? 'دور المستخدم',
               menuItems: MenuItemsHelper.getMenuItems(userData.role ?? 'admin'),
-              onMenuItemTap: _handleMenuItemTap, // تمرير الدالة هنا
-              child: const DashboardSection(),
+              onMenuItemTap: _handleMenuItemTap,
+              child: DashboardSection(
+                  role: userData.role ?? 'admin'), // تمرير الدور
             );
           } else {
             return const Center(child: Text('لا توجد بيانات'));

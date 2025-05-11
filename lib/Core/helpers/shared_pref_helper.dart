@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:new_project/Core/helpers/shared_pref__keys.dart';
+import 'package:new_project/Core/networking/dio_factory.dart';
 import 'package:new_project/features/auth/data/model/login_response.dart';
 import 'package:new_project/features/childSpecialCase/data/model/special_case.dart';
 import 'package:new_project/features/children_managment/data/model/country_model.dart';
@@ -107,13 +108,23 @@ class StorageHelper {
   // ===================== Example Functions =====================
 
   // حفظ بيانات المستخدم في SecureStorage و SharedPreferences
-  static Future<void> saveUserData(LoginResponse userData) async {
-    await saveData('userToken', '${userData.tokenType} ${userData.token}',
-        isSecure: true);
-    await saveData('userId', userData.userId ?? '');
-    await saveData('userRole', userData.role ?? '');
-    await saveData('userName', userData.userName ?? '');
-    await saveData('centerId', userData.centerId ?? '');
+  static Future<void> saveUserData(LoginResponse user) async {
+    final token = '${user.tokenType} ${user.token}';
+
+    // حفظ البيانات في التخزين الآمن
+    await setSecuredString(SharedPrefKeys.userToken, token);
+    await setSecuredString(SharedPrefKeys.userName, user.userName ?? '');
+    await setSecuredString(SharedPrefKeys.userRole, user.role ?? '');
+    await setSecuredString(
+        SharedPrefKeys.userId, user.userId?.toString() ?? '');
+    await setSecuredString(
+        SharedPrefKeys.centerId, user.centerId?.toString() ?? '');
+
+    // تحديث التوكن والهيدر في Dio مباشرة
+    DioFactory.setTokenIntoHeaderAfterLogin(
+        token, user.centerId?.toString() ?? '');
+
+    debugPrint('User data saved successfully');
   }
 
   // استرجاع بيانات المستخدم من SecureStorage و SharedPreferences

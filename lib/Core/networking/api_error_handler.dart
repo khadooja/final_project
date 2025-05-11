@@ -146,6 +146,9 @@ class ErrorHandler implements Exception {
 }
 
 ApiErrorModel _handleError(DioException error) {
+  debugPrint('🚨 DioException type: ${error.type}');
+  debugPrint('❌ Dio Error Data: ${error.response?.data}');
+
   switch (error.type) {
     case DioExceptionType.connectionTimeout:
       return DataSource.CONNECT_TIMEOUT.getFailure();
@@ -153,42 +156,24 @@ ApiErrorModel _handleError(DioException error) {
       return DataSource.SEND_TIMEOUT.getFailure();
     case DioExceptionType.receiveTimeout:
       return DataSource.RECIEVE_TIMEOUT.getFailure();
-    case DioExceptionType.badResponse:
-      if (error.response != null &&
-          error.response?.statusCode != null &&
-          error.response?.statusMessage != null) {
-        return ApiErrorModel.fromJson(error.response!.data);
-      } else {
-        return DataSource.DEFAULT.getFailure();
-      }
-    case DioExceptionType.unknown:
-      if (error.response != null &&
-          error.response?.statusCode != null &&
-          error.response?.statusMessage != null) {
-        return ApiErrorModel.fromJson(error.response!.data);
-      } else {
-        return DataSource.DEFAULT.getFailure();
-      }
     case DioExceptionType.cancel:
       return DataSource.CANCEL.getFailure();
     case DioExceptionType.connectionError:
-      return DataSource.DEFAULT.getFailure();
-    case DioExceptionType.badCertificate:
-      return DataSource.DEFAULT.getFailure();
-    case DioExceptionType.badResponse:
-      debugPrint('❌ Dio Error Data: ${error.response?.data}');
-      if (error.response?.data != null) {
-        try {
-          return ApiErrorModel.fromJson(error.response!.data);
-        } catch (e) {
-          debugPrint('❌ Error parsing error response: $e');
+      return DataSource.NO_INTERNET_CONNECTION.getFailure();
+    default:
+      try {
+        final data = error.response?.data;
+        if (data != null && data is Map<String, dynamic>) {
+          return ApiErrorModel.fromJson(data);
+        } else if (data is String) {
+          return ApiErrorModel(message: data);
+        } else {
           return DataSource.DEFAULT.getFailure();
         }
-      } else {
+      } catch (e) {
+        debugPrint('❌ Error parsing error response: $e');
         return DataSource.DEFAULT.getFailure();
       }
-    case DioExceptionType.unknown:
-      return DataSource.DEFAULT.getFailure();
   }
 }
 

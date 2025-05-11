@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:new_project/Core/commn_widgets/menuItemsHelper.dart';
 import 'package:new_project/Core/helpers/extension.dart';
+import 'package:new_project/Core/helpers/jwt_helper.dart';
 import 'package:new_project/Core/helpers/shared_pref__keys.dart';
 import 'package:new_project/Core/helpers/shared_pref_helper.dart';
 import 'package:new_project/Core/theme/colors.dart';
@@ -36,17 +37,23 @@ class _Sidebar1State extends State<SideNav> {
 
   Future<void> _loadUserData() async {
     try {
-      final userData = await StorageHelper.getSavedUserData();
-      setState(() {
-        userName = userData.userName ?? 'زائر';
-        userRole = userData.role ?? 'مستخدم';
-        menuItems = MenuItemsHelper.getMenuItems(userRole);
-      });
+      final token =
+          await StorageHelper.getSecuredString(SharedPrefKeys.userToken);
+
+      if (token != null) {
+        final decodedData = await JwtHelper.getDecodedUserData(token);
+
+        setState(() {
+          userName = decodedData['userName'] ?? 'زائر';
+          userRole = decodedData['role'] ?? 'مستخدم';
+          menuItems = MenuItemsHelper.getMenuItems(userRole);
+        });
+      }
     } catch (e) {
       setState(() {
         userName = 'زائر';
         userRole = 'مستخدم';
-        menuItems = MenuItemsHelper.getDefaultMenu(); // قائمة افتراضية
+        menuItems = MenuItemsHelper.getDefaultMenu();
       });
     }
   }

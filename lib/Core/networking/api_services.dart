@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:new_project/Core/api/endpoints/api_endpoints.dart';
 import 'package:new_project/features/children_managment/data/model/CommonDropdownsChidModel.dart';
 import 'package:new_project/features/family_management/data/model/mother_model.dart';
@@ -19,11 +20,17 @@ class ApiServiceManual {
   //ApiServiceManual({required Dio dio}) : _dio = dio;
   // Auth
   Future<LoginResponse> login(LoginRequestBody loginRequestBody) async {
-    final response = await _dio.post(
-      ApiEndpoints.auth.login,
-      data: loginRequestBody.toJson(),
-    );
-    return LoginResponse.fromJson(response.data);
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.auth.login,
+        data: loginRequestBody.toJson(),
+      );
+      return LoginResponse.fromJson(response.data);
+    } catch (e) {
+      // تسجيل الأخطاء هنا
+      debugPrint('Login error: $e');
+      throw Exception('حدث خطأ أثناء تسجيل الدخول');
+    }
   }
 
   // Father

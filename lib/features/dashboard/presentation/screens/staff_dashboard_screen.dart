@@ -45,7 +45,9 @@ class _Staffdashboardscreen extends State<Staffdashboardscreen> {
       userName: userName,
       userRole: userRole,
       menuItems: menuItems,
-      child: const DashboardSection(),
+      child: const DashboardSection(
+        role: '',
+      ),
     );
   }
 }

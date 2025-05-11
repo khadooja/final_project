@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_project/Core/helpers/extension.dart';
+import 'package:new_project/Core/helpers/jwt_helper.dart';
 import 'package:new_project/Core/helpers/shared_pref__keys.dart';
 import 'package:new_project/Core/helpers/shared_pref_helper.dart';
 import 'package:new_project/Core/theme/colors.dart';
@@ -29,18 +30,23 @@ class _SidebarState extends State<Sidebar> {
     _loadUserData();
   }
 
-//تحميل بيانات المستخدم المحفوظة محليًا
   Future<void> _loadUserData() async {
     try {
-      final userData = await StorageHelper.getSavedUserData();
-      setState(() {
-        userName = userData.userName ?? 'اسم المستخدم';
-        userRole = userData.role ?? 'دور المستخدم';
-      });
+      final token =
+          await StorageHelper.getSecuredString(SharedPrefKeys.userToken);
+
+      if (token != null) {
+        final decodedData = await JwtHelper.getDecodedUserData(token);
+
+        setState(() {
+          userName = decodedData['userName'] ?? 'زائر';
+          userRole = decodedData['role'] ?? 'مستخدم';
+        });
+      }
     } catch (e) {
       setState(() {
-        userName = 'اسم المستخدم';
-        userRole = 'دور المستخدم';
+        userName = 'زائر';
+        userRole = 'مستخدم';
       });
     }
   }

@@ -17,6 +17,7 @@ class DioFactory {
       dio!
         ..options.connectTimeout = timeOut
         ..options.receiveTimeout = timeOut;
+
       addDioHeaders();
       addDioInterceptor();
     }
@@ -25,16 +26,20 @@ class DioFactory {
   }
 
   static void addDioHeaders() async {
-    // هذا الجزء سيتم فقط عند إنشاء dio لأول مرة
     String? token =
         await StorageHelper.getSecuredString(SharedPrefKeys.userToken);
     String? centerId = await StorageHelper.getString(SharedPrefKeys.centerId,
         defaultValue: '');
 
+    // تأكد أن التوكن لا يحتوي على Bearer مكرر
     if (token != null && centerId != null) {
+      if (!token.startsWith('Bearer ')) {
+        token = 'Bearer $token';
+      }
+
       dio?.options.headers = {
         'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
+        'Authorization': token,
         'X-Center-ID': centerId,
       };
     } else {
@@ -44,10 +49,14 @@ class DioFactory {
     }
   }
 
-  //تستخدم فقط بعد تسجيل الدخول لإعادة ضبط الهيدر بالتوكن الجديد.
   static void setTokenIntoHeaderAfterLogin(String token, String centerId) {
+    // أيضًا تأكد هنا من أن Bearer لم تُكرر
+    if (!token.startsWith('Bearer ')) {
+      token = 'Bearer $token';
+    }
+
     dio?.options.headers = {
-      'Authorization': 'Bearer $token',
+      'Authorization': token,
       'X-Center-ID': centerId,
     };
   }
