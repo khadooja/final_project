@@ -20,6 +20,7 @@ class ApiServiceManual {
   //ApiServiceManual({required Dio dio}) : _dio = dio;
   // Auth
   Future<LoginResponse> login(LoginRequestBody loginRequestBody) async {
+    print('📡 ApiServiceManual - login - البيانات المرسلة: $loginRequestBody');
     try {
       final response = await _dio.post(
         ApiEndpoints.auth.login,

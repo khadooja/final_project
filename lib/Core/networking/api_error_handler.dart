@@ -163,16 +163,43 @@ ApiErrorModel _handleError(DioException error) {
     default:
       try {
         final data = error.response?.data;
+
         if (data != null && data is Map<String, dynamic>) {
-          return ApiErrorModel.fromJson(data);
-        } else if (data is String) {
-          return ApiErrorModel(message: data);
-        } else {
-          return DataSource.DEFAULT.getFailure();
+          final buffer = StringBuffer();
+
+          // الرسالة الأساسية
+          if (data.containsKey('message')) {
+            buffer.writeln(data['message']);
+          }
+
+          // تفاصيل إضافية إن وجدت
+          if (data.containsKey('details')) {
+            buffer.writeln('📌 التفاصيل: ${data['details']}');
+          }
+
+          // قائمة أخطاء مفصلة
+          if (data.containsKey('errors') &&
+              data['errors'] is Map<String, dynamic>) {
+            final errors = data['errors'] as Map<String, dynamic>;
+            errors.forEach((key, value) {
+              buffer.writeln('🔹 $key: ${(value as List).join(", ")}');
+            });
+          }
+
+          final fullMessage = buffer.toString().trim();
+          return ApiErrorModel(
+              message: fullMessage.isEmpty ? 'حدث خطأ غير متوقع' : fullMessage);
         }
+
+        // إذا كانت response عبارة عن String
+        if (data is String) {
+          return ApiErrorModel(message: data);
+        }
+
+        return ApiErrorModel(message: 'حدث خطأ غير متوقع');
       } catch (e) {
         debugPrint('❌ Error parsing error response: $e');
-        return DataSource.DEFAULT.getFailure();
+        return ApiErrorModel(message: 'فشل في قراءة تفاصيل الخطأ');
       }
   }
 }

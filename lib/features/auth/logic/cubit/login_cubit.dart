@@ -30,51 +30,49 @@ class LoginCubit extends Cubit<LoginState> {
 
   void emitLoginStates() async {
     emit(const LoginState.loading());
-    debugPrint('بدء عملية تسجيل الدخول...');
+    debugPrint('🚀 بدء عملية تسجيل الدخول...');
 
     if (!formKey.currentState!.validate()) {
-      emit(const LoginState.error('Please fill all fields'));
+      emit(const LoginState.error('يرجى تعبئة الحقول'));
       return;
     }
+    debugPrint(
+        'بيانات المستخدم: username: ${usernameController.text.trim()}, password: ${passwordController.text.trim()}');
 
-    try {
-      final response = await _loginRepo.login(
-        LoginRequestBody(
-          username: usernameController.text.trim(),
-          password: passwordController.text.trim(),
-        ),
-      );
+    final response = await _loginRepo.login(
+      LoginRequestBody(
+        username: usernameController.text.trim(),
+        password: passwordController.text.trim(),
+      ),
+    );
 
-      response.when(
-        success: (loginResponse) async {
-          debugPrint('Login success: ${loginResponse.toString()}');
+    debugPrint('📦 الريسبونس الراجع من loginRepo: ${response.toString()}');
 
-          if (loginResponse.token == null) {
-            emit(const LoginState.error('Token is missing in response'));
-            return;
-          }
+    response.when(
+      success: (loginResponse) async {
+        debugPrint('✅ تسجيل الدخول ناجح: ${loginResponse.toString()}');
 
-          // 1. حفظ بيانات المستخدم
-          await StorageHelper.saveUserData(loginResponse);
+        if (loginResponse.token == null) {
+          emit(const LoginState.error('Token is missing in response'));
+          return;
+        }
 
-          // 2. تحديث الهيدر في Dio
-          final token = "${loginResponse.tokenType} ${loginResponse.token}";
-          final centerId = (loginResponse.centerId ?? '').toString();
-          DioFactory.setTokenIntoHeaderAfterLogin(token, centerId);
+        // حفظ بيانات المستخدم
+        await StorageHelper.saveUserData(loginResponse);
 
-          // 3. إرسال الحالة بنجاح
-          emit(LoginState.success(loginResponse, loginResponse.role ?? ''));
-        },
-        failure: (error) {
-          final errorMessage = _extractErrorMessage(error);
-          debugPrint('فشل تسجيل الدخول: $errorMessage');
-          emit(LoginState.error(errorMessage));
-        },
-      );
-    } catch (e) {
-      debugPrint('خطأ غير متوقع: ${e.toString()}');
-      emit(const LoginState.error('حدث خطأ تقني، يرجى المحاولة لاحقاً'));
-    }
+        // تحديث الهيدر في Dio
+        final token = "${loginResponse.tokenType} ${loginResponse.token}";
+        final centerId = (loginResponse.centerId ?? '').toString();
+        DioFactory.setTokenIntoHeaderAfterLogin(token, centerId);
+
+        emit(LoginState.success(loginResponse, loginResponse.role ?? ''));
+      },
+      failure: (error) {
+        final errorMessage = _extractErrorMessage(error);
+        debugPrint('❌ فشل تسجيل الدخول: $errorMessage');
+        emit(LoginState.error(errorMessage));
+      },
+    );
   }
 
   String _extractErrorMessage(dynamic error) {

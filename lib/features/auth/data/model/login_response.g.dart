@@ -14,9 +14,6 @@ LoginResponse _$LoginResponseFromJson(Map<String, dynamic> json) =>
       role: json['role'] as String?,
       userId: (json['userId'] as num?)?.toInt(),
       centerId: (json['centerId'] as num?)?.toInt(),
-      message: json['message'] as String?,
-      status: json['status'] as bool?,
-      code: (json['code'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$LoginResponseToJson(LoginResponse instance) =>
@@ -27,7 +24,4 @@ Map<String, dynamic> _$LoginResponseToJson(LoginResponse instance) =>
       'role': instance.role,
       'userId': instance.userId,
       'centerId': instance.centerId,
-      'message': instance.message,
-      'status': instance.status,
-      'code': instance.code,
     };

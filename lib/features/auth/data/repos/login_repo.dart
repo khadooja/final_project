@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:new_project/Core/networking/api_error_handler.dart';
 import 'package:new_project/Core/networking/api_result.dart';
 import 'package:new_project/Core/networking/api_services.dart';
@@ -11,19 +10,16 @@ class LoginRepo {
   LoginRepo(this._apiService);
 
   Future<ApiResult<LoginResponse>> login(LoginRequestBody body) async {
-    try {
-      if (body.username.isEmpty || body.password.isEmpty) {
-        return ApiResult.failure(ErrorHandler.handle(
-          Exception('Username and password are required'),
-        ));
-      }
+    if (body.username.isEmpty || body.password.isEmpty) {
+      return ApiResult.failure(ErrorHandler.handle(
+        Exception('Username and password are required'),
+      ));
+    }
 
+    try {
       final response = await _apiService.login(body);
-      print(
-          '📦 API raw response............................................. ${response.toString()}');
       return ApiResult.success(response);
     } catch (error) {
-      debugPrint('🛑 Login Error Caught: $error');
       return ApiResult.failure(ErrorHandler.handle(error));
     }
   }

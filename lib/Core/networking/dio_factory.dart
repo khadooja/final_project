@@ -18,14 +18,18 @@ class DioFactory {
         ..options.connectTimeout = timeOut
         ..options.receiveTimeout = timeOut;
 
-      addDioHeaders();
+      await addDioHeaders();
       addDioInterceptor();
     }
 
     return dio!;
   }
 
-  static void addDioHeaders() async {
+  static void clearHeaders() {
+    dio?.options.headers.clear();
+  }
+
+  static Future<void> addDioHeaders() async {
     String? token =
         await StorageHelper.getSecuredString(SharedPrefKeys.userToken);
     String? centerId = await StorageHelper.getString(SharedPrefKeys.centerId,
