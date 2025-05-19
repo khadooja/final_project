@@ -34,10 +34,10 @@ class _Sidebar1State extends State<SideNav> {
     menuItems = MenuItemsHelper.getMenuItems(userRole);
   }
 
-  Future<void> _loadUserData() async {
+ Future<void> _loadUserData() async {
   try {
-    final name = await StorageHelper.getString(SharedPrefKeys.userName);
-    final role = await StorageHelper.getString(SharedPrefKeys.userRole);
+    final name = await StorageHelper.getData(SharedPrefKeys.userName, isSecure: true);
+    final role = await StorageHelper.getData(SharedPrefKeys.userRole, isSecure: true);
 
     setState(() {
       userName = name ?? 'زائر';
@@ -51,6 +51,7 @@ class _Sidebar1State extends State<SideNav> {
     });
   }
 }
+
 
   @override
   Widget build(BuildContext context) {
