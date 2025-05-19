@@ -16,7 +16,7 @@ class MenuItemsHelper {
           {"icon": Icons.child_care, "label": "إضافة طفل", "route": Routes.addFather},
           {"icon": Icons.list, "label": "عرض الأطفال", "route": Routes.viewChildren},
         ];
-      case 'super':
+      case 'supervisor':
         return [
           {"icon": Icons.business, "label": "ادارة المستوصفات", "route": Routes.viewCenters},
           {"icon": Icons.add_business, "label": "ادارة الموظفين", "route": Routes.addCenter},

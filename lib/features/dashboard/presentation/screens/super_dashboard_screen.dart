@@ -7,7 +7,7 @@ class SuperDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const BaseDashboardScreen(
-      defaultRole: 'super',
+      defaultRole: 'supervisor',
       title: 'لوحة تحكم المسؤول',
     );
   }

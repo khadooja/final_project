@@ -27,12 +27,12 @@ class DashboardSection extends StatelessWidget {
           DashboardCard(icon: Icons.list, title: "عرض الأطفال", onTap: () => context.pushNamed(Routes.viewChildren)),
         ];
         break;
-      case 'super':
+      case 'supervisor':
         cards = [
           DashboardCard(icon: Icons.business, title: "عرض المراكز", onTap: () => context.pushNamed(Routes.viewCenters)),
           DashboardCard(icon: Icons.add_business, title: "إضافة موظفين", onTap: () => context.pushNamed(Routes.addCenter)),
-          //DashboardCard(icon: Icons.business, title: "تقارير", onTap: () => context.pushNamed(Routes.viewReports)),
-          //DashboardCard(icon: Icons.add_business, title: "إضافات تطعيمات", onTap: () => context.pushNamed(Routes.addVaccination)),
+          DashboardCard(icon: Icons.business, title: "تقارير", onTap: () => context.pushNamed(Routes.viewReports)),
+          DashboardCard(icon: Icons.add_business, title: "إضافات تطعيمات", onTap: () => context.pushNamed(Routes.addVaccination)),
           DashboardCard(icon: Icons.add_business, title: "إضافة مركز", onTap: () => context.pushNamed(Routes.addCenter)),
         ];
         break;
