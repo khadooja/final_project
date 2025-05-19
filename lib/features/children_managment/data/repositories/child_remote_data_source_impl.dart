@@ -22,15 +22,17 @@ class ChildRepositoryImpl implements ChildRepository {
     return _remoteDataSource.updateChild(id, childData);
   }
 
-  @override
-  Future<ApiResult<PersonModel?>> searchParentById(PersonType type, String id) {
-    return _remoteDataSource.searchPersonById(type, id);
-  }
 
   @override
   Future<ApiResult<CommonDropdownsChidModel>>
       getNationalitiesAndCitiesandCases() {
     return _remoteDataSource
         .getNationalitiesAndCitiesandCases(PersonType.child);
+  }
+  
+  @override
+  Future<ApiResult<PersonModel?>> searchParentById(PersonType type, String id) {
+    // TODO: implement searchParentById
+    throw UnimplementedError();
   }
 }

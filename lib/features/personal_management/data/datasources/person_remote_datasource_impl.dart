@@ -7,6 +7,7 @@ import 'package:new_project/features/personal_management/data/models/city_model.
 import 'package:new_project/features/personal_management/data/models/nationality_model.dart';
 import 'package:new_project/features/personal_management/data/models/person_model.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
+import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 
 class PersonRemoteDataSourceImpl extends BaseRemoteDataSource
     implements PersonRemoteDataSource {
@@ -14,10 +15,13 @@ class PersonRemoteDataSourceImpl extends BaseRemoteDataSource
 
   PersonRemoteDataSourceImpl(this._apiService);
 
-  @override
-  Future<ApiResult<PersonModel?>> searchPersonById(PersonType type, String id) {
-    return callApi(() => _apiService.searchPerson(type, {'id': id}));
-  }
+ @override
+Future<ApiResult<SearchPersonResponse>> searchPersonById(
+    PersonType type, String identityCardNumber) {
+  return callApi(() => _apiService.searchPerson(type, {
+        'identity_card_number': identityCardNumber,
+      }));
+}
 
   @override
   Future<ApiResult<void>> toggleActivation(

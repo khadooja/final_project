@@ -77,10 +77,10 @@ class FatherCubit extends Cubit<FatherState> {
     result.when(
       success: (person) {
         if (person is FatherModel) {
-          fillFormWithFather(person);
+         // fillFormWithFather(person);
           emit(FatherFound(isFullFather: true));
         } else if (person is PersonModel) {
-          fillFormWithPerson(person);
+         // fillFormWithPerson(person);
           emit(FatherFound(isFullFather: false));
         } else {
           clearForm();

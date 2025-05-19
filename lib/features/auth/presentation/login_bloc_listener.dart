@@ -14,10 +14,10 @@ class LoginBlocListener extends StatelessWidget {
       listener: (context, state) {
         state.whenOrNull(
           success: (_, role) {
-            if (role.toLowerCase() == 'admin') {
-              context.pushReplacementNamed(Routes.adminDashboard);
+            if (role.toLowerCase() == 'supervisor') {
+              context.pushReplacementNamed(Routes.centerDashboard);
             } else if (role.toLowerCase() == 'manager') {
-              context.pushReplacementNamed(Routes.managerDashboard);
+              context.pushReplacementNamed(Routes.adminDashboard);
             } else if (role.toLowerCase() == 'employee') {
               context.pushReplacementNamed(Routes.employeeDashboard);
             } else {

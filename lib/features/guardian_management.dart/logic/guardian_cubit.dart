@@ -82,10 +82,10 @@ class GuardianCubit extends Cubit<GuardianState> {
     result.when(
       success: (person) {
         if (person is GurdianModel) {
-          fillFormWithGuardian(person);
+          //fillFormWithGuardian(person);
           emit(GuardianFound(isFullGuardian: true));
         } else if (person is PersonModel) {
-          fillFormWithPerson(person);
+         // fillFormWithPerson(person);
           emit(GuardianFound(isFullGuardian: false));
         } else {
           clearForm();

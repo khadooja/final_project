@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:new_project/features/dashboard/presentation/screens/admin_dashboard_screen.dart';
 import 'package:new_project/features/auth/presentation/login_screen.dart';
+import 'package:new_project/features/dashboard/presentation/screens/super_dashboard_screen.dart';
 import 'package:new_project/features/family_management/presentation/father_screen.dart';
 import 'package:new_project/features/profile/presentation/screens/profile.dart';
 import 'package:new_project/features/staff_management/application/bloc/admin_bloc.dart';
@@ -32,11 +33,11 @@ class AppRouter {
             child: const AdminDashboardScreen(),
           ),
         );
-      case Routes.managerDashboard:
+      case Routes.centerDashboard:
         return _buildRoute(
           BlocProvider(
             create: (context) => GetIt.I<AdminBloc>(),
-            child: const AdminDashboardScreen(),
+            child: const SuperDashboardScreen(),
           ),
         );
       case Routes.employeeDashboard:

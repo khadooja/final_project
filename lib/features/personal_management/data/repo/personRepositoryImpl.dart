@@ -3,8 +3,8 @@ import 'package:new_project/features/personal_management/data/datasources/person
 import 'package:new_project/features/personal_management/data/models/area_model.dart';
 import 'package:new_project/features/personal_management/data/models/city_model.dart';
 import 'package:new_project/features/personal_management/data/models/nationality_model.dart';
-import 'package:new_project/features/personal_management/data/models/person_model.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
+import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 import 'package:new_project/features/personal_management/domain/repositories/personal_repo.dart';
 
 class PersonRepositoryImpl implements PersonRepository {
@@ -13,8 +13,8 @@ class PersonRepositoryImpl implements PersonRepository {
   PersonRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<ApiResult<PersonModel?>> searchPersonById(PersonType type, String id) {
-    return _remoteDataSource.searchPersonById(type, id);
+  Future<ApiResult<SearchPersonResponse?>> searchPersonById(PersonType type, String identityCardNumber) {
+    return _remoteDataSource.searchPersonById(type, identityCardNumber);
   }
 
   @override
