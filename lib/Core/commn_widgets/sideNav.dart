@@ -53,7 +53,7 @@ class _Sidebar1State extends State<SideNav> {
       setState(() {
         userName = 'زائر';
         userRole = 'مستخدم';
-        menuItems = MenuItemsHelper.getDefaultMenu();
+       // menuItems = MenuItemsHelper.getDefaultMenu();
       });
     }
   }
@@ -63,7 +63,7 @@ class _Sidebar1State extends State<SideNav> {
     // البحث مع معالجة عدم الوجود
     final menuItemsForRole = menuItems?.firstWhere(
       (item) => item['role'] == userRole.toLowerCase(),
-      orElse: () => MenuItemsHelper.getDefaultMenu().first, // افتراضي
+      //orElse: () => MenuItemsHelper.getDefaultMenu().first, // افتراضي
     );
 
     return Container(

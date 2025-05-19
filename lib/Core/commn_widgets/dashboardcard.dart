@@ -33,7 +33,7 @@ class DashboardCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               title,
-              style: const TextStyle(fontSize: 26, color: Colors.black),
+              style: const TextStyle(fontSize: 26, color:AppColors.textColor2),
               textAlign: TextAlign.center,
             ),
           ],
