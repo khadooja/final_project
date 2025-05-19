@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:new_project/Core/helpers/extension.dart';
 import 'package:new_project/Core/helpers/jwt_helper.dart';
 import 'package:new_project/Core/helpers/shared_pref__keys.dart';
@@ -31,25 +32,41 @@ class _SidebarState extends State<Sidebar> {
   }
 
   Future<void> _loadUserData() async {
-    try {
-      final token =
-          await StorageHelper.getSecuredString(SharedPrefKeys.userToken);
+  try {
+    final token = await StorageHelper.getSecuredString(SharedPrefKeys.userToken);
+    print('Raw token from storage: $token');
 
-      if (token != null) {
-        final decodedData = await JwtHelper.getDecodedUserData(token);
-
-        setState(() {
-          userName = decodedData['userName'] ?? 'زائر';
-          userRole = decodedData['role'] ?? 'مستخدم';
-        });
+    if (token != null && token.isNotEmpty) {
+      // احذف Bearer إن وجد
+      String cleanedToken = token;
+      if (token.startsWith("Bearer ")) {
+        cleanedToken = token.replaceFirst("Bearer ", "");
       }
-    } catch (e) {
+      print('Token after cleanup: $cleanedToken');
+
+      final decodedData = JwtDecoder.decode(cleanedToken);
+      print('Decoded data: $decodedData');
+
+      setState(() {
+        userName = decodedData['userName'] ?? 'زائر';
+        userRole = decodedData['role'] ?? 'مستخدم';
+      });
+    } else {
+      print('No token found');
       setState(() {
         userName = 'زائر';
         userRole = 'مستخدم';
       });
     }
+  } catch (e) {
+    print('Error decoding token: $e');
+    setState(() {
+      userName = 'زائر';
+      userRole = 'مستخدم';
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {

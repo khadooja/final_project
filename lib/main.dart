@@ -8,9 +8,7 @@ import 'package:new_project/Core/di/family_service_locator.dart';
 import 'package:new_project/Core/di/guardian_service_locator.dart';
 import 'package:new_project/Core/di/person_service_locator.dart';
 import 'package:new_project/Core/di/service_locator.dart';
-import 'package:new_project/features/auth/logic/cubit/login_state.dart';
 import 'package:new_project/features/auth/presentation/login_screen.dart';
-import 'package:new_project/features/dashboard/presentation/screens/admin_dashboard_screen.dart';
 import 'package:new_project/features/family_management/logic/father_cubit.dart';
 import 'package:new_project/features/family_management/logic/mother_cubit.dart';
 import 'package:new_project/features/guardian_management.dart/logic/guardian_cubit.dart';
@@ -96,20 +94,5 @@ List<BlocProvider> _getBlocProviders() {
   ];
 }
 
-Widget _getHomeScreen() {
-  return Builder(
-    builder: (context) {
-      return BlocBuilder<LoginCubit, LoginState>(
-        builder: (context, state) {
-          if (state is Success) {
-            final role = state.role.toLowerCase();
-            if (role == 'admin' || role == 'staff') {
-              return const AdminDashboardScreen();
-            }
-          }
-          return const LoginScreen(); // إذا لم يكن مسجلاً
-        },
-      );
-    },
-  );
-}
+Widget _getHomeScreen() => const LoginScreen();
+

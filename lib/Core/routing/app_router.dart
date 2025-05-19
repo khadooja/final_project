@@ -32,6 +32,20 @@ class AppRouter {
             child: const AdminDashboardScreen(),
           ),
         );
+      case Routes.managerDashboard:
+        return _buildRoute(
+          BlocProvider(
+            create: (context) => GetIt.I<AdminBloc>(),
+            child: const AdminDashboardScreen(),
+          ),
+        );
+      case Routes.employeeDashboard:
+        return _buildRoute(
+          BlocProvider(
+            create: (context) => GetIt.I<AdminBloc>(),
+            child: const AdminDashboardScreen(),
+          ),
+        );
 
       // Children Management
       /* case Routes.addChild:

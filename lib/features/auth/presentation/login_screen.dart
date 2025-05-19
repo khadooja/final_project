@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_project/Core/commn_widgets/custom_button.dart';
+import 'package:new_project/Core/theme/colors.dart';
 import 'package:new_project/core/helpers/spacing.dart';
 import 'package:new_project/features/auth/presentation/login_bloc_listener.dart';
 import 'package:new_project/features/auth/presentation/username_and_password.dart';
@@ -15,7 +16,7 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('تسجيل الدخول'),
-        backgroundColor: Colors.blue.shade700,
+        backgroundColor:AppColors.primaryColor,
       ),
       body: Stack(
         children: [
@@ -29,11 +30,11 @@ class LoginScreen extends StatelessWidget {
               width: 0.4.sw,
               padding: EdgeInsets.all(24.w),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color:AppColors.white,
                 borderRadius: BorderRadius.circular(16.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black12,
+                    color: AppColors.textColor2,
                     blurRadius: 10.r,
                     offset: const Offset(0, 5),
                   ),

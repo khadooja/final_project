@@ -14,12 +14,17 @@ class LoginBlocListener extends StatelessWidget {
       listener: (context, state) {
         state.whenOrNull(
           success: (_, role) {
-            context.pushReplacementNamed(Routes.adminDashboard);
-          },
-          error: (message) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)),
-            );
+            if (role.toLowerCase() == 'admin') {
+              context.pushReplacementNamed(Routes.adminDashboard);
+            } else if (role.toLowerCase() == 'manager') {
+              context.pushReplacementNamed(Routes.managerDashboard);
+            } else if (role.toLowerCase() == 'employee') {
+              context.pushReplacementNamed(Routes.employeeDashboard);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('صلاحية غير معروفة')),
+              );
+            }
           },
         );
       },

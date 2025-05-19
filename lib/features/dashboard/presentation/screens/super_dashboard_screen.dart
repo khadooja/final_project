@@ -8,14 +8,14 @@ import 'package:new_project/Core/theme/colors.dart';
 import 'package:new_project/features/auth/data/model/login_response.dart';
 import 'package:new_project/features/dashboard/presentation/widgets/dashboard_section.dart';
 
-class AdminDashboardScreen extends StatefulWidget {
-  const AdminDashboardScreen({super.key});
+class SuperDashboardScreen extends StatefulWidget {
+  const SuperDashboardScreen({super.key});
 
   @override
-  _AdminDashboardScreenState createState() => _AdminDashboardScreenState();
+  _SuperDashboardScreenState createState() => _SuperDashboardScreenState();
 }
 
-class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+class _SuperDashboardScreenState extends State<SuperDashboardScreen> {
   late Future<LoginResponse> _userDataFuture;
 
   @override

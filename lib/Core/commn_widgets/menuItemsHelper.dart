@@ -4,7 +4,7 @@ import 'package:new_project/Core/routing/routes.dart';
 class MenuItemsHelper {
   static List<Map<String, dynamic>> getMenuItems(String role) {
     switch (role.toLowerCase()) {
-      case 'admin':
+      case 'manager':
         return [
           {
             "icon": Icons.person_add,
@@ -40,12 +40,27 @@ class MenuItemsHelper {
             "route": Routes.viewChildren
           },
         ];
-      case 'ministry':
+      case 'Super':
         return [
           {
             "icon": Icons.business,
             "label": "عرض المراكز",
             "route": Routes.viewCenters
+          },
+          {
+            "icon": Icons.add_business,
+            "label": " إضافة موظفين",
+            "route": Routes.addCenter
+          },
+          {
+            "icon": Icons.business,
+            "label": " تقارير",
+            "route": Routes.viewCenters
+          },
+          {
+            "icon": Icons.add_business,
+            "label": " اضافات تطعيمات",
+            "route": Routes.addCenter
           },
           {
             "icon": Icons.add_business,

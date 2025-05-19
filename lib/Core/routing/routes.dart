@@ -5,6 +5,8 @@ class Routes {
 
   // Dashboard Routes
   static const String adminDashboard = '/home';
+  static const String managerDashboard = '/managerDashboard';
+  static const String employeeDashboard = '/employeeDashboard';
 
   // Children Management
   static const String addChild = '/addChild';
