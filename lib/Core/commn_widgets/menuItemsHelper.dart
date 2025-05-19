@@ -20,8 +20,8 @@ class MenuItemsHelper {
         return [
           {"icon": Icons.business, "label": "عرض المراكز", "route": Routes.viewCenters},
           {"icon": Icons.add_business, "label": "إضافة موظفين", "route": Routes.addCenter},
-          //{"icon": Icons.business, "label": "تقارير", "route": Routes.viewReports},
-          //{"icon": Icons.add_business, "label": "إضافات تطعيمات", "route": Routes.addVaccination},
+          {"icon": Icons.business, "label": "تقارير", "route": Routes.viewReports},
+          {"icon": Icons.add_business, "label": "إضافات تطعيمات", "route": Routes.addVaccination},
           {"icon": Icons.add_business, "label": "إضافة مركز", "route": Routes.addCenter},
         ];
       default:

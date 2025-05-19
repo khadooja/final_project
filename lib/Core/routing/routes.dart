@@ -21,8 +21,12 @@ class Routes {
   static const String centerDashboard = '/centerDashboard';
   static const String viewCenters = '/viewCenters';
   static const String addCenter = '/addCenter';
+  static const String viewReports = '/viewReports';
+  static const String addVaccination = '/addVaccination';
 
   // Family Management
   static const String addFather = '/addFather';
   static const String addMother = '/addMother';
+
+
 }

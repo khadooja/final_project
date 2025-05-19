@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_project/Core/commn_widgets/menuItemsHelper.dart';
 import 'package:new_project/Core/helpers/extension.dart';
-import 'package:new_project/Core/helpers/jwt_helper.dart';
 import 'package:new_project/Core/helpers/shared_pref__keys.dart';
 import 'package:new_project/Core/helpers/shared_pref_helper.dart';
 import 'package:new_project/Core/theme/colors.dart';
@@ -36,27 +35,22 @@ class _Sidebar1State extends State<SideNav> {
   }
 
   Future<void> _loadUserData() async {
-    try {
-      final token =
-          await StorageHelper.getSecuredString(SharedPrefKeys.userToken);
+  try {
+    final name = await StorageHelper.getString(SharedPrefKeys.userName);
+    final role = await StorageHelper.getString(SharedPrefKeys.userRole);
 
-      if (token != null) {
-        final decodedData = await JwtHelper.getDecodedUserData(token);
-
-        setState(() {
-          userName = decodedData['userName'] ?? 'زائر';
-          userRole = decodedData['role'] ?? 'مستخدم';
-          menuItems = MenuItemsHelper.getMenuItems(userRole);
-        });
-      }
-    } catch (e) {
-      setState(() {
-        userName = 'زائر';
-        userRole = 'مستخدم';
-       // menuItems = MenuItemsHelper.getDefaultMenu();
-      });
-    }
+    setState(() {
+      userName = name ?? 'زائر';
+      userRole = role ?? 'مستخدم';
+    });
+  } catch (e) {
+    print('Error loading user data: $e');
+    setState(() {
+      userName = 'زائر';
+      userRole = 'مستخدم';
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {

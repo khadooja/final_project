@@ -129,11 +129,11 @@ class StorageHelper {
 
   // استرجاع بيانات المستخدم من SecureStorage و SharedPreferences
   static Future<LoginResponse> getSavedUserData() async {
+    final userId = await getData('userId', isSecure: true);
+final userRole = await getData('userRole', isSecure: true);
+final userName = await getData('userName', isSecure: true);
+final centerId = await getData('centerId', isSecure: true);
     final token = await getData('userToken', isSecure: true);
-    final userId = await getData('userId');
-    final userRole = await getData('userRole');
-    final userName = await getData('userName');
-    final centerId = await getData('centerId');
 
     String tokenType = '';
     String pureToken = '';

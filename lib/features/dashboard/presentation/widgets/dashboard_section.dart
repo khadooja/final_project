@@ -43,13 +43,14 @@ class DashboardSection extends StatelessWidget {
         break;
     }
 
-    return GridView.count(
+    return GridView.count( 
       padding: const EdgeInsets.all(16),
       crossAxisCount: 2,
       crossAxisSpacing: 20,
       mainAxisSpacing: 20,
-      childAspectRatio: 0.9, 
+      childAspectRatio: 3,
       children: cards,
-    );
+);
+
   }
 }
