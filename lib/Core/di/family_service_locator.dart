@@ -94,6 +94,11 @@ Future<void> setupFamilyServiceLocator() async {
       di<PersonRepository>(),
     ),
   );
+  di.registerFactory<FatherCubit>(() => FatherCubit(
+        di(),
+        di<PersonRepository>(),
+      ));
+
   di.registerFactory<MotherCubit>(
     () => MotherCubit(di(), di()),
   );

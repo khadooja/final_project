@@ -7,17 +7,20 @@ abstract class FatherState extends Equatable {
   @override
   List<Object?> get props => [];
 }
+
 class FatherAreasLoaded extends FatherState {
   final List<AreaModel> areas;
 
   FatherAreasLoaded(this.areas);
 }
+
 class FatherDropdownsLoaded extends FatherState {
   final List<NationalityModel> nationalities;
   final List<CityModel> cities;
 
   FatherDropdownsLoaded({required this.nationalities, required this.cities});
 }
+
 class FatherAddSuccess extends FatherState {}
 
 class FatherUpdateSuccess extends FatherState {}

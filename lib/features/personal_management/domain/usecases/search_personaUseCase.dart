@@ -1,5 +1,4 @@
 import 'package:new_project/Core/networking/api_result.dart';
-import 'package:new_project/features/personal_management/data/models/person_model.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
 import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 import 'package:new_project/features/personal_management/domain/repositories/personal_repo.dart';
@@ -10,7 +9,6 @@ class SearchPersonByIdUseCase {
   SearchPersonByIdUseCase(this._repository);
 
   Future<ApiResult<SearchPersonResponse?>> call(PersonType type, String id) {
-  return _repository.searchPersonById(type, id);
-}
-
+    return _repository.searchPersonById(type, id);
+  }
 }

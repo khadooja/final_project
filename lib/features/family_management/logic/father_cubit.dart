@@ -108,7 +108,8 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
   Future<void> searchFather(String identity) async {
     emit(FatherLoading());
 
-     final result = await personRepository.searchPersonById(PersonType.father, identity);
+    final result =
+        await personRepository.searchPersonById(PersonType.father, identity);
 
     result.when(
       success: (res) {
@@ -160,15 +161,14 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
   Future<void> toggleFatherActivation(String id, bool activate) async {
     emit(FatherLoading());
 
-    final result = await personRepository.
-    toggleActivation(PersonType.father, id, activate);
+    final result = await personRepository.toggleActivation(
+        PersonType.father, id, activate);
 
     result.when(
       success: (_) => emit(FatherToggleActivationSuccess()),
       failure: (error) => emit(FatherError(error.message)),
     );
   }
-
 
   // Submit father's data (either add or update)
   Future<void> submitFather({String? fatherId}) async {

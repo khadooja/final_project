@@ -12,4 +12,5 @@ class ApiEndpoints {
   static PersonalEndpoints personal = PersonalEndpoints();
   static ParentEndpoint personalType = ParentEndpoint();
   static GuardianEndpoints guardian = GuardianEndpoints();
+  
 }

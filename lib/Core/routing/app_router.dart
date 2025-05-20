@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:new_project/Core/di/get_it.dart';
 import 'package:new_project/features/dashboard/presentation/screens/admin_dashboard_screen.dart';
 import 'package:new_project/features/auth/presentation/login_screen.dart';
 import 'package:new_project/features/dashboard/presentation/screens/super_dashboard_screen.dart';
 import 'package:new_project/features/family_management/presentation/father_screen.dart';
+import 'package:new_project/features/personal_management/logic/personal_cubit.dart';
 import 'package:new_project/features/profile/presentation/screens/profile.dart';
 import 'package:new_project/features/staff_management/application/bloc/admin_bloc.dart';
 import 'package:new_project/features/dashboard/presentation/screens/staff_dashboard_screen.dart';
@@ -26,13 +28,13 @@ class AppRouter {
         return _errorRoute("Invalid role data passed");
 
       // Admin Routes
-      case Routes.adminDashboard:
-        return _buildRoute(
-          BlocProvider(
-            create: (context) => GetIt.I<AdminBloc>(),
-            child: const AdminDashboardScreen(),
-          ),
-        );
+    case Routes.adminDashboard:
+  return _buildRoute(
+    BlocProvider(
+      create: (context) => di<PersonCubit>(),
+      child: const AdminDashboardScreen(),
+    ),
+  );
       case Routes.centerDashboard:
         return _buildRoute(
           BlocProvider(
