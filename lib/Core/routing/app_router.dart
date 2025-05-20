@@ -10,6 +10,7 @@ import 'package:new_project/features/personal_management/logic/personal_cubit.da
 import 'package:new_project/features/profile/presentation/screens/profile.dart';
 import 'package:new_project/features/staff_management/application/bloc/admin_bloc.dart';
 import 'package:new_project/features/dashboard/presentation/screens/staff_dashboard_screen.dart';
+import 'package:new_project/features/vaccination/dose/presentation/add_dose_screen.dart';
 import 'routes.dart';
 
 class AppRouter {
@@ -89,7 +90,10 @@ class AppRouter {
           const FatherScreen(),
         );
       // Center Admin Routes
-
+      case Routes.addVaccination:
+        return _buildRoute(
+          const AddDoseScreen(),
+        );
       default:
         return _errorRoute("Page not found");
     }

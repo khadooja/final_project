@@ -48,7 +48,6 @@ class AppBootstrapper extends StatelessWidget {
   }
 
   void _verifyDependencies() {
-
     final di = GetIt.I;
     final requiredDependencies = [
       'LoginCubit',
@@ -57,8 +56,9 @@ class AppBootstrapper extends StatelessWidget {
       'PersonCubit',
       'GuardianCubit'
     ];
-        assert(di.isRegistered<PersonCubit>(), 'PersonCubit not registered!');
-  assert(di.isRegistered<PersonRepository>(), 'PersonRepository not registered!');
+    assert(di.isRegistered<PersonCubit>(), 'PersonCubit not registered!');
+    assert(di.isRegistered<PersonRepository>(),
+        'PersonRepository not registered!');
 
     for (var dep in requiredDependencies) {
       if (!di.isRegistered(instanceName: dep)) {

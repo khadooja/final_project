@@ -4,6 +4,7 @@ import 'package:new_project/Core/api/endpoints/employee_endpoints.dart';
 import 'package:new_project/Core/api/endpoints/guardian_endpoints.dart';
 import 'package:new_project/Core/api/endpoints/parent_endpoint.dart';
 import 'package:new_project/Core/api/endpoints/personal_endpoints.dart';
+import 'package:new_project/Core/api/endpoints/vaccination_endpoints.dart';
 
 class ApiEndpoints {
   static AuthEndpoints auth = AuthEndpoints();
@@ -12,5 +13,5 @@ class ApiEndpoints {
   static PersonalEndpoints personal = PersonalEndpoints();
   static ParentEndpoint personalType = ParentEndpoint();
   static GuardianEndpoints guardian = GuardianEndpoints();
-  
+  static VaccinationEndpoints vaccination = VaccinationEndpoints();
 }
