@@ -15,13 +15,13 @@ class PersonRemoteDataSourceImpl extends BaseRemoteDataSource
 
   PersonRemoteDataSourceImpl(this._apiService);
 
- @override
-Future<ApiResult<SearchPersonResponse>> searchPersonById(
-    PersonType type, String identityCardNumber) {
-  return callApi(() => _apiService.searchPerson(type, {
-        'identity_card_number': identityCardNumber,
-      }));
-}
+  @override
+  Future<ApiResult<SearchPersonResponse>> searchPersonById(
+      PersonType type, String identityCardNumber) {
+    return callApi(() => _apiService.searchPerson(type, {
+          'identity_card_number': identityCardNumber,
+        }));
+  }
 
   @override
   Future<ApiResult<void>> toggleActivation(

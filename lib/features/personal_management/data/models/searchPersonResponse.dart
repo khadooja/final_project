@@ -27,20 +27,18 @@ class SearchPersonResponse {
   ) {
     final data = json['data'];
     return SearchPersonResponse(
-      person: PersonModel.fromJson(data['person']),
-      father: personType == PersonType.father && data['father'] != null
-          ? FatherModel.fromJson(data['father'])
-          : null,
-      mother: personType == PersonType.mother && data['mother'] != null
-          ? MotherModel.fromJson(data['mother'])
-          : null,
-      employee: personType == PersonType.employee && data['employee'] != null
-          ? EmployeeModel.fromJson(data['employee'])
-          : null,
-      guardian: personType == PersonType.guardian && data['guardian'] != null
-          ? GurdianModel.fromJson(data['guardian'])
-          : null
-    );
-  
+        person: PersonModel.fromJson(data['person']),
+        father: personType == PersonType.father && data['father'] != null
+            ? FatherModel.fromJson(data['father'])
+            : null,
+        mother: personType == PersonType.mother && data['mother'] != null
+            ? MotherModel.fromJson(data['mother'])
+            : null,
+        employee: personType == PersonType.employee && data['employee'] != null
+            ? EmployeeModel.fromJson(data['employee'])
+            : null,
+        guardian: personType == PersonType.guardian && data['guardian'] != null
+            ? GurdianModel.fromJson(data['guardian'])
+            : null);
   }
 }

@@ -5,14 +5,44 @@ import 'package:new_project/features/family_management/domain/repository/fatherR
 import 'package:new_project/features/family_management/logic/father_state.dart';
 import 'package:new_project/features/personal_management/data/models/person_model.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
+import 'package:new_project/features/personal_management/data/repo/PersonHelperMixin.dart';
 import '../../personal_management/domain/repositories/personal_repo.dart';
 
-class FatherCubit extends Cubit<FatherState> {
-  final FatherRepository _fatherRepository;
-  final PersonRepository _personRepository;
+class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
+  FatherCubit(FatherRepository repo, PersonRepository personRepo)
+      : _fatherRepository = repo,
+        super(FatherInitial()) {
+    setRepository(personRepo);
+  }
 
-  FatherCubit(this._fatherRepository, this._personRepository)
-      : super(FatherInitial());
+  final FatherRepository _fatherRepository;
+
+  Future<void> loadDropdowns() async {
+    emit(FatherLoading());
+
+    final result = await getNationalitiesAndCities(PersonType.father);
+
+    result.when(
+      success: (data) {
+        emit(FatherDropdownsLoaded(
+          nationalities: data.nationalities,
+          cities: data.cities,
+        ));
+      },
+      failure: (error) => emit(FatherError(error.message)),
+    );
+  }
+
+  Future<void> loadAreas(String cityName) async {
+    emit(FatherLoading());
+
+    final result = await loadAreasByCityId(PersonType.father, cityName);
+
+    result.when(
+      success: (data) => emit(FatherAreasLoaded(data)),
+      failure: (error) => emit(FatherError(error.message)),
+    );
+  }
 
   // Controllers
   final firstNameController = TextEditingController();
@@ -63,34 +93,41 @@ class FatherCubit extends Cubit<FatherState> {
     firstNameController.text = model.firstName;
     lastNameController.text = model.lastName;
     identityController.text = model.identityCardNumber;
-    selectedGender = model.gender;
+    // مثال: gender في الـ model بالعربية "أنثى" أو "ذكر"، هنا نحتاج تحويلها لقيمة رقمية أو "male"/"female"
+    if (model.gender != null) {
+      selectedGender = (model.gender == 'ذكر') ? 'male' : 'female';
+    } else {
+      selectedGender = null;
+    }
     selectedNationalityId = model.nationalitiesId;
     selectedAreaId = model.locationId;
+    phoneController.text = model.phoneNumber ?? '';
+    emailController.text = model.email ?? '';
   }
 
-  // Search for father by identity
-  Future<void> searchByIdentity(PersonType type, String identity) async {
+  Future<void> searchFather(String identity) async {
     emit(FatherLoading());
 
-    final result = await _personRepository.searchPersonById(type, identity);
+    final result =
+        await personRepository.searchPersonById(PersonType.father, identity);
 
     result.when(
-      success: (person) {
-        if (person is FatherModel) {
-         // fillFormWithFather(person);
+      success: (res) {
+        if (res == null) {
+          emit(FatherNotFound());
+          return;
+        }
+        if (res.father != null) {
+          fillFormWithFather(res.father!);
           emit(FatherFound(isFullFather: true));
-        } else if (person is PersonModel) {
-         // fillFormWithPerson(person);
+        } else if (res.person != null) {
+          fillFormWithPerson(res.person!);
           emit(FatherFound(isFullFather: false));
         } else {
-          clearForm();
           emit(FatherNotFound());
         }
       },
-      failure: (error) {
-        clearForm();
-        emit(FatherError("فشل البحث: ${error.message}"));
-      },
+      failure: (error) => emit(FatherError(error.message)),
     );
   }
 
@@ -120,17 +157,16 @@ class FatherCubit extends Cubit<FatherState> {
     );
   }
 
-  // Toggle the activation status of the father
-  Future<void> toggleActivation(String id) async {
+// Toggle the activation status of the father
+  Future<void> toggleFatherActivation(String id, bool activate) async {
     emit(FatherLoading());
-    final result =
-        await _personRepository.toggleActivation(PersonType.father, id, true);
+
+    final result = await personRepository.toggleActivation(
+        PersonType.father, id, activate);
 
     result.when(
       success: (_) => emit(FatherToggleActivationSuccess()),
-      failure: (error) {
-        emit(FatherError(error.message));
-      },
+      failure: (error) => emit(FatherError(error.message)),
     );
   }
 
@@ -155,8 +191,23 @@ class FatherCubit extends Cubit<FatherState> {
 
     if (fatherId != null) {
       updateFather(fatherId, fatherModel);
-    } else {    
+    } else {
       addFather(fatherModel);
     }
+  }
+
+  void setGender(String value) {
+    selectedGender = value;
+    emit(FatherInitial());
+  }
+
+  void setIsDead(bool value) {
+    isDead = value;
+    emit(FatherInitial());
+  }
+
+  @override
+  void emitCurrentState() {
+    // TODO: implement emitCurrentState
   }
 }

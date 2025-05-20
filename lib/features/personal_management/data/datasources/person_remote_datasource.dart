@@ -6,10 +6,10 @@ import 'package:new_project/features/personal_management/data/models/personalTyp
 import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 
 abstract class PersonRemoteDataSource {
- Future<ApiResult<SearchPersonResponse?>> searchPersonById(
-  PersonType type,
-  String identityCardNumber,
-);
+  Future<ApiResult<SearchPersonResponse?>> searchPersonById(
+    PersonType type,
+    String identityCardNumber,
+  );
 
   Future<ApiResult<void>> toggleActivation(
       PersonType type, String personId, bool isActive);

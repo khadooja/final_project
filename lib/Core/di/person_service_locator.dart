@@ -1,4 +1,3 @@
-import 'package:get_it/get_it.dart';
 import 'package:new_project/Core/di/get_it.dart';
 import 'package:new_project/Core/di/service_locator.dart';
 import 'package:new_project/Core/networking/api_services.dart';
@@ -20,8 +19,9 @@ import 'package:new_project/features/personal_management/logic/personal_cubit.da
 // ========== CORE ==========
 Future<void> setupPersonServiceLocatorInject() async {
   if (!di.isRegistered<ApiServiceManual>()) {
-    throw Exception('ApiServiceManual must be registered first!');
+    await setupServiceLocator();
   }
+
   // ========== DATASOURCES ==========
   di.registerLazySingleton<PersonRemoteDataSource>(
     () => PersonRemoteDataSourceImpl(di<ApiServiceManual>()),
@@ -29,7 +29,7 @@ Future<void> setupPersonServiceLocatorInject() async {
 
   // ========== REPOSITORY ==========
   di.registerLazySingleton<PersonRepository>(
-    () => PersonRepositoryImpl(di()),
+    () => PersonRepositoryImpl(di<PersonRemoteDataSource>()),
   );
 
   // ========== USE CASES ==========
@@ -48,6 +48,6 @@ Future<void> setupPersonServiceLocatorInject() async {
 
   // ========== CUBITS ==========
   di.registerFactory<PersonCubit>(
-    () => PersonCubit(di()),
+    () => PersonCubit(di<PersonRepository>()),
   );
 }

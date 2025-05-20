@@ -13,6 +13,8 @@ import 'package:new_project/features/family_management/data/model/father_model.d
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
 import 'package:new_project/features/guardian_management.dart/data/model/relationship_type_model.dart';
 import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
+import 'package:new_project/features/vaccination/dose/model/dose_model.dart';
+import 'package:new_project/features/vaccination/vaccine/model/vaccine_model.dart';
 
 class ApiServiceManual {
   final Dio _dio;
@@ -55,14 +57,13 @@ class ApiServiceManual {
 
   // Person Operations (Generic)
   Future<SearchPersonResponse> searchPerson(
-    PersonType type, Map<String, dynamic> data) async {
-  final response = await _dio.post(
-    '/${type.endpoint}/search',
-    data: data,
-  );
-  return SearchPersonResponse.fromJson(response.data, type);
-}
-
+      PersonType type, Map<String, dynamic> data) async {
+    final response = await _dio.post(
+      '/${type.endpoint}/search',
+      data: data,
+    );
+    return SearchPersonResponse.fromJson(response.data, type);
+  }
 
   Future<PersonModel> updatePerson(
       PersonType type, String id, Map<String, dynamic> data) async {
@@ -157,5 +158,29 @@ class ApiServiceManual {
     final response =
         await _dio.get('/${type.endpoint}/nationalities-and-cities-usecase');
     return CommonDropdownsChidModel.fromJson(response.data);
+  }
+
+  Future<Map<String, dynamic>> post(
+      String path, Map<String, dynamic> data) async {
+    try {
+      final response = await _dio.post(path, data: data);
+      return response.data;
+    } on DioException catch (e) {
+      debugPrint('POST error: $e');
+      throw Exception('فشل الاتصال بالخادم');
+    }
+  }
+
+  Future<List<VaccineModel>> getVaccines() async {
+    try {
+      final response =
+          await _dio.get('/vaccines'); // عدّلي المسار حسب الـ endpoint الحقيقي
+      return (response.data as List)
+          .map((item) => VaccineModel.fromJson(item))
+          .toList();
+    } catch (e) {
+      debugPrint("خطأ أثناء تحميل التطعيمات: $e");
+      throw Exception('فشل في تحميل التطعيمات');
+    }
   }
 }

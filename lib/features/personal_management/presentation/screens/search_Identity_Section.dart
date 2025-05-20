@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_project/Core/di/get_it.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
-import 'package:get_it/get_it.dart';
 import 'package:new_project/features/personal_management/logic/personal_cubit.dart';
 
 class SearchIdentitySection extends StatefulWidget {
@@ -26,8 +26,8 @@ class _SearchIdentitySectionState extends State<SearchIdentitySection> {
   @override
   void initState() {
     super.initState();
-    //_personalCubit = GetIt.I<PersonCubit>();
-    _personalCubit = di<PersonCubit>();
+     _personalCubit = di<PersonCubit>();
+//_personalCubit = BlocProvider.of<PersonCubit>(context);
   }
 
   void _search() {

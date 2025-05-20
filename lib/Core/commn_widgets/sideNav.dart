@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*port 'package:flutter/material.dart';
 import 'package:new_project/Core/commn_widgets/menuItemsHelper.dart';
 import 'package:new_project/Core/helpers/extension.dart';
 import 'package:new_project/Core/helpers/shared_pref__keys.dart';
@@ -31,33 +31,35 @@ class _Sidebar1State extends State<SideNav> {
   void initState() {
     super.initState();
     _loadUserData();
-    menuItems = MenuItemsHelper.getMenuItems(userRole);
+ // menuItems = MenuItemsHelper.getMenuItems(userRole);
   }
 
   Future<void> _loadUserData() async {
   try {
-    final name = await StorageHelper.getString(SharedPrefKeys.userName);
-    final role = await StorageHelper.getString(SharedPrefKeys.userRole);
+    final name = await StorageHelper.getData(SharedPrefKeys.userName, isSecure: true);
+    final role = await StorageHelper.getData(SharedPrefKeys.userRole, isSecure: true);
 
     setState(() {
       userName = name ?? 'زائر';
       userRole = role ?? 'مستخدم';
+      menuItems = MenuItemsHelper.getMenuItems(role ?? 'مستخدم');
     });
   } catch (e) {
     print('Error loading user data: $e');
     setState(() {
       userName = 'زائر';
       userRole = 'مستخدم';
+      menuItems = MenuItemsHelper.getMenuItems('مستخدم'); // fallback
     });
   }
 }
 
+
   @override
   Widget build(BuildContext context) {
-    // البحث مع معالجة عدم الوجود
     final menuItemsForRole = menuItems?.firstWhere(
-      (item) => item['role'] == userRole.toLowerCase(),
-      //orElse: () => MenuItemsHelper.getDefaultMenu().first, // افتراضي
+      (p) => p["role"] == userRole,
+      orElse: () => {},
     );
 
     return Container(
@@ -166,3 +168,4 @@ class _Sidebar1State extends State<SideNav> {
     );
   }
 }
+*/
