@@ -8,7 +8,7 @@ class VaccineInitial extends VaccineState {}
 class VaccineLoading extends VaccineState {}
 
 class VaccineLoaded extends VaccineState {
-  final List<VaccineModel> vaccines;
+  final List<SimpleVaccineModel> vaccines;
 
   VaccineLoaded(this.vaccines);
 }

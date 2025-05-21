@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:new_project/Core/api/endpoints/api_endpoints.dart';
+import 'package:new_project/Core/networking/config/api_config.dart';
 import 'package:new_project/features/children_managment/data/model/CommonDropdownsChidModel.dart';
 import 'package:new_project/features/family_management/data/model/mother_model.dart';
 import 'package:new_project/features/guardian_management.dart/data/model/gurdian_model.dart';
@@ -14,6 +15,7 @@ import 'package:new_project/features/personal_management/data/models/personalTyp
 import 'package:new_project/features/guardian_management.dart/data/model/relationship_type_model.dart';
 import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 import 'package:new_project/features/vaccination/dose/model/dose_model.dart';
+import 'package:new_project/features/vaccination/vaccine/model/SimpleVaccineModel.dart';
 import 'package:new_project/features/vaccination/vaccine/model/vaccine_model.dart';
 
 class ApiServiceManual {
@@ -171,12 +173,13 @@ class ApiServiceManual {
     }
   }
 
-  Future<List<VaccineModel>> getVaccines() async {
+  Future<List<SimpleVaccineModel>> getVaccines() async {
     try {
-      final response =
-          await _dio.get('/vaccines'); // عدّلي المسار حسب الـ endpoint الحقيقي
-      return (response.data as List)
-          .map((item) => VaccineModel.fromJson(item))
+      final response = await _dio.get('${ApiConfig.baseUrl}dose/create');
+      final vaccinations = response.data['Vaccinations'] as List;
+
+      return vaccinations
+          .map((item) => SimpleVaccineModel.fromJson(item))
           .toList();
     } catch (e) {
       debugPrint("خطأ أثناء تحميل التطعيمات: $e");

@@ -1,4 +1,5 @@
 import 'package:new_project/Core/networking/api_services.dart';
+import 'package:new_project/features/vaccination/vaccine/model/SimpleVaccineModel.dart';
 import 'package:new_project/features/vaccination/vaccine/model/vaccine_model.dart';
 
 class VaccineRepository {
@@ -6,7 +7,7 @@ class VaccineRepository {
 
   VaccineRepository(this.api);
 
-  Future<List<VaccineModel>> getVaccines() async {
+  Future<List<SimpleVaccineModel>> getVaccines() async {
     return await api.getVaccines();
   }
 }

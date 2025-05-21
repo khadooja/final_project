@@ -1,5 +1,6 @@
 // logic/vaccine_cubit.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:new_project/features/vaccination/vaccine/model/SimpleVaccineModel.dart';
 import 'package:new_project/features/vaccination/vaccine/model/vaccine_model.dart';
 import '../data/vaccine_repository.dart';
 part 'vaccine_state.dart';
