@@ -55,13 +55,19 @@ class ApiServiceManual {
 
   // Person Operations (Generic)
   Future<SearchPersonResponse> searchPerson(
-    PersonType type, Map<String, dynamic> data) async {
+  PersonType type,
+  Map<String, dynamic> data,
+) async {
   final response = await _dio.post(
-    '/${type.endpoint}/search',
-    data: data,
+    '/person/search',
+    data: {
+      ...data,
+      'person_type': type.name, 
+    },
   );
   return SearchPersonResponse.fromJson(response.data, type);
 }
+
 
 
   Future<PersonModel> updatePerson(

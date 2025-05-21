@@ -46,11 +46,11 @@ class _SideNavState extends State<SideNav> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    final menuItemsForRole = menuItems?.firstWhere(
-      (p) => p["role"] == userRole,
-      orElse: () => {},
-    );
+    if (menuItems == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     return Container(
       width: 289,
@@ -65,15 +65,13 @@ class _SideNavState extends State<SideNav> {
             child: Wrap(
               spacing: 16,
               runSpacing: 16,
-              children:
-                  (menuItemsForRole?["items"] as List?)?.map<Widget>((item) {
-                        return FunctionCard(
-                          icon: item["icon"],
-                          label: item["label"],
-                          onTap: () => context.pushNamed(item["route"]),
-                        );
-                      }).toList() ??
-                      [const Center(child: Text('لا توجد عناصر متاحة'))],
+              children: menuItems!.map<Widget>((item) {
+                return FunctionCard(
+                  icon: item["icon"],
+                  label: item["label"],
+                  onTap: () => context.pushNamed(item["route"]),
+                );
+              }).toList(),
             ),
           ),
           const SizedBox(height: 20),
@@ -81,5 +79,10 @@ class _SideNavState extends State<SideNav> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

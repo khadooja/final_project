@@ -14,9 +14,9 @@ class PersonCubit extends Cubit<PersonState> {
   PersonModel? personModel;
 
   PersonCubit(this._personRepository) : super(PersonInitial());
-Future<void> searchPersonById(PersonType type, String id) async {
+Future<void> searchPersonById( String id ,PersonType type) async {
   emit(PersonLoading());
-  final result = await _personRepository.searchPersonById(type, id);
+  final result = await _personRepository.searchPersonById(id, type); 
   result.when(
     success: (data) => emit(PersonSearchSuccess(data)),
     failure: (error) => emit(PersonFailure((error.message))),

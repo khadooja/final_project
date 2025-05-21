@@ -109,7 +109,7 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
     emit(FatherLoading());
 
     final result =
-        await personRepository.searchPersonById(PersonType.father, identity);
+        await personRepository.searchPersonById( identity, PersonType.father);
 
     result.when(
       success: (res) {

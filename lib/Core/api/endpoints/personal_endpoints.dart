@@ -8,7 +8,7 @@ class PersonalEndpoints {
   String guardian = 'guardians';
   String employee = 'employees';
   String child = 'children';
-  String searchPerson = '${ApiConfig.baseUrl}searchPerson';
+  String searchPerson = '${ApiConfig.baseUrl}person/search';
   String nationalitiesAndCities = '${ApiConfig.baseUrl}nationalitiesAndCities';
   String areasByCity = '${ApiConfig.baseUrl}areasByCity';
   String getNationalities = '${ApiConfig.baseUrl}nationalities';

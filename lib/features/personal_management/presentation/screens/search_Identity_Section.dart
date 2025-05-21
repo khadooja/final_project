@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_project/Core/di/get_it.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
+import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 import 'package:new_project/features/personal_management/logic/personal_cubit.dart';
+import 'package:new_project/features/personal_management/logic/personal_state.dart';
 
 class SearchIdentitySection extends StatefulWidget {
-  final Function(bool found) onSearchCompleted;
+  final Function(SearchPersonResponse? result) onSearchCompleted;
   final String type;
 
   const SearchIdentitySection({
@@ -20,21 +21,28 @@ class SearchIdentitySection extends StatefulWidget {
 
 class _SearchIdentitySectionState extends State<SearchIdentitySection> {
   final TextEditingController _identityController = TextEditingController();
-  //late final PersonRepositoryImpl _personRepo;
-  late final PersonCubit _personalCubit;
+  late PersonCubit _personalCubit;
 
   @override
-  void initState() {
-    super.initState();
-     _personalCubit = di<PersonCubit>();
-//_personalCubit = BlocProvider.of<PersonCubit>(context);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _personalCubit = BlocProvider.of<PersonCubit>(context);
   }
 
-  void _search() {
+  Future<void> _search() async {
     final identity = _identityController.text.trim();
-    if (identity.isNotEmpty) {
-      _personalCubit.searchPersonById(
-          PersonType.values.byName(widget.type), identity);
+    if (identity.isEmpty) return;
+
+    await _personalCubit.searchPersonById(
+      identity,
+      PersonType.values.byName(widget.type),
+    );
+
+    final state = _personalCubit.state;
+    if (state is PersonSearchSuccess) {
+      widget.onSearchCompleted(state.response);
+    } else {
+      widget.onSearchCompleted(null);
     }
   }
 

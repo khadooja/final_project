@@ -74,10 +74,10 @@ class GuardianCubit extends Cubit<GuardianState> {
   }
 
   // Search for guardian by identity
-  Future<void> searchByIdentity(PersonType type, String identity) async {
+  Future<void> searchByIdentity(String identity, PersonType type) async {
     emit(GuardianLoading());
 
-    final result = await _personRepository.searchPersonById(type, identity);
+    final result = await _personRepository.searchPersonById( identity, type);
 
     result.when(
       success: (person) {
