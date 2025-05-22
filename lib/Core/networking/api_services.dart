@@ -23,6 +23,9 @@ class ApiServiceManual {
 
   ApiServiceManual({required Dio dio}) : _dio = dio;
   //ApiServiceManual({required Dio dio}) : _dio = dio;
+
+  String getDioBaseUrl() => _dio.options.baseUrl; // Helper
+
   // Auth
   Future<LoginResponse> login(LoginRequestBody loginRequestBody) async {
     print('📡 ApiServiceManual - login - البيانات المرسلة: $loginRequestBody');
@@ -106,6 +109,27 @@ class ApiServiceManual {
       data: childData.toJson(),
     );
     return ChildModel.fromJson(response.data);
+  }
+
+  // ADD THIS GENERIC GET METHOD
+  Future<dynamic> get(String path,
+      {Map<String, dynamic>? queryParameters}) async {
+    print('📞 ApiServiceManual: Calling _dio.get with path: "$path"');
+
+    try {
+      final response = await _dio.get(path, queryParameters: queryParameters);
+      return response
+          .data; // Return the decoded data (usually Map<String, dynamic> or List)
+    } on DioException catch (e) {
+      // You might want more specific error handling or re-throwing
+      debugPrint('GET error for path "$path": $e');
+      debugPrint('DioError Response: ${e.response}');
+      // Consider using your ErrorHandler here if you have one for DioException
+      throw Exception('فشل الاتصال بالخادم أو جلب البيانات من المسار: $path');
+    } catch (e) {
+      debugPrint('Unexpected GET error for path "$path": $e');
+      throw Exception('حدث خطأ غير متوقع أثناء جلب البيانات من المسار: $path');
+    }
   }
 
   Future<ChildModel> updateChild(String id, ChildModel data) async {
