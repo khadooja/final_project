@@ -1,30 +1,53 @@
-// lib/features/vaccination/vaccine/model/vaccine_model.dart
-import '../../dose/model/dose_model.dart';
+import 'package:new_project/features/vaccination/dose/model/dose_model.dart';
+import 'package:new_project/features/vaccination/stage/model/StageModel.dart';
 
 class VaccineModel {
+  final int id;
   final String name;
-  final String description;
-  final String category;
+  final String? description;
   final int doseCount;
-  final List<int> stages;
+  final String category;
+  String status;
+  final List<StageModel> stages;
   final List<DoseModel> doses;
 
   VaccineModel({
+    required this.id,
     required this.name,
-    required this.description,
-    required this.category,
+    this.description,
     required this.doseCount,
+    required this.category,
+    required this.status,
     required this.stages,
     required this.doses,
   });
+
+  factory VaccineModel.fromJson(Map<String, dynamic> json) {
+    return VaccineModel(
+      id: json['id'],
+      name: json['vaccine_name'],
+      description: json['description'],
+      doseCount: json['dose_count'],
+      category: json['category'],
+      status: json['status'],
+      doses: (json['doses'] as List?)
+              ?.map((e) => DoseModel.fromJson(e))
+              .toList() ??
+          [],
+      stages: (json['stages'] as List?)
+              ?.map((e) => StageModel.fromJson(e))
+              .toList() ??
+          [],
+    );
+  }
 
   Map<String, dynamic> toJson() {
     final data = {
       'vaccine_name': name,
       'description': description,
       'category': category,
-      'dose_count': doseCount,
-      'stages': stages,
+      'dose_count': doseCount.toString(),
+      'stages': stages.map((s) => s.id).toList(),
     };
 
     for (int i = 0; i < doses.length; i++) {
@@ -38,17 +61,5 @@ class VaccineModel {
     }
 
     return data;
-  }
-
-  factory VaccineModel.fromJson(Map<String, dynamic> json) {
-    // في حال احتجت لاحقًا لعرض قائمة التطعيمات
-    return VaccineModel(
-      name: json['vaccine_name'],
-      description: json['description'],
-      category: json['category'],
-      doseCount: json['dose_count'],
-      stages: List<int>.from(json['stages']),
-      doses: [],
-    );
   }
 }

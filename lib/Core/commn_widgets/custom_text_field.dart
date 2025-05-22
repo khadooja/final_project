@@ -87,6 +87,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
             TextEditingController(text: widget.initialValue),
         obscureText: widget.isObscureText && _isObscureText,
         textAlign: TextAlign.right,
+        keyboardType: TextInputType.text,
         decoration: _inputDecoration(labelText: widget.label),
         focusNode: widget.focusNode,
         textInputAction: widget.textInputAction,

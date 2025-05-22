@@ -13,6 +13,19 @@ class VaccineLoaded extends VaccineState {
   VaccineLoaded(this.vaccines);
 }
 
+class VaccineLoaded1 extends VaccineState {
+  final int count;
+  final List<VaccineModel> vaccines;
+  VaccineLoaded1(this.vaccines, this.count);
+}
+
+class VaccineStagesLoaded extends VaccineState {
+  final List<StageModel> stages;
+  VaccineStagesLoaded(this.stages);
+}
+
+class VaccineAdded extends VaccineState {}
+
 class VaccineError extends VaccineState {
   final String message;
 

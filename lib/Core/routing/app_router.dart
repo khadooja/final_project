@@ -11,6 +11,8 @@ import 'package:new_project/features/profile/presentation/screens/profile.dart';
 import 'package:new_project/features/staff_management/application/bloc/admin_bloc.dart';
 import 'package:new_project/features/dashboard/presentation/screens/staff_dashboard_screen.dart';
 import 'package:new_project/features/vaccination/dose/presentation/add_dose_screen.dart';
+import 'package:new_project/features/vaccination/stage/presentation/AddStageScreen.dart';
+import 'package:new_project/features/vaccination/vaccine/presentation/screens/vaccine_screen.dart';
 import 'routes.dart';
 
 class AppRouter {
@@ -29,13 +31,13 @@ class AppRouter {
         return _errorRoute("Invalid role data passed");
 
       // Admin Routes
-    case Routes.adminDashboard:
-  return _buildRoute(
-    BlocProvider(
-      create: (context) => di<PersonCubit>(),
-      child: const AdminDashboardScreen(),
-    ),
-  );
+      case Routes.adminDashboard:
+        return _buildRoute(
+          BlocProvider(
+            create: (context) => di<PersonCubit>(),
+            child: const AdminDashboardScreen(),
+          ),
+        );
       case Routes.centerDashboard:
         return _buildRoute(
           BlocProvider(
@@ -92,7 +94,7 @@ class AppRouter {
       // Center Admin Routes
       case Routes.addVaccination:
         return _buildRoute(
-          const AddDoseScreen(),
+          const VaccinesListScreen(),
         );
       default:
         return _errorRoute("Page not found");

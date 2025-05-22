@@ -15,6 +15,7 @@ import 'package:new_project/features/personal_management/data/models/personalTyp
 import 'package:new_project/features/guardian_management.dart/data/model/relationship_type_model.dart';
 import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 import 'package:new_project/features/vaccination/dose/model/dose_model.dart';
+import 'package:new_project/features/vaccination/stage/model/StageModel.dart';
 import 'package:new_project/features/vaccination/vaccine/model/SimpleVaccineModel.dart';
 import 'package:new_project/features/vaccination/vaccine/model/vaccine_model.dart';
 
@@ -186,6 +187,16 @@ class ApiServiceManual {
     return CommonDropdownsChidModel.fromJson(response.data);
   }
 
+  // Future<Map<String, dynamic>> post(
+  //     String path, Map<String, dynamic> data) async {
+  //   try {
+  //     final response = await _dio.post(path, data: data);
+  //     return response.data;
+  //   } on DioException catch (e) {
+  //     debugPrint('POST error: $e');
+  //     throw Exception('فشل الاتصال بالخادم');
+  //   }
+  // }
   Future<Map<String, dynamic>> post(
       String path, Map<String, dynamic> data) async {
     try {
@@ -193,6 +204,25 @@ class ApiServiceManual {
       return response.data;
     } on DioException catch (e) {
       debugPrint('POST error: $e');
+
+      if (e.response != null && e.response?.data != null) {
+        final errorData = e.response?.data;
+
+        if (errorData is Map<String, dynamic>) {
+          // حالة وجود رسائل تحقق
+          if (errorData.containsKey('errors')) {
+            throw errorData['errors']; // 🔴 نرمي Map تحتوي على الأخطاء
+          }
+
+          // رسالة عامة
+          if (errorData.containsKey('message')) {
+            throw Exception(errorData['message']);
+          }
+        }
+
+        throw Exception('حدث خطأ غير متوقع من السيرفر');
+      }
+
       throw Exception('فشل الاتصال بالخادم');
     }
   }
@@ -208,6 +238,78 @@ class ApiServiceManual {
     } catch (e) {
       debugPrint("خطأ أثناء تحميل التطعيمات: $e");
       throw Exception('فشل في تحميل التطعيمات');
+    }
+  }
+
+  // Future<StageModel> createStage(Map<String, dynamic> data) async {
+  //   final response =
+  //       await _dio.post('${ApiConfig.baseUrl}stages/store', data: data);
+  //   return StageModel.fromJson(response.data['data']);
+  // }
+  Future<Map<String, dynamic>> getVaccine() async {
+    final response = await _dio.get('${ApiConfig.baseUrl}vaccines');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getVaccineEditData(int id) async {
+    final res = await _dio.get('${ApiConfig.baseUrl}vaccines/$id/edit');
+    return res.data;
+  }
+
+  Future<void> updateVaccine(int id, VaccineModel model) async {
+    await _dio.put('${ApiConfig.baseUrl}vaccines/$id', data: model.toJson());
+  }
+
+  Future<void> toggleVaccineStatus(int id) async {
+    await _dio.patch('${ApiConfig.baseUrl}vaccines/$id/status');
+  }
+
+  // جلب المراحل
+  Future<List<StageModel>> fetchStages() async {
+    try {
+      final response = await _dio.get('${ApiConfig.baseUrl}stages/create');
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+
+        List<dynamic> stagesJson;
+        if (data is List) {
+          stagesJson = data;
+        } else if (data is Map &&
+            data['stage'] != null &&
+            data['stage'] is List) {
+          stagesJson = data['stage'];
+        } else {
+          throw Exception('البيانات المستلمة غير متوقعة: $data');
+        }
+
+        return stagesJson.map((e) => StageModel.fromJson(e)).toList();
+      } else {
+        throw Exception('فشل في جلب المراحل - الكود: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('خطأ أثناء جلب المراحل: $e');
+    }
+  }
+
+// إضافة تطعيم
+  Future<bool> addVaccine(VaccineModel vaccine) async {
+    try {
+      final response = await _dio.post(
+        '${ApiConfig.baseUrl}vaccine/store',
+        data: vaccine.toJson(),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        throw Exception('فشل في إضافة التطعيم: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('خطأ أثناء إضافة التطعيم: $e');
     }
   }
 }
