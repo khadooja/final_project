@@ -51,15 +51,13 @@ class AppBootstrapper extends StatelessWidget {
   }
 
   void _verifyDependencies() {
-  final di = GetIt.I;
-
-  final checks = <Type, bool>{
-    LoginCubit: di.isRegistered<LoginCubit>(),
-    FatherCubit: di.isRegistered<FatherCubit>(),
-    MotherCubit: di.isRegistered<MotherCubit>(),
-    PersonCubit: di.isRegistered<PersonCubit>(),
-    GuardianCubit: di.isRegistered<GuardianCubit>(),
-  };
+    final checks = {
+      'PersonCubit': GetIt.I.isRegistered<PersonCubit>(),
+      'FatherCubit': GetIt.I.isRegistered<FatherCubit>(),
+      'MotherCubit': GetIt.I.isRegistered<MotherCubit>(),
+      'GuardianCubit': GetIt.I.isRegistered<GuardianCubit>(),
+      'LoginCubit': GetIt.I.isRegistered<LoginCubit>(),
+    };
 
   for (var entry in checks.entries) {
     if (!entry.value) {

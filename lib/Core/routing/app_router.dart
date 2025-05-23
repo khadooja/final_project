@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:new_project/Core/di/get_it.dart';
+import 'package:new_project/features/HelthCenter/presentation/Add_helth_center_screen.dart';
+import 'package:new_project/features/HelthCenter/presentation/showHelthCenters.dart';
 import 'package:new_project/features/dashboard/presentation/screens/admin_dashboard_screen.dart';
 import 'package:new_project/features/auth/presentation/login_screen.dart';
 import 'package:new_project/features/dashboard/presentation/screens/super_dashboard_screen.dart';
@@ -10,6 +12,9 @@ import 'package:new_project/features/personal_management/logic/personal_cubit.da
 import 'package:new_project/features/profile/presentation/screens/profile.dart';
 import 'package:new_project/features/staff_management/application/bloc/admin_bloc.dart';
 import 'package:new_project/features/dashboard/presentation/screens/staff_dashboard_screen.dart';
+import 'package:new_project/features/vaccination/dose/presentation/add_dose_screen.dart';
+import 'package:new_project/features/vaccination/stage/presentation/AddStageScreen.dart';
+import 'package:new_project/features/vaccination/vaccine/presentation/screens/vaccine_screen.dart';
 import 'routes.dart';
 
 class AppRouter {
@@ -28,13 +33,13 @@ class AppRouter {
         return _errorRoute("Invalid role data passed");
 
       // Admin Routes
-    case Routes.adminDashboard:
-  return _buildRoute(
-    BlocProvider(
-      create: (context) => di<PersonCubit>(),
-      child: const AdminDashboardScreen(),
-    ),
-  );
+      case Routes.adminDashboard:
+        return _buildRoute(
+          BlocProvider(
+            create: (context) => di<PersonCubit>(),
+            child: const AdminDashboardScreen(),
+          ),
+        );
       case Routes.centerDashboard:
         return _buildRoute(
           BlocProvider(
@@ -89,7 +94,14 @@ class AppRouter {
           const FatherScreen(),
         );
       // Center Admin Routes
-
+      case Routes.addVaccination:
+        return _buildRoute(
+          const VaccinesListScreen(),
+        );
+      case Routes.addCenter:
+        return _buildRoute(
+          HealthCentersScreen(),
+        );
       default:
         return _errorRoute("Page not found");
     }

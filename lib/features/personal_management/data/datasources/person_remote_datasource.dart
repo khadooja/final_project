@@ -7,8 +7,8 @@ import 'package:new_project/features/personal_management/data/models/searchPerso
 
 abstract class PersonRemoteDataSource {
   Future<ApiResult<SearchPersonResponse?>> searchPersonById(
-    PersonType type,
-    String identityCardNumber,
+
+    String identityCardNumber,    PersonType type,
   );
 
   Future<ApiResult<void>> toggleActivation(

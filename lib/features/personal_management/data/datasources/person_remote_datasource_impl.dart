@@ -16,10 +16,15 @@ class PersonRemoteDataSourceImpl extends BaseRemoteDataSource
 
   @override
   Future<ApiResult<SearchPersonResponse?>> searchPersonById(
+        String identityCardNumber,
     PersonType type,
-    String identityCardNumber,
+
   ) async {
-    return callApi(() => _apiService.searchPerson(identityCardNumber, type));
+    return callApi(() => _apiService.searchPerson(
+                identityCardNumber,
+          type,
+
+        ));
   }
 
   @override
@@ -37,8 +42,9 @@ class PersonRemoteDataSourceImpl extends BaseRemoteDataSource
       getNationalitiesAndCities(PersonType type) {
     return callApi(() async {
       final response = await _apiService.getNationalitiesAndCities(type);
-      return (response.nationalities, response.cities);
-    });
+        return (response.nationalities,response.cities);
+    }
+    );
   }
 
   @override
