@@ -32,7 +32,7 @@ class _FatherScreenState extends State<FatherScreen> {
   void initState() {
     super.initState();
     _loadUserData();
-   // _fatherCubit.loadDropdowns();
+    _fatherCubit.loadDropdowns();
   }
 
   Future<void> _loadUserData() async {

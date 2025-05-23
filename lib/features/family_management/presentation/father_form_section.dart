@@ -22,6 +22,9 @@ class _FatherFormSectionState extends State<FatherFormSection> {
   void initState() {
     super.initState();
     _fillFromSearchResult(firstLoad: true);
+      context.read<FatherCubit>().loadDropdowns(); // ⬅️ تحميل المدن والجنسيات
+  _fillFromSearchResult(firstLoad: true);
+
   }
 
   @override

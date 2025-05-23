@@ -27,6 +27,7 @@ PersonModel _$PersonModelFromJson(Map<String, dynamic> json) => PersonModel(
       birthDate: json['birthDate'] == null
           ? null
           : DateTime.parse(json['birthDate'] as String),
+
     );
 
 Map<String, dynamic> _$PersonModelToJson(PersonModel instance) =>

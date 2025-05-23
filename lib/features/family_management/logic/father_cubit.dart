@@ -74,6 +74,7 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
   }
 
   @override
+
   void setArea(int? areaId) {
     print('\n🔄 جاري تعيين المنطقة: $areaId');
     final area = areas.firstWhereOrNull((a) => a.id == areaId);
