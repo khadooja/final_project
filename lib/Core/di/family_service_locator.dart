@@ -31,53 +31,47 @@ Future<void> setupFamilyServiceLocator() async {
   if (!di.isRegistered<ApiServiceManual>()) {
     throw Exception('ApiServiceManual must be registered first!');
   }
+
   // ========== DATASOURCES ==========
-  di.registerLazySingleton<FatherRemoteDataSource>(
-    () => FatherRemoteDataSourceImpl(di()),
-  );
   di.registerLazySingleton<FatherRemoteDataSource>(
     () => FatherRemoteDataSourceImpl(di<ApiServiceManual>()),
   );
 
   di.registerLazySingleton<MotherRemoteDataSource>(
-    () => MotherRemoteDataSourceImpl(di()),
+    () => MotherRemoteDataSourceImpl(di<ApiServiceManual>()),
   );
 
   // ========== REPOSITORIES ==========
-  di.registerLazySingleton<FatherRepository>(() => FatherRepositoryImpl(di()));
-
   di.registerLazySingleton<FatherRepository>(
     () => FatherRepositoryImpl(di<FatherRemoteDataSource>()),
   );
-  di.registerLazySingleton<MotherRepository>(() => MotherRepositoryImpl(di()));
+
+  di.registerLazySingleton<MotherRepository>(
+    () => MotherRepositoryImpl(di<MotherRemoteDataSource>()),
+  );
 
   // ========== USECASES ==========
   di.registerLazySingleton<AddFatherUseCase>(
-    () => AddFatherUseCase(di()),
+    () => AddFatherUseCase(di<FatherRepository>()),
   );
+
   di.registerLazySingleton<UpdateFatherUseCase>(
-    () => UpdateFatherUseCase(repository: di()),
+    () => UpdateFatherUseCase(repository: di<FatherRepository>()),
   );
+
   di.registerLazySingleton<AddMotherUseCase>(
-    () => AddMotherUseCase(di()),
+    () => AddMotherUseCase(di<MotherRepository>()),
   );
+
   di.registerLazySingleton<UpdateMotherUseCase>(
-    () => UpdateMotherUseCase(repository: di()),
+    () => UpdateMotherUseCase(repository: di<MotherRepository>()),
   );
 
   // ========== CUBITS ==========
   di.registerFactory<FatherCubit>(
     () => FatherCubit(
       di<FatherRepository>(),
-      di<PersonRepository>(),
+      di<PersonRepository>(), // تأكد من تسجيل PersonRepository في مكان آخر
     ),
-  );
-  di.registerFactory<FatherCubit>(() => FatherCubit(
-        di(),
-        di<PersonRepository>(),
-      ));
-
-  di.registerFactory<MotherCubit>(
-    () => MotherCubit(di(), di()),
   );
 }

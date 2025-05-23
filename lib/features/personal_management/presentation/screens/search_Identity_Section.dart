@@ -49,21 +49,17 @@ class _SearchIdentitySectionState extends State<SearchIdentitySection> {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: TextDirection.rtl, 
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          ElevatedButton(
-            onPressed: _search,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(6),
-              ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              "يجب التحقق إذا كان الشخص مضاف سابقاً",
+              style: TextStyle(fontSize: 14),
             ),
-            child: const Text("ابحث"),
           ),
-          const SizedBox(width: 8),
           SizedBox(
             width: 200,
             child: TextField(
@@ -80,10 +76,18 @@ class _SearchIdentitySectionState extends State<SearchIdentitySection> {
               keyboardType: TextInputType.number,
             ),
           ),
+          
           const SizedBox(width: 8),
-          const Text(
-            "يجب التحقق إذا كان الشخص مضاف سابقاً",
-            style: TextStyle(fontSize: 14),
+        
+          ElevatedButton(
+            onPressed: _search,
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+            child: const Text("ابحث"),
           ),
         ],
       ),

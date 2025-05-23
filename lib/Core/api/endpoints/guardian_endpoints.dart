@@ -7,5 +7,5 @@ class GuardianEndpoints {
       '${ApiConfig.baseUrl}children/{childId}/linkGuardian';
 
   // Relationship Types
-  String getRelationshipTypes = '${ApiConfig.baseUrl}relationship_types';
+  String guardiancreate = '${ApiConfig.baseUrl}guardian/create';
 }

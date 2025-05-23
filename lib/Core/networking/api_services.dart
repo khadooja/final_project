@@ -38,7 +38,7 @@ class ApiServiceManual {
   // Father
   Future<FatherModel> addFather(FatherModel fatherData) async {
     final response = await _dio.post(
-      '/father',
+      ApiEndpoints.parent.addFather,
       data: fatherData.toJson(),
     );
     return FatherModel.fromJson(response.data);
@@ -55,20 +55,21 @@ class ApiServiceManual {
 
   // Person Operations (Generic)
   Future<SearchPersonResponse> searchPerson(
+  String identityNumber,
   PersonType type,
-  Map<String, dynamic> data,
 ) async {
+  print('📡 ApiServiceManual - searchPerson - البيانات المرسلة: $identityNumber$type');
+
   final response = await _dio.post(
-    '/person/search',
+    ApiEndpoints.personal.searchPerson,
     data: {
-      ...data,
-      'person_type': type.name, 
+      'identity_card_number': identityNumber,
+      'person_type': type.name,
     },
   );
-  return SearchPersonResponse.fromJson(response.data, type);
+
+  return SearchPersonResponse.fromJson(response.data);
 }
-
-
 
   Future<PersonModel> updatePerson(
       PersonType type, String id, Map<String, dynamic> data) async {
@@ -82,7 +83,7 @@ class ApiServiceManual {
   Future<NationalitiesAndCitiesModel> getNationalitiesAndCities(
       PersonType type) async {
     final response =
-        await _dio.get('/${type.endpoint}/nationalities-and-cities');
+        await _dio.get(ApiEndpoints.personal.nationalitiesAndCities);
     return NationalitiesAndCitiesModel.fromJson(response.data);
   }
 
@@ -103,6 +104,11 @@ class ApiServiceManual {
   }
 
   // Child
+  Future<CommonDropdownsChidModel> getDropdownsData() async {
+  final response = await _dio.get(ApiEndpoints.child.getDropdownsData);
+  return CommonDropdownsChidModel.fromJson(response.data['data']);
+}
+
   Future<ChildModel> addChild(ChildModel childData) async {
     final response = await _dio.post(
       ApiEndpoints.child.addChild,
@@ -139,7 +145,7 @@ class ApiServiceManual {
 
   // Relationship Types
   Future<List<RelationshipTypeModel>> getRelationshipTypes() async {
-    final response = await _dio.get(ApiEndpoints.guardian.getRelationshipTypes);
+    final response = await _dio.get(ApiEndpoints.guardian.guardiancreate);
     return (response.data as List)
         .map((item) => RelationshipTypeModel.fromJson(item))
         .toList();
@@ -161,7 +167,7 @@ class ApiServiceManual {
   Future<CommonDropdownsChidModel> getNationalitiesAndCitiesUseCase(
       PersonType type) async {
     final response =
-        await _dio.get('/${type.endpoint}/nationalities-and-cities-usecase');
+        await _dio.get(ApiEndpoints.personal.nationalitiesAndCities);
     return CommonDropdownsChidModel.fromJson(response.data);
   }
 }

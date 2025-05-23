@@ -3,7 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:new_project/Core/theme/colors.dart';
 import 'package:new_project/Core/utils/form_validators.dart';
 
-enum InputType { text, date, dropdown, radio, location }
+
+enum InputType { text, number, email, date, dropdown, radio, location, phone }
+
 
 class CustomInputField extends StatefulWidget {
   final String label;
@@ -11,7 +13,9 @@ class CustomInputField extends StatefulWidget {
   final TextEditingController? controller;
   final String? initialValue;
   final bool isObscureText;
-  final List<String>? dropdownItems;
+final List<dynamic>? dropdownItems;
+final List<String>? dropdownItems1;
+
   final List<String>? radioOptions;
   final String? hintText;
   final String? selectedValue;
@@ -33,6 +37,7 @@ class CustomInputField extends StatefulWidget {
     this.controller,
     this.initialValue,
     this.dropdownItems,
+    this.dropdownItems1,
     this.radioOptions,
     this.selectedValue,
     this.hintText,
@@ -68,7 +73,14 @@ class _CustomInputFieldState extends State<CustomInputField> {
       case InputType.date:
         return _buildDateInput(context);
       case InputType.dropdown:
-        return _buildDropdown();
+  return _buildGenericDropdown(
+    label: widget.label,
+    value: widget.selectedValue,
+    items: widget.dropdownItems ?? [],
+    displayText: (item) => item.toString(),
+    onChanged: (dynamic value) => widget.onChanged?.call(value?.toString()),
+  );
+
       case InputType.radio:
         return _buildRadio();
       case InputType.location:
@@ -132,7 +144,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
       height: 80,
       child: DropdownButtonFormField<String>(
         value: widget.selectedValue,
-        items: widget.dropdownItems
+        items: widget.dropdownItems1
             ?.map((item) =>
                 DropdownMenuItem(value: item, child: _rightAlignedText(item)))
             .toList(),
@@ -144,23 +156,23 @@ class _CustomInputFieldState extends State<CustomInputField> {
     );
   }
 
-  Widget _buildRadio() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        _buildAlignedLabel(),
-        ...?widget.radioOptions?.map(
-          (option) => RadioListTile<String>(
-            title: _rightAlignedText(option),
-            value: option,
-            groupValue: widget.selectedValue,
-            onChanged: widget.onChanged,
-            controlAffinity: ListTileControlAffinity.trailing,
-          ),
+Widget _buildRadio() {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.end,
+    children: [
+      _buildAlignedLabel(),
+      ...?widget.radioOptions?.map(
+        (option) => RadioListTile<String>(
+          title: _rightAlignedText(option),
+          value: option,
+          groupValue: widget.selectedValue,
+          onChanged: widget.onChanged,
+          controlAffinity: ListTileControlAffinity.trailing,
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
 
   Widget _buildLocation() {
     return FutureBuilder<List<dynamic>>(
@@ -218,6 +230,29 @@ class _CustomInputFieldState extends State<CustomInputField> {
           (value) => validateNotEmpty(value, fieldName: label),
     );
   }
+  Widget _buildGenericDropdown<T>({
+  required String label,
+  required T? value,
+  required List<T> items,
+  required String Function(T) displayText,
+  required void Function(T?) onChanged,
+  FormFieldValidator<T>? validator,
+}) {
+  return DropdownButtonFormField<T>(
+    value: value,
+    items: items
+        .map((item) => DropdownMenuItem<T>(
+              value: item,
+              child: _rightAlignedText(displayText(item)),
+            ))
+        .toList(),
+    onChanged: onChanged,
+    decoration: _inputDecoration(labelText: label),
+    validator: validator ??
+        (val) => val == null ? 'يرجى اختيار $label' : null,
+  );
+}
+
 
   InputDecoration _inputDecoration({
     String? labelText,
@@ -242,7 +277,6 @@ class _CustomInputFieldState extends State<CustomInputField> {
       fillColor: const Color(0xFFEEEEEE),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
 
-      /// ✅ أيقونة البداية
       suffixIcon: (!showEyeIcon && widget.prefixIcon != null)
           ? widget.prefixIcon
           : null,

@@ -22,24 +22,25 @@ void main() async {
   await setupPersonServiceLocatorInject();
   
   final isRegistered = GetIt.I.isRegistered<PersonCubit>();
-  print('✅ PersonCubit Registered: $isRegistered');
+    print('✅ PersonCubit Registered: $isRegistered');
     await setupFamilyServiceLocator();
   final isRegister = GetIt.I.isRegistered<FatherCubit>(); 
-  print('✅ FatherCubit Registered: $isRegister');
+    print('✅ FatherCubit Registered: $isRegister');
   runApp(const AppBootstrapper());
 }
-       //! "username":"user_Ro5ofEk",
-       //! "password":"4thSWXLXCU5pyXM"
+       //? "username":"user_Ro5ofEk",
+       //? "password":"4thSWXLXCU5pyXM"
+       //?"identity_card_number": "2956023408534",
+
 class AppBootstrapper extends StatelessWidget {
   const AppBootstrapper({super.key});
-
   Future<void> _initializeApp() async {
     try {
       await ScreenUtil.ensureScreenSize();
       await setupServiceLocator();
       await setupAuthServiceLocator(useMock: false);
      // await setupPersonServiceLocatorInject();
-      await setupFamilyServiceLocator();
+      //await setupFamilyServiceLocator();
       await setupGuardianServiceLocator();
       await initChildManagementDependencies();
       _verifyDependencies();
@@ -49,7 +50,7 @@ class AppBootstrapper extends StatelessWidget {
     }
   }
 
- void _verifyDependencies() {
+  void _verifyDependencies() {
   final di = GetIt.I;
 
   final checks = <Type, bool>{

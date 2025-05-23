@@ -1,43 +1,46 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
+import 'location_model.dart';
+import 'nationality_model.dart';
 
 part 'person_model.g.dart';
 
-@JsonSerializable(
-  explicitToJson: true, // ضروري للتعامل مع الوراثة
-  anyMap: true, // ليدعم Map بأي نوع مفتاح
-)
+@JsonSerializable()
 class PersonModel {
   final int id;
-  final String firstName;
-  final String lastName;
+  final String first_name;
+  final String last_name;
   final String gender;
-  final String email;
-  final String phoneNumber;
-  final String identityCardNumber;
-  final int nationalitiesId;
-  final int locationId;
-  final DateTime birthDate;
-
-  @JsonKey(includeToJson: false)
-  final PersonType? type;
+  final String? email;
+  final String? phone_number;
+  final String identity_card_number;
+  final bool isDeceased;
+  final int nationalities_id;
+  final int? location_id;
+   final DateTime? birthDate;
+  
+  @JsonKey(name: 'location')
+  final Location? location;
+  
+  @JsonKey(name: 'nationality')
+  final NationalityModel? nationality;
 
   PersonModel({
     required this.id,
-    required this.firstName,
-    required this.lastName,
+    required this.first_name,
+    required this.last_name,
     required this.gender,
-    required this.email,
-    required this.phoneNumber,
-    required this.identityCardNumber,
-    required this.nationalitiesId,
-    required this.locationId,
-    required this.birthDate,
-    this.type,
+    this.email,
+    this.phone_number,
+    required this.identity_card_number,
+    required this.isDeceased,
+    required this.nationalities_id,
+    this.location_id,
+    this.location,
+    this.nationality,
+    this.birthDate,
   });
-  String get name => "$firstName $lastName";
 
-  factory PersonModel.fromJson(Map<String, dynamic> json) =>
+  factory PersonModel.fromJson(Map<String, dynamic> json) => 
       _$PersonModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$PersonModelToJson(this);

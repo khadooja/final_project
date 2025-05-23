@@ -53,31 +53,32 @@ class GuardianCubit extends Cubit<GuardianState> {
   }
 
   void fillFormWithGuardian(GurdianModel model) {
-    firstNameController.text = model.firstName;
-    lastNameController.text = model.lastName;
-    identityController.text = model.identityCardNumber;
-    birthDateController.text = model.birthDate?.toString() ?? '';
-    phoneController.text = model.phoneNumber ?? '';
+    firstNameController.text = model.first_name;
+    lastNameController.text = model.last_name;
+    identityController.text = model.identity_card_number;
+    phoneController.text = model.phone_number ?? '';
     emailController.text = model.email ?? '';
     selectedGender = model.gender;
-    selectedNationalityId = model.nationalitiesId;
-    selectedAreaId = model.locationId;
+    selectedNationalityId = model.nationalities_id;
+    selectedAreaId = model.location_id;
   }
 
   void fillFormWithPerson(PersonModel model) {
-    firstNameController.text = model.firstName;
-    lastNameController.text = model.lastName;
-    identityController.text = model.identityCardNumber;
+    firstNameController.text = model.first_name;
+    lastNameController.text = model.last_name;
+    identityController.text = model.identity_card_number;
+    phoneController.text = model.phone_number ?? '';
+    emailController.text = model.email ?? '';
     selectedGender = model.gender;
-    selectedNationalityId = model.nationalitiesId;
-    selectedAreaId = model.locationId;
+    selectedNationalityId = model.nationalities_id;
+    selectedAreaId = model.location_id;
   }
 
   // Search for guardian by identity
   Future<void> searchByIdentity(String identity, PersonType type) async {
     emit(GuardianLoading());
 
-    final result = await _personRepository.searchPersonById( identity, type);
+    final result = await _personRepository.searchPersonById(identity, type);
 
     result.when(
       success: (person) {
@@ -174,16 +175,16 @@ class GuardianCubit extends Cubit<GuardianState> {
     // إذا كان ولي أمر جديد (سواء مع أو بدون childId)
     final guardianModel = GurdianModel(
       id: guardianId != null ? int.parse(guardianId) : 0,
-      firstName: firstNameController.text,
-      lastName: lastNameController.text,
-      identityCardNumber: identityController.text,
-      birthDate: DateTime.parse(birthDateController.text),
-      phoneNumber: phoneController.text,
+      first_name: firstNameController.text,
+      last_name: lastNameController.text,
+      identity_card_number: identityController.text,
+      phone_number: phoneController.text,
       email: emailController.text,
-      nationalitiesId: selectedNationalityId ?? 0,
-      locationId: selectedAreaId ?? 0,
+      nationalities_id:
+          int.parse(selectedNationalityId.toString()), // selectedNationalityId,
+      //location_id: selectedAreaId, ,
       isActive: true,
-      gender: selectedGender ?? 'male',
+      gender: selectedGender ?? 'male', location_id: null,
     );
 
     final addResult = await _guardianRepository.addGuardian(guardianModel);
