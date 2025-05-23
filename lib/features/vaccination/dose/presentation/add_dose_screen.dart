@@ -15,10 +15,10 @@ class AddDoseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<DoseCubit>(
       create: (_) => di<DoseCubit>(), // GetIt instance
-      child: Scaffold(
+      child: const Scaffold(
         backgroundColor: Colors.white,
         // appBar: AppBar(title: const Text('إضافة جرعة')),
-        body: const Padding(
+        body: Padding(
           padding: EdgeInsets.all(16.0),
           child: DoseForm(),
         ),

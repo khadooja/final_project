@@ -64,13 +64,22 @@ class ApiServiceManual {
   }
 
   // Person Operations (Generic)
-  Future<SearchPersonResponse> searchPerson(String identityCardNumber,
-      PersonType type,) async {
-    final response = await _dio.post(
-      ApiEndpoints.personal.searchPerson,
-    );
-    return SearchPersonResponse.fromJson(response.data);
-  }
+  Future<SearchPersonResponse> searchPerson(
+  String identity_card_number,
+  PersonType person_type,
+) async {
+  print('📡 ApiServiceManual - searchPerson - البيانات المرسلة: $identity_card_number$person_type');
+
+  final response = await _dio.post(
+    ApiEndpoints.personal.searchPerson,
+    data: {
+      'identity_card_number': identity_card_number,
+      'person_type': person_type.name,
+    },
+  );
+
+  return SearchPersonResponse.fromJson(response.data);
+}
 
   Future<PersonModel> updatePerson(
       PersonType type, String id, Map<String, dynamic> data) async {

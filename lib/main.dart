@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
-
 import 'package:new_project/Core/di/auth_service_locator.dart';
 import 'package:new_project/Core/di/child_service_locator.dart';
 import 'package:new_project/Core/di/family_service_locator.dart';

@@ -170,39 +170,43 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
   Future<void> fetchFatherByIdentity(String identity) async {
   print('⏳ [1] بدء عملية البحث عن الأب برقم الهوية: $identity');
   emit(const FatherLoaded());
-  
+
   print('🔄 [2] جاري استدعاء API للبحث...');
   final result = await personRepository.searchPersonById(identity, PersonType.father);
-  
+
   result.when(
     success: (response) async {
       print('✅ [3] تم استلام الاستجابة بنجاح من API');
-      print('📦 محتوى الاستجابة: ${response}');
-      
-      emit(FatherLoaded(searchResult: response));
-      
+      print('📦 محتوى الاستجابة: $response');
+
       if (response?.data == null) {
         print('⚠️ [3.1] لا يوجد بيانات في الاستجابة');
+        clearForm();
         emit(FatherNotFound());
         return;
       }
-      
-      print('🔄 [4] جاري تعبئة النموذج بالبيانات...');
-      if (response!.data!.father != null) {
+
+      final data = response!.data!;
+      final father = data.father;
+      final person = data.person;
+
+      if (father != null) {
         print('👨‍👦 [4.1] تم العثور على بيانات الأب');
         fillFormFromFather(response);
-        emit(FatherDataFound(response.data!.father!));
-      } else if (response.data!.person != null) {
+        emit(FatherDataFound(father));
+      } else if (person != null) {
         print('👤 [4.2] تم العثور على بيانات الشخص فقط');
         fillFormFromPerson(response);
-        emit(FatherPersonFound(response.data!.person!));
+        emit(FatherPersonFound(person));
       } else {
         print('⚠️ [4.3] لا يوجد بيانات شخص أو أب في الاستجابة');
+        clearForm();
         emit(FatherNotFound());
       }
     },
     failure: (error) {
       print('❌ [3] فشل في استدعاء API: ${error.message}');
+      clearForm();
       emit(FatherError(error.message));
     },
   );
