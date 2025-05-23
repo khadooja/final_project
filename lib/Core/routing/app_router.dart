@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:new_project/Core/di/get_it.dart';
+import 'package:new_project/features/HelthCenter/presentation/Add_helth_center_screen.dart';
+import 'package:new_project/features/HelthCenter/presentation/showHelthCenters.dart';
 import 'package:new_project/features/dashboard/presentation/screens/admin_dashboard_screen.dart';
 import 'package:new_project/features/auth/presentation/login_screen.dart';
 import 'package:new_project/features/dashboard/presentation/screens/super_dashboard_screen.dart';
@@ -95,6 +97,10 @@ class AppRouter {
       case Routes.addVaccination:
         return _buildRoute(
           const VaccinesListScreen(),
+        );
+      case Routes.addCenter:
+        return _buildRoute(
+          HealthCentersScreen(),
         );
       default:
         return _errorRoute("Page not found");

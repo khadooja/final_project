@@ -19,6 +19,9 @@ import 'package:new_project/features/vaccination/stage/model/StageModel.dart';
 import 'package:new_project/features/vaccination/vaccine/model/SimpleVaccineModel.dart';
 import 'package:new_project/features/vaccination/vaccine/model/vaccine_model.dart';
 
+import '../../features/HelthCenter/model/helth_center.dart';
+import '../../features/HelthCenter/model/location.dart';
+
 class ApiServiceManual {
   final Dio _dio;
 
@@ -311,5 +314,64 @@ class ApiServiceManual {
     } catch (e) {
       throw Exception('خطأ أثناء إضافة التطعيم: $e');
     }
+  }
+
+  Future<List<Location>> fetchCities() async {
+    final response =
+        await _dio.get('${ApiConfig.baseUrl}citiesAndNationalities');
+    if (response.statusCode == 200) {
+      final List<dynamic> citiesJson = response.data['cities'];
+      return citiesJson.map((e) => Location.fromJson(e)).toList();
+    } else {
+      throw Exception('فشل تحميل المدن');
+    }
+  }
+
+  Future<List<Location>> fetchAreas(String cityName) async {
+    final encodedCityName = Uri.encodeComponent(cityName);
+    final response =
+        await _dio.get('${ApiConfig.baseUrl}areas/$encodedCityName');
+    if (response.statusCode == 200) {
+      final List<dynamic> areasJson = response.data;
+      return areasJson.map((e) => Location.fromJson(e)).toList();
+    } else {
+      throw Exception('فشل تحميل المناطق');
+    }
+  }
+
+  Future<bool> addHealthCenter(HealthCenter center) async {
+    try {
+      final response = await _dio.post(
+        '${ApiConfig.baseUrl}healthCenter/store',
+        data: center.toJson(),
+      );
+
+      print('Response Status: ${response.statusCode}');
+      print('Response Body: ${response.data}');
+
+      return response.statusCode == 201;
+    } catch (e) {
+      print('Error occurred: $e');
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchClinics() async {
+    final response = await _dio.get('${ApiConfig.baseUrl}healthCenter/index');
+    return response.data;
+  }
+
+  Future<void> toggleHealthStatus(int id) async {
+    await _dio.patch('${ApiConfig.baseUrl}healthCenter/$id/status');
+  }
+
+  Future<void> updateHealth(int id, HealthCenter model) async {
+    await _dio.put('${ApiConfig.baseUrl}healthCenter/$id',
+        data: model.toJson());
+  }
+
+  Future<Map<String, dynamic>> getHealthEditData(int id) async {
+    final res = await _dio.get('${ApiConfig.baseUrl}healthCenter/$id/edit');
+    return res.data;
   }
 }
