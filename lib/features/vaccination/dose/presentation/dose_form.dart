@@ -1,6 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:new_project/Core/commn_widgets/custom_button.dart';
+import 'package:new_project/Core/commn_widgets/custom_text_field.dart';
+import 'package:new_project/Core/commn_widgets/top_bar.dart';
+import 'package:new_project/Core/networking/api_services.dart';
+import 'package:new_project/Core/theme/colors.dart';
 import 'package:new_project/features/vaccination/dose/logic/cubit/dose_cubit.dart';
+import 'package:new_project/features/vaccination/vaccine/model/vaccine_model.dart';
 
 class DoseForm extends StatefulWidget {
   const DoseForm({super.key});
@@ -20,6 +27,7 @@ class _DoseFormState extends State<DoseForm> {
 
   String? _selectedVaccineId;
   List<DropdownMenuItem<String>> _vaccineItems = [];
+  bool _isLoadingVaccines = true;
 
   @override
   void initState() {
@@ -28,13 +36,26 @@ class _DoseFormState extends State<DoseForm> {
   }
 
   void _fetchVaccines() async {
-    // مؤقتًا فقط - لاحقًا يتم جلبها من API
-    setState(() {
-      _vaccineItems = [
-        DropdownMenuItem(value: '1', child: Text('تطعيم الحصبة')),
-        DropdownMenuItem(value: '2', child: Text('تطعيم شلل الأطفال')),
-      ];
-    });
+    try {
+      final vaccines = await ApiServiceManual(dio: Dio()).getVaccines();
+      setState(() {
+        _vaccineItems = vaccines
+            .map((vaccine) => DropdownMenuItem<String>(
+                  value: vaccine.id.toString(),
+                  child: Text(vaccine.name),
+                ))
+            .toList();
+        _isLoadingVaccines = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingVaccines = false;
+      });
+      debugPrint("فشل في تحميل التطعيمات: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('فشل في تحميل قائمة التطعيمات')),
+      );
+    }
   }
 
   void _submitForm() {
@@ -58,72 +79,127 @@ class _DoseFormState extends State<DoseForm> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<DoseCubit, DoseState>(
-      listener: (context, state) {
-        if (state is DoseSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('تمت إضافة الجرعة بنجاح')),
-          );
-          Navigator.pop(context); // يرجع للخلف بعد النجاح
-        } else if (state is DoseError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('فشل في الإضافة: ${state.message}')),
-          );
-        }
-      },
-      builder: (context, state) {
-        return Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _doseNumberController,
-                decoration: const InputDecoration(labelText: 'رقم الجرعة'),
-                validator: (val) => val!.isEmpty ? 'مطلوب' : null,
-              ),
-              TextFormField(
-                controller: _ageYearsController,
-                decoration: const InputDecoration(labelText: 'العمر (سنوات)'),
-                keyboardType: TextInputType.number,
-                validator: (val) => val!.isEmpty ? 'مطلوب' : null,
-              ),
-              TextFormField(
-                controller: _ageMonthsController,
-                decoration: const InputDecoration(labelText: 'العمر (أشهر)'),
-                keyboardType: TextInputType.number,
-                validator: (val) => val!.isEmpty ? 'مطلوب' : null,
-              ),
-              TextFormField(
-                controller: _ageDaysController,
-                decoration: const InputDecoration(labelText: 'العمر (أيام)'),
-                keyboardType: TextInputType.number,
-                validator: (val) => val!.isEmpty ? 'مطلوب' : null,
-              ),
-              TextFormField(
-                controller: _delayDaysController,
-                decoration:
-                    const InputDecoration(labelText: 'مدة التأخير (أيام)'),
-                keyboardType: TextInputType.number,
-                validator: (val) => val!.isEmpty ? 'مطلوب' : null,
-              ),
-              DropdownButtonFormField<String>(
-                value: _selectedVaccineId,
-                items: _vaccineItems,
-                decoration: const InputDecoration(labelText: 'اسم التطعيم'),
-                onChanged: (val) => setState(() => _selectedVaccineId = val),
-                validator: (val) => val == null ? 'مطلوب' : null,
-              ),
-              const SizedBox(height: 24),
-              state is DoseLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                      onPressed: _submitForm,
-                      child: const Text('إضافة الجرعة'),
-                    ),
-            ],
+    return SafeArea(
+      child: Column(
+        children: [
+          const TopBar(title: "إضافة جرعة"),
+          Expanded(
+            child: BlocConsumer<DoseCubit, DoseState>(
+              listener: (context, state) {
+                if (state is DoseSuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('تمت إضافة الجرعة بنجاح')),
+                  );
+                  Navigator.pop(context);
+                } else if (state is DoseError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('فشل في الإضافة: ${state.message}')),
+                  );
+                }
+              },
+              builder: (context, state) {
+                return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Form(
+                      key: _formKey,
+                      child: ListView(
+                        children: [
+                          const SizedBox(height: 16),
+
+                          // الصف الأول: العمر (سنوات - أشهر - أيام)
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomInputField(
+                                  controller: _ageYearsController,
+                                  label: 'العمر (سنوات)',
+                                  //keyboardType: TextInputType.number,
+                                  validator: (val) =>
+                                      val!.isEmpty ? 'مطلوب' : null,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: CustomInputField(
+                                  controller: _ageMonthsController,
+                                  label: 'العمر (أشهر)',
+                                  // keyboardType: TextInputType.number,
+                                  validator: (val) =>
+                                      val!.isEmpty ? 'مطلوب' : null,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: CustomInputField(
+                                  controller: _ageDaysController,
+                                  label: 'العمر (أيام)',
+                                  //keyboardType: TextInputType.number,
+                                  validator: (val) =>
+                                      val!.isEmpty ? 'مطلوب' : null,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // الصف الثاني: رقم الجرعة - مدة التأخير
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomInputField(
+                                  controller: _doseNumberController,
+                                  label: 'رقم الجرعة',
+                                  validator: (val) =>
+                                      val!.isEmpty ? 'مطلوب' : null,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: CustomInputField(
+                                  controller: _delayDaysController,
+                                  label: 'مدة التأخير (أيام)',
+                                  //keyboardType: TextInputType.number,
+                                  validator: (val) =>
+                                      val!.isEmpty ? 'مطلوب' : null,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Dropdown: اسم التطعيم
+                          _isLoadingVaccines
+                              ? const Center(child: CircularProgressIndicator())
+                              : DropdownButtonFormField<String>(
+                                  value: _selectedVaccineId,
+                                  items: _vaccineItems,
+                                  decoration: const InputDecoration(
+                                      labelText: 'اسم التطعيم'),
+                                  onChanged: (val) =>
+                                      setState(() => _selectedVaccineId = val),
+                                  validator: (val) =>
+                                      val == null ? 'مطلوب' : null,
+                                ),
+
+                          const SizedBox(height: 24),
+
+                          // زر الإضافة
+                          state is DoseLoading
+                              ? const Center(child: CircularProgressIndicator())
+                              : CustomButton(
+                                  onPressed: _submitForm,
+                                  text: 'إضافة الجرعة',
+                                ),
+                        ],
+                      ),
+                    ));
+              },
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }

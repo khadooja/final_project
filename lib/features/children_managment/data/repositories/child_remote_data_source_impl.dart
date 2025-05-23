@@ -1,6 +1,7 @@
 import 'package:new_project/Core/networking/api_result.dart';
 import 'package:new_project/features/children_managment/data/dataSources/child_data_source.dart';
 import 'package:new_project/features/children_managment/data/model/CommonDropdownsChidModel.dart';
+import 'package:new_project/features/children_managment/data/model/child_list_response_model.dart';
 import 'package:new_project/features/children_managment/domain/repositories/child_repository.dart';
 import 'package:new_project/features/personal_management/data/models/nationalitiesAndcities_model.dart';
 import 'package:new_project/features/personal_management/data/models/person_model.dart';
@@ -10,6 +11,11 @@ class ChildRepositoryImpl implements ChildRepository {
   final ChildRemoteDataSource _remoteDataSource;
 
   ChildRepositoryImpl(this._remoteDataSource);
+
+  @override
+  Future<ApiResult<ChildListResponseModel>> getChildren() {
+    return _remoteDataSource.getChildren();
+  }
 
   @override
   Future<ApiResult<void>> addChild(Map<String, dynamic> childData) {
@@ -22,14 +28,13 @@ class ChildRepositoryImpl implements ChildRepository {
     return _remoteDataSource.updateChild(id, childData);
   }
 
-
   @override
   Future<ApiResult<CommonDropdownsChidModel>>
       getNationalitiesAndCitiesandCases() {
     return _remoteDataSource
         .getNationalitiesAndCitiesandCases(PersonType.child);
   }
-  
+
   @override
   Future<ApiResult<PersonModel?>> searchParentById(PersonType type, String id) {
     // TODO: implement searchParentById

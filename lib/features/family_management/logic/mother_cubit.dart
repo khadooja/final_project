@@ -45,7 +45,7 @@ class MotherCubit extends Cubit<MotherState> {
   Future<void> searchFatherById(String id) async {
     emit(MotherLoading());
     final result =
-        await _personRepository.searchPersonById(PersonType.mother, id);
+        await _personRepository.searchPersonById( id, PersonType.mother);
     result.when(
       success: (data) => emit(MotherSearchSuccess(data)),
       failure: (error) => emit(MotherFailure((error.message))),

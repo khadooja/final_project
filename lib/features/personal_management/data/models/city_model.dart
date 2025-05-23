@@ -4,10 +4,12 @@ part 'city_model.g.dart';
 
 @JsonSerializable()
 class CityModel {
-  final String name;
+    final int id;
+  final String city_name;
 
   CityModel({
-    required this.name,
+    required this.id,
+    required this.city_name,
   });
 
   factory CityModel.fromJson(Map<String, dynamic> json) =>

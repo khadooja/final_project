@@ -2,6 +2,6 @@ import 'package:new_project/features/personal_management/data/models/nationality
 
 class DropdownMapper {
   static List<String> mapNationalitiesToNames(List<NationalityModel> list) {
-    return list.map((e) => e.name).toList();
+    return list.map((e) => e.nationality_name).toList();
   }
 }

@@ -5,11 +5,15 @@ part 'nationality_model.g.dart';
 @JsonSerializable()
 class NationalityModel {
   final int id;
-  final String name;
+  final String nationality_name;
+    final String country_name;
+  final String country_code;
 
   NationalityModel({
     required this.id,
-    required this.name,
+    required this.nationality_name,
+    required this.country_name,
+    required this.country_code,
   });
 
   factory NationalityModel.fromJson(Map<String, dynamic> json) =>

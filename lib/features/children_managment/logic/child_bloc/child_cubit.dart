@@ -1,12 +1,29 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_project/Core/helpers/shared_pref_helper.dart';
 import 'package:new_project/features/children_managment/domain/repositories/child_repository.dart';
+import 'package:new_project/features/children_managment/domain/usecase/get_children_usecase.dart';
 import 'package:new_project/features/children_managment/logic/child_bloc/child_state.dart';
 
 class ChildCubit extends Cubit<ChildState> {
   final ChildRepository _repository;
+  final GetChildrenUseCase _getChildrenUseCase;
 
-  ChildCubit(this._repository) : super(ChildInitial());
+  ChildCubit(this._repository, this._getChildrenUseCase)
+      : super(ChildInitial());
+
+//جلب الأطفال
+  Future<void> fetchChildrenList() async {
+    emit(ChildrenListLoading());
+    final result = await _getChildrenUseCase.execute();
+    result.when(
+      success: (childListResponse) {
+        emit(ChildrenListLoaded(childListResponse));
+      },
+      failure: (error) {
+        emit(ChildrenListError(error.message));
+      },
+    );
+  }
 
   Future<void> addChild(Map<String, dynamic> childData) async {
     emit(ChildLoading());

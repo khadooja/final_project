@@ -13,10 +13,12 @@ class PersonRepositoryImpl implements PersonRepository {
   PersonRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<ApiResult<SearchPersonResponse?>> searchPersonById(
-      PersonType type, String identityCardNumber) {
-    return _remoteDataSource.searchPersonById(type, identityCardNumber);
-  }
+Future<ApiResult<SearchPersonResponse?>> searchPersonById(String identityCardNumber, PersonType type) {
+  return _remoteDataSource.searchPersonById(
+    identityCardNumber,
+    type,
+  );
+}
 
   @override
   Future<ApiResult<void>> toggleActivation(

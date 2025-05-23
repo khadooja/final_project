@@ -32,7 +32,7 @@ ChildWithRelations:
   Child: ${child.toString()}
   Special Cases: ${specialCases?.length ?? 0}
   Birth City: ${countryModel?.name ?? 'N/A'}
-  Nationality: ${nationality.name}
+  Nationality: ${nationality.nationality_name}
 ''';
   }
 }

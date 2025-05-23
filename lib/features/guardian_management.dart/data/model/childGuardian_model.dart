@@ -1,6 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:new_project/features/personal_management/data/models/person_model.dart';
-import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
 
 part 'childGuardian_model.g.dart';
 
@@ -20,35 +19,32 @@ class ChildGuardianModel extends PersonModel {
   final int? guardianId;
 
   @JsonKey(includeFromJson: false, includeToJson: false)
-  final bool isDeceased; // مخفي عن JSON لأنه موجود في PersonModel
+  final bool isDeceased;
 
-  ChildGuardianModel(
-    this.startDate,
-    this.isActive,
-    this.isVerified,
-    this.verificationDocument,
-    this.guardianId, {
+  ChildGuardianModel({
     required super.id,
-    required super.firstName,
-    required super.lastName,
+    required super.first_name,
+    required super.last_name,
     required super.gender,
     required super.email,
-    required super.phoneNumber,
-    required super.identityCardNumber,
-    required super.nationalitiesId,
-    required super.locationId,
-    required super.birthDate,
+    required super.phone_number,
+    required super.identity_card_number,
+    required super.nationalities_id,
+    required super.location_id,
     required this.hasGuardian,
     required this.endDate,
+    this.startDate,
+    required this.isActive,
+    required this.isVerified,
+    this.verificationDocument,
     required this.relationshipTypesId,
     required this.relationshipStartDate,
     required this.relationshipEndDate,
     this.notes,
     required this.childrenIds,
+    this.guardianId,
     this.isDeceased = false,
-  }) : super(
-          type: PersonType.guardian,
-        );
+  }) : super(isDeceased: false);
 
   factory ChildGuardianModel.fromJson(Map<String, dynamic> json) =>
       _$ChildGuardianModelFromJson(json);

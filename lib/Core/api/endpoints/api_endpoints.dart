@@ -11,7 +11,9 @@ class ApiEndpoints {
   static ChildEndpoints child = ChildEndpoints();
   static EmployeeEndpoints employee = EmployeeEndpoints();
   static PersonalEndpoints personal = PersonalEndpoints();
-  static ParentEndpoint personalType = ParentEndpoint();
+  static ParentEndpoint parent = ParentEndpoint();
   static GuardianEndpoints guardian = GuardianEndpoints();
+
   static VaccinationEndpoints vaccination = VaccinationEndpoints();
+
 }

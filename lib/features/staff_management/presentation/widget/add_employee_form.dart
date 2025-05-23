@@ -52,12 +52,7 @@ class _EmployeeRegistrationFormState extends State<EmployeeRegistrationForm> {
 
   void _prefillDataIfExists() {
     if (widget.personData != null) {
-      firstNameController.text = widget.personData!.firstName ?? '';
-      lastNameController.text = widget.personData!.lastName ?? '';
-      idNumberController.text = (widget.personData!.nationalitiesId).toString();
-      emailController.text = widget.personData!.email ?? '';
-      birthDateController.text = widget.personData!.birthDate?.toString() ?? '';
-      phoneController.text = widget.personData!.phoneNumber ?? '';
+      
     }
   }
 

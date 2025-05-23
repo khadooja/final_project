@@ -8,7 +8,7 @@ class SearchPersonByIdUseCase {
 
   SearchPersonByIdUseCase(this._repository);
 
-  Future<ApiResult<SearchPersonResponse?>> call(PersonType type, String id) {
-    return _repository.searchPersonById(type, id);
+  Future<ApiResult<SearchPersonResponse?>> call(String identityCardNumber ,PersonType type) {
+    return _repository.searchPersonById( identityCardNumber,type);
   }
 }

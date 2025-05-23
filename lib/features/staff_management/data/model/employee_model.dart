@@ -44,33 +44,12 @@ class EmployeeModel {
       };
     } else {
       return {
-        'isPersonExist': false,
-        'first_name': personData?.firstName,
-        'last_name': personData?.lastName,
-        'gender': personData?.gender,
-        'identity_card_number': personData?.identityCardNumber,
-        'email': personData?.email,
-        'phone_number': personData?.phoneNumber,
-        'location_id': personData?.locationId,
-        'nationalities_id': personData?.nationalitiesId,
-        'employment_date': employmentDate.toIso8601String(),
-        'date_of_birth': dateOfBirth.toIso8601String(),
-        'health_center_id': healthCenterId,
-        'is_active': isActive,
+       
       };
     }
   }
 
-  factory EmployeeModel.fromPersonModel(PersonModel person) {
-    return EmployeeModel(
-      id: person.id,
-      employmentDate: DateTime.now(),
-      dateOfBirth: person.birthDate,
-      isActive: true,
-      healthCenterId: 0,
-      personData: person,
-    );
-  }
+ 
 
   EmployeeModel copyWith({
     int? id,

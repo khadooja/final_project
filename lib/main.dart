@@ -8,38 +8,40 @@ import 'package:new_project/Core/di/family_service_locator.dart';
 import 'package:new_project/Core/di/guardian_service_locator.dart';
 import 'package:new_project/Core/di/person_service_locator.dart';
 import 'package:new_project/Core/di/service_locator.dart';
+import 'package:new_project/Core/routing/app_router.dart';
+import 'package:new_project/features/auth/logic/cubit/login_cubit.dart';
 import 'package:new_project/features/auth/presentation/login_screen.dart';
 import 'package:new_project/features/family_management/logic/father_cubit.dart';
 import 'package:new_project/features/family_management/logic/mother_cubit.dart';
 import 'package:new_project/features/guardian_management.dart/logic/guardian_cubit.dart';
-import 'package:new_project/features/personal_management/domain/repositories/personal_repo.dart';
 import 'package:new_project/features/personal_management/logic/personal_cubit.dart';
-
-import 'Core/routing/app_router.dart';
-import 'features/auth/logic/cubit/login_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await setupPersonServiceLocatorInject();
+  
+  final isRegistered = GetIt.I.isRegistered<PersonCubit>();
+    print('✅ PersonCubit Registered: $isRegistered');
+    await setupFamilyServiceLocator();
+  final isRegister = GetIt.I.isRegistered<FatherCubit>(); 
+    print('✅ FatherCubit Registered: $isRegister');
   runApp(const AppBootstrapper());
 }
+       //? "username":"user_Ro5ofEk",
+       //? "password":"4thSWXLXCU5pyXM"
+       //?"identity_card_number": "2956023408534",
 
 class AppBootstrapper extends StatelessWidget {
   const AppBootstrapper({super.key});
-
   Future<void> _initializeApp() async {
     try {
       await ScreenUtil.ensureScreenSize();
-
-      // الترتيب الأمثل لتهيئة DI
-      await setupServiceLocator(); // التهيئة الأساسية أولاً
+      await setupServiceLocator();
       await setupAuthServiceLocator(useMock: false);
-      await setupPersonServiceLocatorInject();
-      print('object setupPersonServiceLocatorInject');
-      await setupFamilyServiceLocator();
+     // await setupPersonServiceLocatorInject();
+      //await setupFamilyServiceLocator();
       await setupGuardianServiceLocator();
       await initChildManagementDependencies();
-
-      // التحقق من التهيئة
       _verifyDependencies();
     } catch (e) {
       debugPrint('Error during initialization: $e');
@@ -48,24 +50,24 @@ class AppBootstrapper extends StatelessWidget {
   }
 
   void _verifyDependencies() {
-    final di = GetIt.I;
-    final requiredDependencies = [
-      'LoginCubit',
-      'FatherCubit',
-      'MotherCubit',
-      'PersonCubit',
-      'GuardianCubit'
-    ];
-    assert(di.isRegistered<PersonCubit>(), 'PersonCubit not registered!');
-    assert(di.isRegistered<PersonRepository>(),
-        'PersonRepository not registered!');
+    final checks = {
+      'PersonCubit': GetIt.I.isRegistered<PersonCubit>(),
+      'FatherCubit': GetIt.I.isRegistered<FatherCubit>(),
+      'MotherCubit': GetIt.I.isRegistered<MotherCubit>(),
+      'GuardianCubit': GetIt.I.isRegistered<GuardianCubit>(),
+      'LoginCubit': GetIt.I.isRegistered<LoginCubit>(),
+    };
 
-    for (var dep in requiredDependencies) {
-      if (!di.isRegistered(instanceName: dep)) {
-        throw Exception('Dependency $dep not registered!');
-      }
+  for (var entry in checks.entries) {
+    if (!entry.value) {
+      throw Exception('❌ Dependency of type ${entry.key} not registered!');
+    } else {
+      debugPrint('✅ ${entry.key} is registered');
     }
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +75,7 @@ class AppBootstrapper extends StatelessWidget {
       future: _initializeApp(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return const MyApp();
+          return const MyApp(); // يتم عرض التطبيق فقط بعد التهيئة
         } else if (snapshot.hasError) {
           return MaterialApp(
             home: Scaffold(
@@ -101,18 +103,16 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (_, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          onGenerateRoute: AppRouter.generateRoute,
-          builder: (context, child) {
-            return MultiBlocProvider(
-              providers: _getBlocProviders(),
-              child: child!,
-            );
-          },
-          home: _getHomeScreen(),
+        return MultiBlocProvider(
+          providers: _getBlocProviders(),
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            onGenerateRoute: AppRouter.generateRoute,
+            home: child,
+          ),
         );
       },
+      child: _getHomeScreen(),
     );
   }
 }
@@ -120,23 +120,14 @@ class MyApp extends StatelessWidget {
 List<BlocProvider> _getBlocProviders() {
   final di = GetIt.I;
   return [
-    BlocProvider<LoginCubit>(
-      create: (context) => di<LoginCubit>(),
-      lazy: false, // يتم إنشاؤه فوراً
-    ),
-    BlocProvider<PersonCubit>(
-      create: (context) => di<PersonCubit>(),
-    ),
-    BlocProvider<FatherCubit>(
-      create: (context) => di<FatherCubit>(),
-    ),
-    BlocProvider<MotherCubit>(
-      create: (context) => di<MotherCubit>(),
-    ),
-    BlocProvider<GuardianCubit>(
-      create: (context) => di<GuardianCubit>(),
-    ),
+    BlocProvider<LoginCubit>(create: (_) => di<LoginCubit>()),
+    BlocProvider<PersonCubit>(create: (_) => di<PersonCubit>()),
+    BlocProvider<FatherCubit>(create: (_) => di<FatherCubit>()),
+    BlocProvider<MotherCubit>(create: (_) => di<MotherCubit>()),
+    BlocProvider<GuardianCubit>(create: (_) => di<GuardianCubit>()),
   ];
 }
 
-Widget _getHomeScreen() => const LoginScreen();
+Widget _getHomeScreen() {
+  return const LoginScreen(); // أو FatherScreen للتجربة
+}
