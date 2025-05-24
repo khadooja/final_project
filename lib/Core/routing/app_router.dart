@@ -10,6 +10,7 @@ import 'package:new_project/features/dashboard/presentation/screens/super_dashbo
 import 'package:new_project/features/family_management/presentation/father_screen.dart';
 import 'package:new_project/features/personal_management/logic/personal_cubit.dart';
 import 'package:new_project/features/profile/presentation/screens/profile.dart';
+import 'package:new_project/features/reports/presentation/report_screen.dart';
 import 'package:new_project/features/staff_management/application/bloc/admin_bloc.dart';
 import 'package:new_project/features/dashboard/presentation/screens/staff_dashboard_screen.dart';
 import 'package:new_project/features/vaccination/dose/presentation/add_dose_screen.dart';
@@ -101,6 +102,10 @@ class AppRouter {
       case Routes.addCenter:
         return _buildRoute(
           HealthCentersScreen(),
+        );
+      case Routes.viewReports:
+        return _buildRoute(
+          ReportScreen(),
         );
       default:
         return _errorRoute("Page not found");
