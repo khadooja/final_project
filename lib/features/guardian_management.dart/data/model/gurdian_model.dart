@@ -25,13 +25,12 @@ class GurdianModel extends PersonModel {
     required super.identity_card_number,
     required super.nationalities_id,
     required super.location_id,
-
     this.notes,
     this.childCount,
     this.createdAt,
     this.updatedAt,
     this.isActive,
-  }) :super(
+  }) : super(
           isDeceased: false,
         );
 
@@ -54,7 +53,6 @@ class GurdianModel extends PersonModel {
       //isDeceased: json['isDeceased'] as bool,
     );
   }
-     
 
   @override
   Map<String, dynamic> toJson() {
@@ -64,7 +62,7 @@ class GurdianModel extends PersonModel {
       'last_name': last_name,
       'gender': gender,
       'email': email,
-      'phone_number': phone_number, 
+      'phone_number': phone_number,
       'identity_card_number': identity_card_number,
       'nationalities_id': nationalities_id,
       'location_id': location_id,
@@ -77,5 +75,22 @@ class GurdianModel extends PersonModel {
     };
   }
 
-  
+  factory GurdianModel.empty() {
+    return GurdianModel(
+      id: 0,
+      first_name: '',
+      last_name: '',
+      gender: '',
+      email: '',
+      phone_number: '',
+      identity_card_number: '',
+      nationalities_id: 0,
+      location_id: 0,
+      notes: '',
+      childCount: 0,
+      createdAt: '',
+      updatedAt: '',
+      isActive: false,
+    );
+  }
 }

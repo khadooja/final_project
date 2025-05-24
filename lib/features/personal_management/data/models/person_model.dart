@@ -1,13 +1,12 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:new_project/features/personal_management/data/models/area_model.dart';
-import 'location_model.dart';
 import 'nationality_model.dart';
 
-part 'person_model.g.dart';
+//part 'person_model.g.dart';
 
 @JsonSerializable()
 class PersonModel {
-  final int id;
+  final int? id;
   final String first_name;
   final String last_name;
   final String gender;
@@ -63,5 +62,26 @@ class PersonModel {
       : DateTime.parse(json['birthDate'] as String),
 );
 
-  Map<String, dynamic> toJson() => _$PersonModelToJson(this);
+  get firstName => null;
+
+  get identityCardNumber => null;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'first_name': first_name,
+      'last_name': last_name,
+      'gender': gender,
+      'email': email,
+      'phone_number': phone_number,
+      'identity_card_number': identity_card_number,
+      'isDeceased': isDeceased,
+      'nationalities_id': nationalities_id,
+      'location_id': location_id,
+      //'location': location?.toJson(),
+      'nationality': nationality?.toJson(),
+      'birthDate': birthDate?.toIso8601String(),
+
+    };
+  }
 }

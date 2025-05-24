@@ -1,20 +1,18 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:new_project/features/personal_management/data/models/nationality_model.dart';
 import 'package:new_project/features/personal_management/data/models/person_model.dart';
-import 'package:new_project/features/staff_management/data/model/dropdownclass.dart';
 
 part 'father_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class FatherModel extends PersonModel {
   final bool isDeceased;
-  final bool is_Active;
+  final int is_Active;
   final int child_count;
-  final DateTime birthDate;
+  final DateTime? birthDate;
 
 
   FatherModel({
-    required super.id,
+     super.id,
     required super.first_name,
     required super.last_name,
     required super.gender,
@@ -51,7 +49,7 @@ class FatherModel extends PersonModel {
       location_id: person.location_id,
       birthDate: person.birthDate ?? DateTime.now(),
       isDeceased: person.isDeceased == 1,
-      is_Active: true,
+      is_Active: 1, // Default to active
       child_count: 0,
       //location: person.location,
       //nationality: person.nationality,

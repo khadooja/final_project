@@ -46,7 +46,7 @@ class ApiServiceManual {
   }
 
   // Father
-  Future<FatherModel> addFather(FatherModel fatherData) async {
+  /*Future<FatherModel> addFather(FatherModel fatherData) async {
   try {
     // 1. إعداد الـ headers مع Center-Id
     final options = Options(headers: {
@@ -76,6 +76,15 @@ class ApiServiceManual {
       throw Exception('خطأ في الاتصال: ${e.message}');
     }
   }
+}*/
+Future<FatherModel> addFather(FatherModel fatherData) async {
+    final response = await _dio.post(
+      ApiEndpoints.parent.addFather,
+      data: fatherData.toJson(),
+      
+    );
+    return FatherModel.fromJson(response.data);
+ 
 }
   // Mother
   Future<MotherModel> addMother(MotherModel motherData) async {

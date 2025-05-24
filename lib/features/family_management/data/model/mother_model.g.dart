@@ -7,7 +7,7 @@ part of 'mother_model.dart';
 // **************************************************************************
 
 MotherModel _$MotherModelFromJson(Map<String, dynamic> json) => MotherModel(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       first_name: json['first_name'] as String,
       last_name: json['last_name'] as String,
       gender: json['gender'] as String,

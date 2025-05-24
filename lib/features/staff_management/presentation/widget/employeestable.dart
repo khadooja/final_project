@@ -1,4 +1,4 @@
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_project/Core/commn_widgets/generic_table.dart';
 import 'package:new_project/features/staff_management/application/bloc/admin_bloc.dart';
@@ -59,7 +59,7 @@ class EmployeesTable extends GenericTable<EmployeeModel> {
                   isActive: employee.isActive,
                 ),
                 _buildCell(
-                  employee.personData?.lastName ?? "",
+                  employee.personData?.last_name ?? "",
                   width: 120,
                   isActive: employee.isActive,
                 ),
@@ -211,4 +211,3 @@ class EmployeesTable extends GenericTable<EmployeeModel> {
     );
   }
 }
-*/
