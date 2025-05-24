@@ -1,3 +1,5 @@
+import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_project/Core/commn_widgets/custom_button.dart';
@@ -253,8 +255,10 @@ class FatherForm extends StatelessWidget {
                       label: 'الحالة',
                       keyboardType: InputType.radio,
                       radioOptions: const ['غير نشط', 'نشط'],
-                      selectedValue: cubit.is_Active.toString(),
-                      onChanged: (val) => cubit.setIsActive(val! == 'نشط'),
+                      selectedValue: cubit.is_Active?.call() ?? false ? 'نشط' : 'غير نشط',
+
+                      onChanged: (val) => cubit.setIsActive(val == 'نشط'),
+
                     ),
                   ),
                 ],
@@ -268,7 +272,7 @@ class FatherForm extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
-                onChanged: (v) => cubit.childCount = int.tryParse(v) ?? 0,
+                onChanged: cubit.setChildCount,
               ),
               const SizedBox(height: 20),
 

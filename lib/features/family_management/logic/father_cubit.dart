@@ -28,7 +28,6 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
   final counterchlidren = TextEditingController();
-
   // ========== State variables ==========
   String? selectedGender;
   bool? is_Active;
@@ -78,6 +77,14 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
   }
   emit(FatherDropdownsLoaded());
 }
+void setChildCount(String value) {
+  final parsed = int.tryParse(value);
+  if (parsed != null) {
+    childCount = parsed;
+    emit(FatherFormDataLoaded());
+  }
+}
+
 
   @override
   void setArea(int? areaId) {
@@ -246,7 +253,7 @@ Future<void> fetchFatherByIdentity(String identity) async {
         location_id: selectedCityId,
         isDeceased: isDead,
         is_Active: is_Active ?? true,
-        child_count: 0,
+        child_count: childCount,
         gender: selectedGender ?? 'male',
       );
 
