@@ -11,6 +11,7 @@ class SearchPersonResponse {
   });
 
   factory SearchPersonResponse.fromJson(Map<String, dynamic> json) {
+    print("\n\n\n.........................................$json\n\n\n");
     return SearchPersonResponse(
       message: json['message'],
       data: json['data'] != null ? PersonData.fromJson(json['data']) : null,
@@ -28,6 +29,7 @@ class PersonData {
   });
 
   factory PersonData.fromJson(Map<String, dynamic> json) {
+    print("\n\n\n.........................................$json\n\n\n");
     return PersonData(
       person: json['person'] != null ? PersonModel.fromJson(json['person']) : null,
       father: json['father'] != null ? FatherModel.fromJson(json['father']) : null,

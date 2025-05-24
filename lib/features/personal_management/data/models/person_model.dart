@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:new_project/features/personal_management/data/models/area_model.dart';
 import 'location_model.dart';
 import 'nationality_model.dart';
 
@@ -19,7 +20,7 @@ class PersonModel {
    final DateTime? birthDate;
   
   @JsonKey(name: 'location')
-  final Location? location;
+  final AreaModel? location;
   
   @JsonKey(name: 'nationality')
   final NationalityModel? nationality;
@@ -40,8 +41,27 @@ class PersonModel {
     this.birthDate,
   });
 
-  factory PersonModel.fromJson(Map<String, dynamic> json) => 
-      _$PersonModelFromJson(json);
+  factory PersonModel.fromJson(Map<String, dynamic> json) => PersonModel(
+  id: (json['id'] as num).toInt(),
+  first_name: json['first_name'] as String,
+  last_name: json['last_name'] as String,
+  gender: json['gender'] as String,
+  email: json['email'] as String?,
+  phone_number: json['phone_number'] as String?,
+  identity_card_number: json['identity_card_number'] as String,
+  isDeceased: json['isDeceased'] == 1, 
+  nationalities_id: (json['nationalities_id'] as num).toInt(),
+  location_id: (json['location_id'] as num?)?.toInt(),
+  location: json['location'] == null
+      ? null
+      : AreaModel.fromJson(json['location'] as Map<String, dynamic>),
+  nationality: json['nationality'] == null
+      ? null
+      : NationalityModel.fromJson(json['nationality'] as Map<String, dynamic>),
+  birthDate: json['birthDate'] == null
+      ? null
+      : DateTime.parse(json['birthDate'] as String),
+);
 
   Map<String, dynamic> toJson() => _$PersonModelToJson(this);
 }

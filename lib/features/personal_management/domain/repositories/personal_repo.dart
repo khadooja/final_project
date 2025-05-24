@@ -1,7 +1,7 @@
 import 'package:new_project/Core/networking/api_result.dart';
+import 'package:new_project/features/personal_management/data/models/SimpleNationalityModel.dart';
 import 'package:new_project/features/personal_management/data/models/area_model.dart';
 import 'package:new_project/features/personal_management/data/models/city_model.dart';
-import 'package:new_project/features/personal_management/data/models/nationality_model.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
 import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 
@@ -13,7 +13,7 @@ abstract class PersonRepository {
 
   Future<ApiResult<void>> toggleActivation(
       PersonType type, String personId, bool isActive);
-  Future<ApiResult<(List<NationalityModel>, List<CityModel>)>>
+  Future<ApiResult<(List<SimpleNationalityModel>, List<CityModel>)>>
       getNationalitiesAndCities(PersonType type);
   Future<ApiResult<List<AreaModel>>> getAreasByCity(
       PersonType type, String cityName);

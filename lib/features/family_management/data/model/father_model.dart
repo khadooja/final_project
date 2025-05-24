@@ -8,8 +8,8 @@ part 'father_model.g.dart';
 @JsonSerializable(explicitToJson: true)
 class FatherModel extends PersonModel {
   final bool isDeceased;
-  final bool isActive;
-  final int childCount;
+  final bool is_Active;
+  final int child_Count;
   final DateTime birthDate;
 
 
@@ -25,8 +25,8 @@ class FatherModel extends PersonModel {
     required super.location_id,
     required this.birthDate,
     required this.isDeceased,
-    required this.isActive,
-    required this.childCount,
+    required this.is_Active,
+    required this.child_Count,
   }) : super(
     isDeceased: isDeceased,
          // type: PersonType.father,
@@ -51,8 +51,8 @@ class FatherModel extends PersonModel {
       location_id: person.location_id,
       birthDate: person.birthDate ?? DateTime.now(),
       isDeceased: person.isDeceased == 1,
-      isActive: true,
-      childCount: 0,
+      is_Active: true,
+      child_Count: 0,
       //location: person.location,
       //nationality: person.nationality,
     );

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:new_project/Core/helpers/dropdown_helper/dropdown_storage_helper.dart';
 import 'package:new_project/Core/helpers/shared_pref_helper.dart';
 import 'package:new_project/features/children_managment/domain/repositories/child_repository.dart';
 import 'package:new_project/features/children_managment/domain/usecase/get_children_usecase.dart';
@@ -51,18 +52,18 @@ class ChildCubit extends Cubit<ChildState> {
     emit(ChildLoadingDropdowns());
 
     try {
-      final nationalities = await StorageHelper.getNationalities();
-      final countries = await StorageHelper.getCountries();
-      final specialCases = await StorageHelper.getSpecialCases();
+      final nationalities = await DropdownStorageHelper.getNationalities();
+      final countries = await DropdownStorageHelper.getCountries();
+      final specialCases = await DropdownStorageHelper.getSpecialCases();
 
       if (nationalities == null || countries == null || specialCases == null) {
         final result = await _repository.getNationalitiesAndCitiesandCases();
         result.when(
           success: (data) async {
             await Future.wait([
-              StorageHelper.setNationalities(data.nationalities),
-              StorageHelper.setCountry(data.countries),
-              StorageHelper.setSpecialCases(data.specialCases),
+              DropdownStorageHelper.setNationalities(data.nationalities),
+              DropdownStorageHelper.setCountry(data.countries),
+              //DropdownStorageHelper.setSpecialCases(data.specialCases),
             ]);
           },
           failure: (error) => emit(
@@ -71,11 +72,11 @@ class ChildCubit extends Cubit<ChildState> {
         );
       }
 
-      emit(ChildLoadedDropdowns(
-        nationalities: await StorageHelper.getNationalities() ?? [],
-        countries: await StorageHelper.getCountries() ?? [],
-        specialCases: await StorageHelper.getSpecialCases() ?? [],
-      ));
+      //emit(ChildLoadedDropdowns(
+      //  nationalities: await DropdownStorageHelper.getNationalities() ?? [],
+       // countries: await DropdownStorageHelper.getCountries() ?? [],
+        //specialCases: await DropdownStorageHelper.getSpecialCases() ?? [],
+     // ));
     } catch (e) {
       emit(ChildFailure("حدث خطأ أثناء تحميل البيانات"));
     }

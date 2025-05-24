@@ -99,8 +99,9 @@ class ApiServiceManual {
 
   Future<List<String>> getAreasByCity(PersonType type, String cityName) async {
     final response = await _dio.get(
-      '/${type.endpoint}/areas',
-      queryParameters: {'city_name': cityName},
+      //ApiEndpoints.personal.areasByCity,
+      '${ApiEndpoints.personal.areasByCity}/$cityName'
+      //queryParameters: {'city_name': cityName},
     );
     return (response.data as List).map((item) => item.toString()).toList();
   }
@@ -195,12 +196,7 @@ class ApiServiceManual {
     );
   }
 
-  Future<CommonDropdownsChidModel> getNationalitiesAndCitiesUseCase(
-      PersonType type) async {
-    final response =
-        await _dio.get(ApiEndpoints.personal.nationalitiesAndCities);
-    return CommonDropdownsChidModel.fromJson(response.data);
-  }
+
 
   // Future<Map<String, dynamic>> post(
   //     String path, Map<String, dynamic> data) async {

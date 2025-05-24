@@ -1,10 +1,11 @@
+import 'package:new_project/Core/networking/api_error_handler.dart';
 import 'package:new_project/Core/networking/api_result.dart';
 import 'package:new_project/Core/networking/api_services.dart';
 import 'package:new_project/Core/networking/BaseRemoteDataSource.dart';
 import 'package:new_project/features/personal_management/data/datasources/person_remote_datasource.dart';
+import 'package:new_project/features/personal_management/data/models/SimpleNationalityModel.dart';
 import 'package:new_project/features/personal_management/data/models/area_model.dart';
 import 'package:new_project/features/personal_management/data/models/city_model.dart';
-import 'package:new_project/features/personal_management/data/models/nationality_model.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
 import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 
@@ -15,14 +16,39 @@ class PersonRemoteDataSourceImpl extends BaseRemoteDataSource
   PersonRemoteDataSourceImpl(this._apiService);
 
   @override
-Future<ApiResult<SearchPersonResponse?>> searchPersonById(
+/*Future<ApiResult<SearchPersonResponse?>> searchPersonById(
   String identityCardNumber,
   PersonType type,
 ) async {
+  print('🔍 [1] بدء البحث عن الشخص - رقم الهوية: $identityCardNumber');
+  print('📌 نوع الشخص: ${type.name}');
+  
   return callApi(() => _apiService.searchPerson(
+    
         identityCardNumber,
         type,
+        
       ));
+      
+}*/
+@override
+Future<ApiResult<SearchPersonResponse?>> searchPersonById(
+  String identityCardNumber, 
+  PersonType type
+) async {
+  print('🔍 [1] بدء البحث عن الشخص - رقم الهوية: $identityCardNumber');
+  print('📌 نوع الشخص: ${type.name}');
+  
+  try {
+    final response = await _apiService.searchPerson(identityCardNumber, type);
+    print('✅ [2] تم استلام الاستجابة من API بنجاح');
+    print('📊 بيانات الاستجابة: ${response}');
+    
+    return ApiResult.success(response);
+  } catch (e) {
+    print('❌ [2] فشل في استدعاء API: ${e.toString()}');
+    return ApiResult.failure(ErrorHandler.handle(e));
+  }
 }
 
 
@@ -36,26 +62,39 @@ Future<ApiResult<SearchPersonResponse?>> searchPersonById(
         ));
   }
 
-  @override
-  Future<ApiResult<(List<NationalityModel>, List<CityModel>)>>
-      getNationalitiesAndCities(PersonType type) {
-    return callApi(() async {
+ Future<ApiResult<(List<SimpleNationalityModel>, List<CityModel>)>>
+    getNationalitiesAndCities(PersonType type) {
+  print('📡 [Remote] بدء تحميل الجنسيات والمدن من الـ API');
+  return callApi(() async {
+    try {
       final response = await _apiService.getNationalitiesAndCities(type);
-        return (response.nationalities,response.cities);
+      print('✅ [Remote] الجنسيات والمدن: ${response.toJson()}');
+      return (response.nationalities, response.cities);
+    } catch (e, stack) {
+      print('❌ [Remote] فشل تحميل الجنسيات والمدن: $e');
+      rethrow;
     }
-    );
-  }
+  });
+}
 
-  @override
-  Future<ApiResult<List<AreaModel>>> getAreasByCity(
-      PersonType type, String cityName) {
-    return callApi(() async {
+Future<ApiResult<List<AreaModel>>> getAreasByCity(
+    PersonType type, String cityName) {
+  print('📡 [Remote] تحميل المناطق حسب المدينة $cityName');
+  return callApi(() async {
+    try {
       final response = await _apiService.getAreasByCity(type, cityName);
+      print('✅ [Remote] المناطق: $response');
+
       return response
           .asMap()
           .entries
           .map((entry) => AreaModel(id: entry.key, area_name: entry.value))
           .toList();
-    });
-  }
+    } catch (e, stack) {
+      print('❌ [Remote] فشل تحميل المناطق: $e');
+      rethrow;
+    }
+  });
+}
+
 }

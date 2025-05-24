@@ -1,4 +1,4 @@
-import 'package:json_annotation/json_annotation.dart';
+/*import 'package:json_annotation/json_annotation.dart';
 
 part 'location_model.g.dart';
 
@@ -19,3 +19,4 @@ class Location {
 
   Map<String, dynamic> toJson() => _$LocationToJson(this);
 }
+*/

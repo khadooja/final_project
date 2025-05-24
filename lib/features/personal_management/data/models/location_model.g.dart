@@ -1,3 +1,4 @@
+/*
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 part of 'location_model.dart';
@@ -17,3 +18,5 @@ Map<String, dynamic> _$LocationToJson(Location instance) => <String, dynamic>{
       'city_name': instance.city_name,
       'area_name': instance.area_name,
     };
+
+    */

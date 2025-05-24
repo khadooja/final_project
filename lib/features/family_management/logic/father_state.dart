@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:new_project/features/family_management/data/model/father_model.dart';
+import 'package:new_project/features/personal_management/data/models/SimpleNationalityModel.dart';
 import 'package:new_project/features/personal_management/data/models/area_model.dart';
 import 'package:new_project/features/personal_management/data/models/city_model.dart';
-import 'package:new_project/features/personal_management/data/models/nationality_model.dart';
 import 'package:new_project/features/personal_management/data/models/person_model.dart';
 import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 
@@ -50,7 +50,7 @@ class FatherSuccess extends FatherState {
 }
 // حالة تحميل القوائم المنسدلة
 class FatherDropdownsLoaded extends FatherState {
-  final List<NationalityModel> nationalities;
+  final List<SimpleNationalityModel> nationalities;
   final List<CityModel> cities;
 
   const FatherDropdownsLoaded({required this.nationalities, required this.cities});
@@ -78,6 +78,12 @@ class FatherSearchResultLoaded extends FatherState {
   @override
   List<Object?> get props => [result];
 }
+class FatherPersonOnlyLoaded extends FatherState {
+  final PersonModel person;
+
+  const FatherPersonOnlyLoaded(this.person);
+}
+
 
 // حالة الشخص موجود فقط
 class PersonFoundState extends FatherState {

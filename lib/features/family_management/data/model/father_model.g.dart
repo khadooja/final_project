@@ -17,9 +17,9 @@ FatherModel _$FatherModelFromJson(Map<String, dynamic> json) => FatherModel(
       nationalities_id: (json['nationalities_id'] as num).toInt(),
       location_id: (json['location_id'] as num?)?.toInt(),
       birthDate: DateTime.parse(json['birthDate'] as String),
-      isDeceased: json['isDeceased'] as bool,
-      isActive: json['isActive'] as bool,
-      childCount: (json['childCount'] as num).toInt(),
+      isDeceased: json['isDeceased'] ==1,
+      is_Active: json['is_Active'] ==1,
+      child_Count: (json['child_Count'] as num).toInt(),
     );
 
 Map<String, dynamic> _$FatherModelToJson(FatherModel instance) =>
@@ -34,7 +34,7 @@ Map<String, dynamic> _$FatherModelToJson(FatherModel instance) =>
       'nationalities_id': instance.nationalities_id,
       'location_id': instance.location_id,
       'isDeceased': instance.isDeceased,
-      'isActive': instance.isActive,
-      'childCount': instance.childCount,
+      'is_Active': instance.is_Active,
+      'child_Count': instance.child_Count,
       'birthDate': instance.birthDate.toIso8601String(),
     };

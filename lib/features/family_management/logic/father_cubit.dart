@@ -26,7 +26,7 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
   final birthDateController = TextEditingController();
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
-  final addressController = TextEditingController();
+  final counterchlidren = TextEditingController();
 
   // ========== State variables ==========
   String? selectedGender;
@@ -56,23 +56,39 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
     emit(FatherFormDataLoaded());
   }
 
-  @override
-  void setCity(String? cityName) {
-     print('\n🔄 جاري تعيين المدينة: $cityName');
-    final city = cities.firstWhereOrNull((c) => c.city_name == cityName);
-    selectedCity = city?.city_name;
-    selectedCityId = city?.id;
-     print('المدينة المحددة: ${city?.city_name}');
-  print('ID المدينة: ${city?.id}');
-    if (selectedCityId != null) {
-    print('🌆 جاري تحميل مناطق المدينة ID: $selectedCityId');
-    loadAreas(selectedCityId.toString());
-  } else {
-    print('⚠️ لم يتم العثور على المدينة أو لا يوجد ID');
-  }
-  emit(FatherFormDataLoaded());
-  }
+@override
+Future<void> setCity(String? cityName, {int? autoSelectAreaId}) async {
+  emit( FatherLoaded()); 
+  final city = cities.firstWhereOrNull((c) => c.city_name == cityName);
+  if (city == null) return;
 
+  selectedCity = city.city_name;
+
+  final result = await loadAreasByCityId(PersonType.father, city.city_name.toString());
+  
+  result.when(
+    success: (areas) {
+      this.areas = areas;    
+      // تحديد المنطقة إذا كان autoSelectAreaId موجوداً
+      if (autoSelectAreaId != null) {
+        final area = areas.firstWhereOrNull((a) => a.id == autoSelectAreaId);
+        if (area != null) {
+          selectedArea = area.area_name;
+          selectedAreaId = area.id; // تأكد من تعيين ID المنطقة
+          print('✅ تم تحديد المنطقة: ${area.area_name} (ID: ${area.id})');
+        } else {
+          print('⚠️ المنطقة غير موجودة في القائمة المحملة');
+          selectedArea = null;
+          selectedAreaId = null;
+        }
+      }
+      emit(FatherFormDataLoaded());
+    },
+    failure: (error) {
+      emit(FatherError(error.message));
+    },
+  );
+}
   @override
   void setArea(int? areaId) {
     print('\n🔄 جاري تعيين المنطقة: $areaId');
@@ -84,43 +100,50 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
   print('ID المنطقة: $areaId');
     emit(FatherFormDataLoaded());
   }
-
   // ========== Form Prefill ==========
-  void fillFormFromPerson(SearchPersonResponse response) async {
-    final person = response.data?.person;
-     print('\n=== بدء تعبئة النموذج من بيانات الشخص ===');
-   print('====== fillFormFromPerson called ======');
-  print('Person data: ${person?.first_name}, ${person?.last_name}, ID: ${person?.id}');
+ void fillFormFromPerson(SearchPersonResponse response) async {
+  final person = response.data?.person;
+  print('\n=== بدء تعبئة النموذج من بيانات الشخص ===');
 
-    if (person != null) {
-      print('👤 [4.2] تم العثور على بيانات الشخص');
-      firstNameController.text = person.first_name;
-      lastNameController.text = person.last_name;
-      emailController.text = person.email ?? '';
-      birthDateController.text = DateFormat('yyyy-MM-dd')
-          .format(person.birthDate ?? DateTime.now());
-      phoneController.text = person.phone_number ?? '';
-      identityController.text = person.identity_card_number;
-      setGender(person.gender);
-      selectedNationalityId = person.nationalities_id;
+  if (person != null) {
+     //await loadCachedData();
+    // تعبئة البيانات الأساسية أولاً
+    firstNameController.text = person.first_name;
+    lastNameController.text = person.last_name;
+    emailController.text = person.email ?? '';
+    birthDateController.text = DateFormat('yyyy-MM-dd')
+        .format(person.birthDate ?? DateTime.now());
+    phoneController.text = person.phone_number ?? '';
+    identityController.text = person.identity_card_number;
+    setGender(person.gender);
+    selectedNationalityId = person.nationalities_id;
 
-      if (person.location != null) {
-        setCity(person.location!.city_name ?? '');
-        setArea(person.location!.id); // نستخدم ID وليس الاسم
-      }
-      emit(FatherFormDataLoaded());
-       print('=== انتهت تعبئة النموذج بنجاح ===\n');
-    } else {
-      clearForm();
+    // تعبئة الموقع (المدينة والمنطقة)
+    if (person.location != null) {
+      print('📍 بيانات الموقع:');
+      print('- المدينة: ${person.location!.city_name}');
+      print('- منطقة ID: ${person.location!.area_name}');
+      
+      await setCity(
+        person.location!.city_name,
+        autoSelectAreaId: person.location!.id,
+      );
     }
+
+    emit(FatherFormDataLoaded());
+    print('✅ تم تعبئة النموذج بنجاح');
+  } else {
+    clearForm();
   }
+}
+
  // ========== Form father ==========
   void fillFormFromFather(SearchPersonResponse response) async {
     final father = response.data?.father;
     print('====== fillFormFromFather called ======');
     print('Father data: ${father?.first_name}, ${father?.last_name}, ID: ${father?.id}');
     if (father != null) {
-      print('👨‍👦 [4.1] تم العثور على بيانات الأب');
+      print(' [4.1] تم العثور على بيانات الأب');
       firstNameController.text = father.first_name;
       lastNameController.text = father.last_name;
       emailController.text = father.email ?? '';
@@ -129,15 +152,18 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
       phoneController.text = father.phone_number ?? '';
       identityController.text = father.identity_card_number;
       setGender(father.gender);
-      is_Active = father.isActive;
+      is_Active = father.is_Active;
       isDead = father.isDeceased ?? false;
       selectedNationalityId = father.nationalities_id;
+      counterchlidren.text = father.child_Count.toString();
 
       if (father.location != null) {
-        setCity(father.location!.city_name ?? '');
-        setArea(father.location!.id); // نستخدم ID وليس الاسم
-      }
-      emit(FatherFormDataLoaded());
+      // المدينة بالاسم، والحي بالـ ID
+      await setCity(
+        father.location!.city_name ?? '',
+        autoSelectAreaId: father.location!.id,
+      );
+    }emit(FatherFormDataLoaded());
       print('=== انتهت تعبئة النموذج بنجاح ===\n');
     } else {
       clearForm();
@@ -152,7 +178,7 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
     birthDateController.clear();
     phoneController.clear();
     emailController.clear();
-    addressController.clear();
+    counterchlidren.clear();
 
     selectedGender = null;
     selectedNationalityId = null;
@@ -225,8 +251,8 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
         nationalities_id: selectedNationalityId ?? 0,
         location_id: selectedCityId,
         isDeceased: isDead,
-        isActive: is_Active ?? true,
-        childCount: 0,
+        is_Active: is_Active ?? true,
+        child_Count: 0,
         gender: selectedGender ?? 'male',
       );
 
@@ -269,18 +295,29 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
 
   // ========== Dropdowns ==========
   Future<void> loadDropdowns() async {
-    emit(const FatherLoaded());
-    final result = await getNationalitiesAndCities(PersonType.father);
-    result.when(
-      success: (data) {
-        emit(FatherDropdownsLoaded(
-          nationalities: data.nationalities,
-          cities: data.cities,
-        ));
-      },
-      failure: (error) => emit(FatherError(error.message)),
-    );
-  }
+  emit(const FatherLoaded());
+  print('🔄 جاري تحميل القوائم المنسدلة (الجنسيات والمدن)...');
+  
+  final result = await getNationalitiesAndCities(PersonType.father);
+  result.when(
+    success: (data) {
+      print('✅ تم تحميل ${data.nationalities.length} جنسية');
+      print('✅ تم تحميل ${data.cities.length} مدينة');
+      
+      // تأكد من تحديث قائمة cities في الميكسين
+      this.cities = data.cities;
+      
+      emit(FatherDropdownsLoaded(
+        nationalities: data.nationalities,
+        cities: data.cities,
+      ));
+    },
+    failure: (error) {
+      print('❌ فشل تحميل القوائم المنسدلة: ${error.message}');
+      emit(FatherError(error.message));
+    },
+  );
+}
 
   Future<void> loadAreas(String cityId) async {
     if (cityId.isEmpty) return;
