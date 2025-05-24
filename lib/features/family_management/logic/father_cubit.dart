@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:collection/collection.dart';
+import 'package:new_project/Core/routing/routes.dart';
 import 'package:new_project/features/family_management/data/model/father_model.dart';
 import 'package:new_project/features/family_management/domain/repository/fatherRepository.dart';
 import 'package:new_project/features/family_management/logic/father_state.dart';
@@ -30,9 +31,9 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
   final counterchlidren = TextEditingController();
   // ========== State variables ==========
   String? selectedGender;
-  bool? is_Active;
+  int? is_Active;
   int? selectedNationalityId;
-  bool isDead = false;
+  bool isDead= false;
   int childCount = 0;
   String? selectedCity;
   int? selectedCityId;
@@ -46,10 +47,11 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
     emit(FatherFormDataLoaded());
   }
 
-  void setIsActive(bool value) {
-    is_Active = value;
-    emit(FatherFormDataLoaded());
-  }
+  void setIsActive(int value) {
+  is_Active = value ;
+  emit(FatherFormDataLoaded());
+}
+
 
   void setIsDead(bool value) {
     isDead = value;
@@ -166,8 +168,8 @@ void setChildCount(String value) {
       phoneController.text = father.phone_number ?? '';
       identityController.text = father.identity_card_number;
       setGender(father.gender);
-      is_Active = father.is_Active;
-      isDead = father.isDeceased ?? false;
+      is_Active = father.is_Active ;
+      isDead = father.isDeceased ;
       selectedNationalityId = father.nationalities_id;
       counterchlidren.text = father.child_count.toString();
 
@@ -239,34 +241,42 @@ Future<void> fetchFatherByIdentity(String identity) async {
   );
 }
 
-  Future<void> submitFather({String? fatherId}) async {
-    try {
-      final model = FatherModel(
-        id: fatherId != null ? int.parse(fatherId) : 0,
-        first_name: firstNameController.text,
-        last_name: lastNameController.text,
-        identity_card_number: identityController.text,
-        birthDate: DateTime.parse(birthDateController.text),
-        phone_number: phoneController.text,
-        email: emailController.text,
-        nationalities_id: selectedNationalityId ?? 0,
-        location_id: selectedCityId,
-        isDeceased: isDead,
-        is_Active: is_Active ?? true,
-        child_count: childCount,
-        gender: selectedGender ?? 'male',
-      );
+  Future<void> submitFather(BuildContext context, {String? fatherId}) async {
+  try {
+    final isDeceasedInt = isDead ? 1 : 0;
+    final isActiveInt = is_Active ?? 0;
 
-      if (fatherId != null) {
-        await updateFather(fatherId, model);
-      } else {
-        await addFather(model);
-      }
-    } catch (e) {
-      emit(FatherError('فشل في إرسال البيانات: ${e.toString()}'));
+    final model = FatherModel(
+      first_name: firstNameController.text,
+      last_name: lastNameController.text,
+      identity_card_number: identityController.text,
+      birthDate: birthDateController.text.isNotEmpty 
+    ? DateTime.parse(birthDateController.text)
+    : null,
+      phone_number: phoneController.text,
+      email: emailController.text,
+      nationalities_id: selectedNationalityId ?? 1,
+      location_id: selectedCityId ?? 1,
+      isDeceased: isDead,
+      is_Active: isActiveInt,
+      child_count: childCount ?? 0,
+      gender: selectedGender ?? 'ذكر',
+    );
+
+    if (fatherId != null) {
+      await updateFather(fatherId, model);
+    } else {
+      await addFather(model);
     }
+    
+    Navigator.pushReplacementNamed(context, Routes.centerDashboard);
+  } catch (e) {
+    emit(FatherError('فشل في إرسال البيانات: ${e.toString()}'));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('فشل في إرسال البيانات: ${e.toString()}')),
+    );
   }
-
+}
   Future<void> addFather(FatherModel model) async {
     emit(const FatherLoaded());
     final result = await _fatherRepository.addFather(model);

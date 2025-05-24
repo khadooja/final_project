@@ -8,7 +8,7 @@ part of 'childGuardian_model.dart';
 
 ChildGuardianModel _$ChildGuardianModelFromJson(Map<String, dynamic> json) =>
     ChildGuardianModel(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       first_name: json['first_name'] as String,
       last_name: json['last_name'] as String,
       gender: json['gender'] as String,

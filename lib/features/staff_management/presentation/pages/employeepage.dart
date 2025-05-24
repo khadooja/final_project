@@ -1,4 +1,4 @@
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:new_project/Core/commn_widgets/sidebar.dart';
@@ -8,8 +8,7 @@ import 'package:new_project/features/staff_management/data/model/employee_model.
 import 'package:new_project/features/staff_management/domain/repositories/staff_repository.dart';
 import 'package:new_project/features/staff_management/domain/usecases/add_employee.dart';
 import 'package:new_project/features/staff_management/domain/usecases/check_person_existence.dart';
-import 'package:new_project/features/staff_management/presentation/pages/view_employees_page.dart';
-import 'package:new_project/features/staff_management/presentation/widget/employeestable.dart';
+import 'package:new_project/features/staff_management/presentation/pages/add_employee_page.dart';
 import 'package:new_project/features/staff_management/presentation/widget/mainheader.dart';
 
 class EmployeesPage extends StatelessWidget {
@@ -32,8 +31,6 @@ class EmployeesPage extends StatelessWidget {
           children: [
             const Sidebar(
               menuItems: [],
-              userName: 'koko',
-              userRole: 'employee',
             ),
             Expanded(
               child: Column(
@@ -49,47 +46,9 @@ class EmployeesPage extends StatelessWidget {
                         } else if (state is AdminError) {
                           return Center(child: Text(state.message));
                         } else if (state is EmployeesLoadedWithPagination) {
-                          return EmployeesTable(
-                            employees: state.employees.map((employee) {
-                              // هنا يمكنك إجراء التحويل اليدوي إذا كانت "EmployeeDeactivated" تحتوي على بيانات مطابقة.
-                              return EmployeeModel(
-                                id: employee.id,
-                                employmentDate: DateTime.now(),
-                                dateOfBirth: DateTime.now(),
-                                healthCenterId: employee.healthCenterId,
-                                isActive: false,
-                              );
-                            }).toList(),
-                            currentPage: state.currentPage,
-                            totalPages: state.totalPages,
-                            onPageChanged: (page) {
-                              context.read<AdminBloc>().add(
-                                  FetchEmployeesWithPaginationEvent(
-                                      page: page));
-                            },
-                            onEdit: (employee) {
-                              // توجيه المستخدم إلى صفحة عرض تفاصيل الموظف
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const ViewEmployeesPage(
-                                    //employees: [],
-                                    selectedFunction: 'عرض موظفين',
-                                    username: '',
-                                    useremail:
-                                        '', // اختيار الوظيفة من السياق أو حالة معينة
-                                  ),
-                                ),
-                              );
-                            },
-                            onDeactivate: (employee) {
-                              // هنا يمكننا إظهار حوار تأكيد قبل تعطيل الموظف
-                              _showDeactivateConfirmationDialog(
-                                  context, employee);
-                            },
-                            persons: const [],
-                            //maxRows: 5,
-                          );
+                          return Text( state.employees.isEmpty
+                              ? "لا توجد موظفين"
+                              : "عدد الموظفين: ${state.employees.length}");
                         }
                         return const SizedBox();
                       },
@@ -136,4 +95,3 @@ class EmployeesPage extends StatelessWidget {
     );
   }
 }
-*/
