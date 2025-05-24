@@ -16,12 +16,10 @@ MotherModel _$MotherModelFromJson(Map<String, dynamic> json) => MotherModel(
       identity_card_number: json['identity_card_number'] as String,
       nationalities_id: (json['nationalities_id'] as num).toInt(),
       location_id: (json['location_id'] as num?)?.toInt(),
-      birthDate: json['birthDate'] == null
-          ? null
-          : DateTime.parse(json['birthDate'] as String),
+      birthDate: DateTime.parse(json['birthDate'] as String),
       isDeceased: json['isDeceased'] as bool,
-      isActive: json['isActive'] as bool,
-      childCount: (json['childCount'] as num).toInt(),
+      is_Active: json['is_Active'] as bool,
+      child_count: (json['child_count'] as num).toInt(),
     );
 
 Map<String, dynamic> _$MotherModelToJson(MotherModel instance) =>
@@ -36,7 +34,7 @@ Map<String, dynamic> _$MotherModelToJson(MotherModel instance) =>
       'nationalities_id': instance.nationalities_id,
       'location_id': instance.location_id,
       'isDeceased': instance.isDeceased,
-      'isActive': instance.isActive,
-      'childCount': instance.childCount,
-      'birthDate': instance.birthDate?.toIso8601String(),
+      'is_Active': instance.is_Active,
+      'child_count': instance.child_count,
+      'birthDate': instance.birthDate.toIso8601String(),
     };

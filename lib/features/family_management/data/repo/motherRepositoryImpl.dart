@@ -14,8 +14,7 @@ class MotherRepositoryImpl implements MotherRepository {
   }
 
   @override
-  Future<ApiResult<MotherModel>> updateMother(
-      String motherId, MotherModel mother) {
-    return _remoteDataSource.updateMother(motherId, mother);
+  Future<ApiResult<MotherModel>> updateMother(String id, MotherModel mother) {
+    return _remoteDataSource.updateMother(id, mother);
   }
 }

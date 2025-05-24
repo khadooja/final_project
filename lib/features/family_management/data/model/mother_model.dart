@@ -8,13 +8,11 @@ part 'mother_model.g.dart';
 @JsonSerializable(explicitToJson: true)
 class MotherModel extends PersonModel {
   final bool isDeceased;
-  final bool isActive;
-  final int childCount;
-  final DateTime? birthDate;
+  final bool is_Active;
+  final int child_count;
+  final DateTime birthDate;
 
   MotherModel({
-
-
     required super.id,
     required super.first_name,
     required super.last_name,
@@ -26,12 +24,11 @@ class MotherModel extends PersonModel {
     required super.location_id,
     required this.birthDate,
     required this.isDeceased,
-    required this.isActive,
-    required this.childCount,
+    required this.is_Active,
+    required this.child_count,
   }) : super(
           isDeceased: isDeceased,
-          // type: PersonType.mother,
-          // location: location,
+          // type: PersonType.father,
         );
 
   factory MotherModel.fromJson(Map<String, dynamic> json) =>
@@ -39,4 +36,24 @@ class MotherModel extends PersonModel {
 
   @override
   Map<String, dynamic> toJson() => _$MotherModelToJson(this);
+
+  factory MotherModel.fromPerson(PersonModel person) {
+    return MotherModel(
+      id: person.id,
+      first_name: person.first_name,
+      last_name: person.last_name,
+      gender: person.gender,
+      email: person.email,
+      phone_number: person.phone_number,
+      identity_card_number: person.identity_card_number,
+      nationalities_id: person.nationalities_id,
+      location_id: person.location_id,
+      birthDate: person.birthDate ?? DateTime.now(),
+      isDeceased: person.isDeceased == 1,
+      is_Active: true,
+      child_count: 0,
+      //location: person.location,
+      //nationality: person.nationality,
+    );
+  }
 }
