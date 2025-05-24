@@ -8,7 +8,6 @@ import 'package:new_project/features/staff_management/data/model/employee_model.
 import 'package:new_project/features/staff_management/domain/repositories/staff_repository.dart';
 import 'package:new_project/features/staff_management/domain/usecases/add_employee.dart';
 import 'package:new_project/features/staff_management/domain/usecases/check_person_existence.dart';
-import 'package:new_project/features/staff_management/presentation/pages/add_employee_page.dart';
 import 'package:new_project/features/staff_management/presentation/widget/mainheader.dart';
 
 class EmployeesPage extends StatelessWidget {
