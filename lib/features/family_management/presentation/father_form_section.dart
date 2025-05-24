@@ -19,10 +19,8 @@ class _FatherFormSectionState extends State<FatherFormSection> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<FatherCubit>().getNationalitiesAndCities(PersonType.father)
+    context.read<FatherCubit>().getNationalitiesAndCities(PersonType.father)
         .then((_) => _handleSearchResult());
-    });
   }
 
   @override
@@ -72,7 +70,7 @@ class _FatherFormSectionState extends State<FatherFormSection> {
         if (state is FatherLoaded) {
           return const Center(child: CircularProgressIndicator());
         }
-        return FatherForm();
+        return  FatherForm();
       },
     );
   }

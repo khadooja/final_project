@@ -15,6 +15,6 @@ abstract class PersonRemoteDataSource {
       PersonType type, String personId, bool isActive);
   Future<ApiResult<(List<SimpleNationalityModel>, List<CityModel>)>>
       getNationalitiesAndCities(PersonType type);
-  Future<ApiResult<List<AreaModel>>> getAreasByCity(
+  Future<ApiResult<List<Map<String, dynamic>>>> getAreasByCity(
       PersonType type, String cityName);
 }

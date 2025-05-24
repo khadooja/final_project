@@ -62,8 +62,7 @@ Future<ApiResult<SearchPersonResponse?>> searchPersonById(
         ));
   }
 
- Future<ApiResult<(List<SimpleNationalityModel>, List<CityModel>)>>
-    getNationalitiesAndCities(PersonType type) {
+ Future<ApiResult<(List<SimpleNationalityModel>, List<CityModel>)>>getNationalitiesAndCities(PersonType type) {
   print('📡 [Remote] بدء تحميل الجنسيات والمدن من الـ API');
   return callApi(() async {
     try {
@@ -77,24 +76,17 @@ Future<ApiResult<SearchPersonResponse?>> searchPersonById(
   });
 }
 
-Future<ApiResult<List<AreaModel>>> getAreasByCity(
-    PersonType type, String cityName) {
-  print('📡 [Remote] تحميل المناطق حسب المدينة $cityName');
+Future<ApiResult<List<Map<String, dynamic>>>> getAreasByCity(PersonType type, String cityName) async {
   return callApi(() async {
     try {
-      final response = await _apiService.getAreasByCity(type, cityName);
-      print('✅ [Remote] المناطق: $response');
-
-      return response
-          .asMap()
-          .entries
-          .map((entry) => AreaModel(id: entry.key, area_name: entry.value))
-          .toList();
+      final List<Map<String, dynamic>> response = await _apiService.getAreasByCity(type, cityName);
+      print('✅ [Remote] البيانات الخام: ${response.runtimeType} - $response');
+      return response;
     } catch (e, stack) {
-      print('❌ [Remote] فشل تحميل المناطق: $e');
-      rethrow;
+      print('❌ [Remote] خطأ في التحويل: ${e.runtimeType} - $e');
+      throw (message: 'فشل تحميل المناطق: ${e.toString()}');
     }
   });
 }
-
 }
+

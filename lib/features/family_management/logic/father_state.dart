@@ -53,10 +53,11 @@ class FatherDropdownsLoaded extends FatherState {
   final List<SimpleNationalityModel> nationalities;
   final List<CityModel> cities;
 
-  const FatherDropdownsLoaded({required this.nationalities, required this.cities});
+  const FatherDropdownsLoaded({this.nationalities = const [],this.cities = const [] }
+    );
 
-  @override
-  List<Object?> get props => [nationalities, cities];
+
+ // List<Object?> get props => [nationalities, cities];
 }
 
 // حالة تحميل الأحياء بعد اختيار المدينة

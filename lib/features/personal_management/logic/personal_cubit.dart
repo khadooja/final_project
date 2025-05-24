@@ -108,25 +108,17 @@ Future<void> searchPersonById(String id, PersonType type) async {
   List<AreaModel> _areas = [];
 
   List<AreaModel> get filteredAreas => _areas;
-
-  Future<void> loadAreasByCityId(PersonType type, String cityName) async {
-    print('🚀 [1] بدء تحميل المناطق حسب المدينة');
-    emit(PersonLoading());
-    print('🔄 [2] محاولة تحميل المناطق من الـ API');
-    final result = await _personRepository.getAreasByCity(type, cityName);
-    print('🔄 [3] محاولة تحميل المناطق من الـ API');
-    print('🔍 Result from repository: $result');
-
-    result.when(
-      success: (data) {
-        print('✅ [4] تم تحميل المناطق بنجاح');
-        _areas = data;
-        emit(PersonAreasLoaded(data));
-      },
-      failure: (error) {
-        print('💥 [4] فشل تحميل المناطق: ${error.message}');
-        emit(PersonFailure((error.message)));
-      },
-    );
-  }
+Future<void> loadAreasByCityId(PersonType type, String cityName) async {
+  emit(PersonLoading());
+  final result = await _personRepository.getAreasByCity(type, cityName);
+  
+  result.when(
+    success: (areas) {
+      _areas = areas.map((areaMap) => AreaModel.fromJson(areaMap)).toList();
+      emit(PersonAreasLoaded(_areas));
+    },
+    failure: (error) => emit(PersonFailure(error.message)),
+  );
 }
+}
+

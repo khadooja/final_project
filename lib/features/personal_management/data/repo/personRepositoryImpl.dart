@@ -60,9 +60,20 @@ Future<ApiResult<SearchPersonResponse?>> searchPersonById(
   }
 
   @override
-  Future<ApiResult<List<AreaModel>>> getAreasByCity(
-      PersonType type, String cityName) {
-    print('🔄 [Repo] تحويل الطلب إلى RemoteDataSource');
-    return _remoteDataSource.getAreasByCity(type, cityName);
-  }
+  Future<ApiResult<List<Map<String, dynamic>>>> getAreasByCity(PersonType type, String cityName) async {
+  print('🔄 جلب المناطق لمدينة: $cityName');
+  final result = await _remoteDataSource.getAreasByCity(type, cityName);
+  
+  return result.when(
+    success: (areas) {
+      print('✅ تم تحميل ${areas.length} منطقة');
+      return ApiResult.success( areas);
+    },
+    failure: (error) {
+      print('❌ خطأ في جلب المناطق: ${error.message}');
+      return ApiResult.failure( error);
+    },
+  );
+}
+  
 }

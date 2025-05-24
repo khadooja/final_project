@@ -9,7 +9,7 @@ part 'father_model.g.dart';
 class FatherModel extends PersonModel {
   final bool isDeceased;
   final bool is_Active;
-  final int child_Count;
+  final int child_count;
   final DateTime birthDate;
 
 
@@ -26,7 +26,7 @@ class FatherModel extends PersonModel {
     required this.birthDate,
     required this.isDeceased,
     required this.is_Active,
-    required this.child_Count,
+    required this.child_count,
   }) : super(
     isDeceased: isDeceased,
          // type: PersonType.father,
@@ -52,7 +52,7 @@ class FatherModel extends PersonModel {
       birthDate: person.birthDate ?? DateTime.now(),
       isDeceased: person.isDeceased == 1,
       is_Active: true,
-      child_Count: 0,
+      child_count: 0,
       //location: person.location,
       //nationality: person.nationality,
     );

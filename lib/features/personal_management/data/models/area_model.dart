@@ -1,9 +1,6 @@
-
 class AreaModel {
   final int id;
   final String area_name;
-
-  // ✅ أضف هذه:
   final String? city_name;
 
   AreaModel({
@@ -13,17 +10,14 @@ class AreaModel {
   });
 
   factory AreaModel.fromJson(Map<String, dynamic> json) {
-    print('JSON AreaModel..............................: $json');
+    print('🔧 تحويل JSON إلى AreaModel: $json');
     return AreaModel(
-      id: json['id'],
-      area_name: json['area_name'],
-      city_name: json['city_name'], // <-- يجب أن تكون موجودة في الاستجابة من API
+      id: json['id'] as int,
+      area_name: json['area_name'] as String,
+      city_name: json['city_name'] as String?,
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'area_name': area_name,
-    'city_name': city_name, // <-- يجب أن تكون موجودة في الاستجابة من API
-  };
+  @override
+  String toString() => 'AreaModel(id: $id, area_name: $area_name)';
 }
