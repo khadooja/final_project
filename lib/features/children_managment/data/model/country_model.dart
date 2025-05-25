@@ -13,5 +13,7 @@ class CountryModel {
   factory CountryModel.fromJson(Map<String, dynamic> json) =>
       _$CountryModelFromJson(json);
 
+  get id => null;
+
   Map<String, dynamic> toJson() => _$CountryModelToJson(this);
 }

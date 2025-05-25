@@ -5,6 +5,7 @@ part 'displayed_child_model.g.dart';
 
 @JsonSerializable()
 class DisplayedChildModel {
+  final int childId;
   @JsonKey(name: 'vaccine_card_number', defaultValue: 'N/A')
   final String vaccineCardNumber;
   @JsonKey(name: 'first_name', defaultValue: 'N/A')
@@ -35,6 +36,7 @@ class DisplayedChildModel {
   final String countryName;
 
   DisplayedChildModel({
+    required this.childId,
     required this.vaccineCardNumber,
     required this.firstName,
     required this.lastName,
