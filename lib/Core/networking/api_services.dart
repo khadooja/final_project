@@ -89,8 +89,9 @@ Future<FatherModel> addFather(FatherModel fatherData) async {
   // Mother
   Future<MotherModel> addMother(MotherModel motherData) async {
     final response = await _dio.post(
-      '/mother',
+      ApiEndpoints.parent.addMother,
       data: motherData.toJson(),
+      
     );
     return MotherModel.fromJson(response.data);
   }
@@ -227,16 +228,6 @@ Future<FatherModel> addFather(FatherModel fatherData) async {
 
 
 
-  // Future<Map<String, dynamic>> post(
-  //     String path, Map<String, dynamic> data) async {
-  //   try {
-  //     final response = await _dio.post(path, data: data);
-  //     return response.data;
-  //   } on DioException catch (e) {
-  //     debugPrint('POST error: $e');
-  //     throw Exception('فشل الاتصال بالخادم');
-  //   }
-  // }
   Future<Map<String, dynamic>> post(
       String path, Map<String, dynamic> data) async {
     try {
@@ -281,11 +272,6 @@ Future<FatherModel> addFather(FatherModel fatherData) async {
     }
   }
 
-  // Future<StageModel> createStage(Map<String, dynamic> data) async {
-  //   final response =
-  //       await _dio.post('${ApiConfig.baseUrl}stages/store', data: data);
-  //   return StageModel.fromJson(response.data['data']);
-  // }
   Future<Map<String, dynamic>> getVaccine() async {
     final response = await _dio.get('${ApiConfig.baseUrl}vaccines');
     return response.data;

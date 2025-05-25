@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_project/Core/helpers/dropdown_helper/dropdown_storage_helper.dart';
+import 'package:new_project/features/children_managment/data/model/child_model.dart';
 import 'package:new_project/features/children_managment/domain/repositories/child_repository.dart';
 import 'package:new_project/features/children_managment/domain/usecase/get_child_details_usecase.dart';
 import 'package:new_project/features/children_managment/domain/usecase/get_children_usecase.dart';
@@ -26,7 +27,7 @@ class ChildCubit extends Cubit<ChildState> {
     );
   }
 
-  Future<void> addChild(Map<String, dynamic> childData) async {
+  Future<void> addChild(ChildModel childData) async {
     emit(ChildLoading());
     final result = await _repository.addChild(childData);
     result.when(
@@ -63,7 +64,7 @@ class ChildCubit extends Cubit<ChildState> {
             await Future.wait([
               DropdownStorageHelper.setNationalities(data.nationalities),
               DropdownStorageHelper.setCountry(data.countries),
-              //DropdownStorageHelper.setSpecialCases(data.specialCases),
+             // DropdownStorageHelper.setSpecialCases(data.specialCases),
             ]);
           },
           failure: (error) => emit(
@@ -71,14 +72,9 @@ class ChildCubit extends Cubit<ChildState> {
           ),
         );
       }
-
-      //emit(ChildLoadedDropdowns(
-      //  nationalities: await DropdownStorageHelper.getNationalities() ?? [],
-       // countries: await DropdownStorageHelper.getCountries() ?? [],
-        //specialCases: await DropdownStorageHelper.getSpecialCases() ?? [],
-     // ));
     } catch (e) {
       emit(ChildFailure("حدث خطأ أثناء تحميل البيانات"));
     }
   }
+  
 }

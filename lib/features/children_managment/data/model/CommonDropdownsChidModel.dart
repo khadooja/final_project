@@ -1,19 +1,38 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:new_project/features/childSpecialCase/data/model/special_case.dart';
 import 'package:new_project/features/children_managment/data/model/country_model.dart';
 import 'package:new_project/features/personal_management/data/models/nationality_model.dart';
 
-part 'CommonDropdownsChidModel.freezed.dart';
-part 'CommonDropdownsChidModel.g.dart';
+class CommonDropdownsChidModel {
+  List<NationalityModel> nationalities;
+  List<CountryModel> countries;
+  List<SpecialCase> specialCases;
 
-@freezed
-class CommonDropdownsChidModel with _$CommonDropdownsChidModel {
-  const factory CommonDropdownsChidModel({
-    required List<NationalityModel> nationalities,
-    required List<CountryModel> countries,
-    required List<SpecialCase> specialCases,
-  }) = _CommonDropdownsChidModel;
+  CommonDropdownsChidModel({
+    required this.nationalities,
+    required this.countries,
+    required this.specialCases,
+  });
 
-  factory CommonDropdownsChidModel.fromJson(Map<String, dynamic> json) =>
-      _$CommonDropdownsChidModelFromJson(json);
+  factory CommonDropdownsChidModel.fromJson(Map<String, dynamic> json) {
+    print('JSON CommonDropdownsChidModel..............................: $json');
+    return CommonDropdownsChidModel(
+      nationalities: (json['nationalities'] as List<dynamic>)
+          .map((e) => NationalityModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      countries: (json['countries'] as List<dynamic>)
+          .map((e) => CountryModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      specialCases: (json['specialCases'] as List<dynamic>)
+          .map((e) => SpecialCase.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'nationalities': nationalities.map((item) => item.toJson()).toList(),
+      'countries': countries.map((item) => item.toJson()).toList(),
+      'specialCases': specialCases.map((item) => item.toJson()).toList(),
+    };
+  }
 }

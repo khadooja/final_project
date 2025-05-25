@@ -9,7 +9,6 @@ import 'package:new_project/features/family_management/logic/father_state.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
 import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 import 'package:new_project/features/personal_management/data/repo/PersonHelperMixin.dart';
-import 'package:new_project/features/staff_management/data/model/dropdownclass.dart';
 import '../../personal_management/data/models/area_model.dart';
 import '../../personal_management/domain/repositories/personal_repo.dart';
 
@@ -39,7 +38,7 @@ class FatherCubit extends Cubit<FatherState> with PersonHelperMixin {
   int? selectedCityId;
   String? selectedArea;
   int? selectedAreaId;
-  List<Location> locations = [];
+  //List<Location> locations = [];
 
   // ========== Setters ==========
   void setGender(String value) {

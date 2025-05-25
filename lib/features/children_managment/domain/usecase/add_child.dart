@@ -1,7 +1,6 @@
 import 'package:new_project/Core/networking/api_result.dart';
 import 'package:new_project/features/children_managment/data/model/child_model.dart';
 import 'package:new_project/features/children_managment/domain/repositories/child_repository.dart';
-import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
 
 class AddChildUseCase {
   final ChildRepository _repository;
@@ -9,6 +8,6 @@ class AddChildUseCase {
   AddChildUseCase(this._repository);
 
   Future<ApiResult<void>> execute(ChildModel child) async {
-    return _repository.addChild(child.toJson());
+    return _repository.addChild(child);
   }
 }

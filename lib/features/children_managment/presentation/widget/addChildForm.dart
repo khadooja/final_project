@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:new_project/features/children_managment/data/model/child_model.dart';
 import 'package:new_project/features/children_managment/logic/child_bloc/child_cubit.dart';
 import 'package:new_project/features/children_managment/logic/child_bloc/child_state.dart';
 
@@ -132,7 +133,7 @@ class _AddChildFormState extends State<AddChildForm> {
                           });
                         }
 
-                        context.read<ChildCubit>().addChild(childData);
+                        context.read<ChildCubit>().addChild(ChildModel.fromJson(childData));
                       }
                     },
                     child: const Text("إضافة الطفل"),

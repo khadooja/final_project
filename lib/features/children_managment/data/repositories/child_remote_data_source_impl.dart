@@ -3,8 +3,8 @@ import 'package:new_project/features/children_managment/data/dataSources/child_d
 import 'package:new_project/features/children_managment/data/model/CommonDropdownsChidModel.dart';
 import 'package:new_project/features/children_managment/data/model/child_edit_details_model.dart';
 import 'package:new_project/features/children_managment/data/model/child_list_response_model.dart';
+import 'package:new_project/features/children_managment/data/model/child_model.dart';
 import 'package:new_project/features/children_managment/domain/repositories/child_repository.dart';
-import 'package:new_project/features/personal_management/data/models/nationalitiesAndcities_model.dart';
 import 'package:new_project/features/personal_management/data/models/person_model.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
 
@@ -19,7 +19,8 @@ class ChildRepositoryImpl implements ChildRepository {
   }
 
   @override
-  Future<ApiResult<void>> addChild(Map<String, dynamic> childData) {
+  Future<ApiResult<void>> addChild( ChildModel childData) {
+    print(" Repository Adding child: $childData");
     return _remoteDataSource.addChild(childData);
   }
 

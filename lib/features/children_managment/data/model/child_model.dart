@@ -1,44 +1,80 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'package:new_project/features/childSpecialCase/data/model/child_special_case.dart';
-
-part 'child_model.g.dart';
-
-@JsonSerializable(explicitToJson: true)
 class ChildModel {
-  final int id;
-  @JsonKey(name: 'first_name')
   final String firstName;
-  @JsonKey(name: 'last_name')
   final String lastName;
-  @JsonKey(name: 'birth_date')
-  final DateTime birthDate;
+  final String birthDate;
   final String gender;
-  @JsonKey(name: 'father_id', includeIfNull: false)
-  final int? fatherId;
-  @JsonKey(name: 'mother_id', includeIfNull: false)
-  final int? motherId;
-  @JsonKey(name: 'nationality_id')
-  final int nationalityId;
-  @JsonKey(name: 'foreing_birth_country_id', includeIfNull: false)
-  final int? foreignBirthCountryId;
-  @JsonKey(name: 'special_cases', includeIfNull: false)
-  final List<ChildSpecialCase>? specialCases;
+  final int hasSpecialCase;
+  final String birthCertificateNumber;
+  final String birthCertificateType;
+  final int healthCentersId;
+  final int nationalitiesId;
+  final int fathersId;
+  final int mothersId;
+  final int countriesId;
+  final int foreingBirthCountryId;
+  final String? caseName;
+  final String? description;
+  final String? startDate;
 
   ChildModel({
-    required this.id,
     required this.firstName,
     required this.lastName,
     required this.birthDate,
     required this.gender,
-    this.fatherId,
-    this.motherId,
-    required this.nationalityId,
-    this.foreignBirthCountryId,
-    this.specialCases,
+    required this.hasSpecialCase,
+    required this.birthCertificateNumber,
+    required this.birthCertificateType,
+    required this.healthCentersId,
+    required this.nationalitiesId,
+    required this.fathersId,
+    required this.mothersId,
+    required this.countriesId,
+    required this.foreingBirthCountryId,
+    this.caseName,
+    this.description,
+    this.startDate,
   });
 
-  factory ChildModel.fromJson(Map<String, dynamic> json) =>
-      _$ChildModelFromJson(json);
+  factory ChildModel.fromJson(Map<String, dynamic> json) {
+    print("ChildModel.fromJson: $json");
+    return ChildModel(
+      firstName: json['first_name'],
+      lastName: json['last_name'],
+      birthDate: json['birth_date'],
+      gender: json['gender'],
+      hasSpecialCase: json['has_specail_case'],
+      birthCertificateNumber: json['birth_certificate_number'],
+      birthCertificateType: json['birth_certificate_type'],
+      healthCentersId: json['health_centers_id'],
+      nationalitiesId: json['nationalities_id'],
+      fathersId: json['fathers_id'],
+      mothersId: json['mothers_id'],
+      countriesId: json['countries_id'],
+      foreingBirthCountryId: json['foreing_birth_country_id'],
+      caseName: json['case_name'],
+      description: json['description'],
+      startDate: json['start_date'],
+    );
+  }
 
-  Map<String, dynamic> toJson() => _$ChildModelToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      "first_name": firstName,
+      "last_name": lastName,
+      "birth_date": birthDate,
+      "gender": gender,
+      "has_specail_case": hasSpecialCase,
+      "birth_certificate_number": birthCertificateNumber,
+      "birth_certificate_type": birthCertificateType,
+      "health_centers_id": healthCentersId,
+      "nationalities_id": nationalitiesId,
+      "fathers_id": fathersId,
+      "mothers_id": mothersId,
+      "countries_id": countriesId,
+      "foreing_birth_country_id": foreingBirthCountryId,
+      "case_name": caseName,
+      "description": description,
+      "start_date": startDate,
+    };
+  }
 }
