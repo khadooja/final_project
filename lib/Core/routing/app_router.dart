@@ -2,19 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:new_project/Core/di/get_it.dart';
-import 'package:new_project/features/HelthCenter/presentation/Add_helth_center_screen.dart';
 import 'package:new_project/features/HelthCenter/presentation/showHelthCenters.dart';
+import 'package:new_project/features/children_managment/presentation/pages/add_chlid_page.dart';
 import 'package:new_project/features/dashboard/presentation/screens/admin_dashboard_screen.dart';
 import 'package:new_project/features/auth/presentation/login_screen.dart';
 import 'package:new_project/features/dashboard/presentation/screens/super_dashboard_screen.dart';
 import 'package:new_project/features/family_management/presentation/father_screen.dart';
+import 'package:new_project/features/family_management/presentation/mother_screen.dart';
 import 'package:new_project/features/personal_management/logic/personal_cubit.dart';
 import 'package:new_project/features/profile/presentation/screens/profile.dart';
 import 'package:new_project/features/reports/presentation/report_screen.dart';
 import 'package:new_project/features/staff_management/application/bloc/admin_bloc.dart';
 import 'package:new_project/features/dashboard/presentation/screens/staff_dashboard_screen.dart';
-import 'package:new_project/features/vaccination/dose/presentation/add_dose_screen.dart';
-import 'package:new_project/features/vaccination/stage/presentation/AddStageScreen.dart';
 import 'package:new_project/features/vaccination/vaccine/presentation/screens/vaccine_screen.dart';
 import 'routes.dart';
 
@@ -92,7 +91,14 @@ class AppRouter {
         );
       case Routes.addMother:
         return _buildRoute(
-          const FatherScreen(),
+          const MotherScreen(),
+        );
+      case Routes.addChild:
+        return _buildRoute(
+          const AddChildScreen(
+            fatherId: 0, // Replace with actual father ID
+            motherId: 0, // Replace with actual mother ID
+          ),
         );
       // Center Admin Routes
       case Routes.addVaccination:
@@ -101,11 +107,11 @@ class AppRouter {
         );
       case Routes.addCenter:
         return _buildRoute(
-          HealthCentersScreen(),
+          const HealthCentersScreen(),
         );
       case Routes.viewReports:
         return _buildRoute(
-          ReportScreen(),
+          const ReportScreen(),
         );
       default:
         return _errorRoute("Page not found");

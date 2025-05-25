@@ -53,30 +53,28 @@ class FatherForm extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  flex: 2,
-                  child: DropdownButtonFormField<int>(
-  value: cubit.selectedNationalityId,
-  decoration: const InputDecoration(
-    labelText: 'الجنسية',
-    border: OutlineInputBorder(),
-  ),
-  items: cubit.nationalities
-      .map(
-        (nat) => DropdownMenuItem(
-          value: nat.id,
-          child: Text(nat.country_name),
-        ),
-      )
-      .toList(),
-  onChanged: (value) {
-    cubit.selectedNationalityId = value;
-    cubit.emit(FatherFormDataLoaded());
-  },
-  validator: (val) =>
-      val == null ? 'يرجى اختيار الجنسية' : null,
-)
-
-                ),
+                    flex: 2,
+                    child: DropdownButtonFormField<int>(
+                      value: cubit.selectedNationalityId,
+                      decoration: const InputDecoration(
+                        labelText: 'الجنسية',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: cubit.nationalities
+                          .map(
+                            (nat) => DropdownMenuItem(
+                              value: nat.id,
+                              child: Text(nat.country_name),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        cubit.selectedNationalityId = value;
+                        cubit.emit(FatherFormDataLoaded());
+                      },
+                      validator: (val) =>
+                          val == null ? 'يرجى اختيار الجنسية' : null,
+                    )),
                 const SizedBox(width: 16),
                 Expanded(
                   flex: 1,
@@ -128,61 +126,60 @@ class FatherForm extends StatelessWidget {
                     flex: 3,
                     child: Column(
                       children: [
-                         DropdownButtonFormField<String>(
-                                value: cubit.selectedCity,
-                                decoration: const InputDecoration(
-                                  labelText: 'المدينة',
-                                  border: OutlineInputBorder(),
+                        DropdownButtonFormField<String>(
+                          value: cubit.selectedCity,
+                          decoration: const InputDecoration(
+                            labelText: 'المدينة',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: cubit.cities
+                              .map(
+                                (city) => DropdownMenuItem(
+                                  value: city.city_name,
+                                  child: Text(city.city_name),
                                 ),
-                                items: cubit.cities
-                                    .map(
-                                      (city) => DropdownMenuItem(
-                                        value: city.city_name,
-                                        child: Text(city.city_name),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: (value) {
-                                  if (value != null) cubit.setCity(value);
-                                },
-                                validator: (val) =>
-                                    val == null ? 'يرجى اختيار المدينة' : null,
-                              ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            if (value != null) cubit.setCity(value);
+                          },
+                          validator: (val) =>
+                              val == null ? 'يرجى اختيار المدينة' : null,
+                        ),
 
                         const SizedBox(height: 16),
 
                         // Dropdown الحي
                         DropdownButtonFormField<int>(
-                              value: cubit.selectedAreaId,
-                              decoration: const InputDecoration(
-                                labelText: 'الحي',
-                                border: OutlineInputBorder(),
-                              ),
-                              items: cubit.areas.map((area) {
-                                return DropdownMenuItem<int>(
-                                  value: area.id,
-                                  child: Text(
-                                      area.area_name), // عرض اسم المنطقة فقط
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                if (value != null) {
-                                  cubit.setArea(value);
-                                }
-                              },
-                              validator: (val) =>
-                                  val == null ? 'يرجى اختيار الحي' : null,
-                              selectedItemBuilder: (context) {
-                                // هذه هي الإضافة المهمة
-                                return cubit.areas.map((area) {
-                                  return Text(
-                                    area.area_name, 
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                  );
-                                }).toList();
-                              },
-                            )
+                          value: cubit.selectedAreaId,
+                          decoration: const InputDecoration(
+                            labelText: 'الحي',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: cubit.areas.map((area) {
+                            return DropdownMenuItem<int>(
+                              value: area.id,
+                              child:
+                                  Text(area.area_name), // عرض اسم المنطقة فقط
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              cubit.setArea(value);
+                            }
+                          },
+                          validator: (val) =>
+                              val == null ? 'يرجى اختيار الحي' : null,
+                          selectedItemBuilder: (context) {
+                            // هذه هي الإضافة المهمة
+                            return cubit.areas.map((area) {
+                              return Text(
+                                area.area_name,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              );
+                            }).toList();
+                          },
+                        )
                       ],
                     ),
                   ),
@@ -215,42 +212,42 @@ class FatherForm extends StatelessWidget {
               const SizedBox(height: 20),
 
               // الجنس والحالة
-             BlocBuilder<FatherCubit, FatherState>(
-  builder: (context, state) {
-    final cubit = context.read<FatherCubit>();
+              BlocBuilder<FatherCubit, FatherState>(
+                builder: (context, state) {
+                  final cubit = context.read<FatherCubit>();
 
-    return Row(
-      children: [
-        // الجنس
-        Expanded(
-          child: CustomInputField(
-            label: 'الجنس',
-            keyboardType: InputType.radio,
-            radioOptions: const ['ذكر', 'أنثى'],
-            selectedValue: cubit.selectedGender,
-            onChanged: (val) => cubit.setGender(val!),
-          ),
-        ),
+                  return Row(
+                    children: [
+                      // الجنس
+                      Expanded(
+                        child: CustomInputField(
+                          label: 'الجنس',
+                          keyboardType: InputType.radio,
+                          radioOptions: const ['ذكر', 'أنثى'],
+                          selectedValue: cubit.selectedGender,
+                          onChanged: (val) => cubit.setGender(val!),
+                        ),
+                      ),
 
-        const SizedBox(width: 16),
+                      const SizedBox(width: 16),
 
-        // الحالة
-        Expanded(
-          child: CustomInputField(
-            label: 'الحالة',
-            keyboardType: InputType.radio,
-            radioOptions: const ['غير نشط', 'نشط'],
-            selectedValue: cubit.is_Active == 1 ? 'نشط' : 'غير نشط',
-            onChanged: (val) {
-              cubit.setIsActive(val == 'نشط' ? 1 : 0);
-            },
-          ),
-        ),
-      ],
-    );
-  },
-)
-,
+                      // الحالة
+                      Expanded(
+                        child: CustomInputField(
+                          label: 'الحالة',
+                          keyboardType: InputType.radio,
+                          radioOptions: const ['غير نشط', 'نشط'],
+                          selectedValue:
+                              cubit.is_Active == 1 ? 'نشط' : 'غير نشط',
+                          onChanged: (val) {
+                            cubit.setIsActive(val == 'نشط' ? 1 : 0);
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
 
               const SizedBox(height: 20),
 
@@ -270,7 +267,7 @@ class FatherForm extends StatelessWidget {
                 width: double.infinity,
                 child: CustomButton(
                   text: 'حفظ البيانات',
-                      onPressed: () => cubit.submitFather(context), 
+                  onPressed: () => cubit.submitFather(context),
                 ),
               ),
             ],

@@ -1,5 +1,3 @@
-import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_project/Core/commn_widgets/custom_button.dart';
@@ -13,9 +11,6 @@ class MotherForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<MotherCubit>();
-    if (cubit.cities.isEmpty || cubit.nationalities.isEmpty) {
-      return const CircularProgressIndicator();
-    }
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -55,36 +50,28 @@ class MotherForm extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  flex: 2,
-                  child: BlocBuilder<MotherCubit, MotherState>(
-                    builder: (context, state) {
-                      if (state is MotherDropdownsLoaded ||
-                          state is MotherFormDataLoaded ||
-                          state is MotherPersonOnlyLoaded) {
-                        return DropdownButtonFormField<int>(
-                          value: cubit.selectedNationalityId,
-                          decoration: const InputDecoration(
-                            labelText: 'الجنسية',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: cubit.nationalities
-                              .map(
-                                (nat) => DropdownMenuItem(
-                                  value: nat.id,
-                                  child: Text(nat.country_name),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (value) {
-                            cubit.selectedNationalityId = value;
-                            cubit.emit(MotherFormDataLoaded());
-                          },
-                        );
-                      }
-                      return const CircularProgressIndicator();
-                    },
-                  ),
-                ),
+                    flex: 2,
+                    child: DropdownButtonFormField<int>(
+                      value: cubit.selectedNationalityId,
+                      decoration: const InputDecoration(
+                        labelText: 'الجنسية',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: cubit.nationalities
+                          .map(
+                            (nat) => DropdownMenuItem(
+                              value: nat.id,
+                              child: Text(nat.country_name),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        cubit.selectedNationalityId = value;
+                        cubit.emit(MotherFormDataLoaded());
+                      },
+                      validator: (val) =>
+                          val == null ? 'يرجى اختيار الجنسية' : null,
+                    )),
                 const SizedBox(width: 16),
                 Expanded(
                   flex: 1,
@@ -129,88 +116,70 @@ class MotherForm extends StatelessWidget {
               const SizedBox(height: 20),
 
               // المدينة والحي
-              Row(
-                children: [
-                  // المدينة والحي
-                  Expanded(
+             Expanded(
                     flex: 3,
                     child: Column(
                       children: [
-                        // Dropdown المدينة
-                        BlocBuilder<MotherCubit, MotherState>(
-                          builder: (context, state) {
-                            if (state is MotherDropdownsLoaded ||
-                                state is MotherFormDataLoaded ||
-                                state is MotherPersonOnlyLoaded) {
-                              return DropdownButtonFormField<String>(
-                                value: cubit.selectedCity,
-                                decoration: const InputDecoration(
-                                  labelText: 'المدينة',
-                                  border: OutlineInputBorder(),
+                        DropdownButtonFormField<String>(
+                          value: cubit.selectedCity,
+                          decoration: const InputDecoration(
+                            labelText: 'المدينة',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: cubit.cities
+                              .map(
+                                (city) => DropdownMenuItem(
+                                  value: city.city_name,
+                                  child: Text(city.city_name),
                                 ),
-                                items: cubit.cities
-                                    .map(
-                                      (city) => DropdownMenuItem(
-                                        value: city.city_name,
-                                        child: Text(city.city_name),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: (value) {
-                                  if (value != null) cubit.setCity(value);
-                                },
-                                validator: (val) =>
-                                    val == null ? 'يرجى اختيار المدينة' : null,
-                              );
-                            }
-                            return const CircularProgressIndicator();
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            if (value != null) cubit.setCity(value);
                           },
+                          validator: (val) =>
+                              val == null ? 'يرجى اختيار المدينة' : null,
                         ),
 
                         const SizedBox(height: 16),
 
                         // Dropdown الحي
-                        BlocBuilder<MotherCubit, MotherState>(
-                          builder: (context, state) {
-                            final cubit = context.read<MotherCubit>();
-                            return DropdownButtonFormField<int>(
-                              value: cubit.selectedAreaId,
-                              decoration: const InputDecoration(
-                                labelText: 'الحي',
-                                border: OutlineInputBorder(),
-                              ),
-                              items: cubit.areas.map((area) {
-                                return DropdownMenuItem<int>(
-                                  value: area.id,
-                                  child: Text(
-                                      area.area_name), // عرض اسم المنطقة فقط
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                if (value != null) {
-                                  cubit.setArea(value);
-                                }
-                              },
-                              validator: (val) =>
-                                  val == null ? 'يرجى اختيار الحي' : null,
-                              selectedItemBuilder: (context) {
-                                // هذه هي الإضافة المهمة
-                                return cubit.areas.map((area) {
-                                  return Text(
-                                    area.area_name,
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                  );
-                                }).toList();
-                              },
+                        DropdownButtonFormField<int>(
+                          value: cubit.selectedAreaId,
+                          decoration: const InputDecoration(
+                            labelText: 'الحي',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: cubit.areas.map((area) {
+                            return DropdownMenuItem<int>(
+                              value: area.id,
+                              child:
+                                  Text(area.area_name), // عرض اسم المنطقة فقط
                             );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              cubit.setArea(value);
+                            }
                           },
-                        ),
+                          validator: (val) =>
+                              val == null ? 'يرجى اختيار الحي' : null,
+                          selectedItemBuilder: (context) {
+                            // هذه هي الإضافة المهمة
+                            return cubit.areas.map((area) {
+                              return Text(
+                                area.area_name,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              );
+                            }).toList();
+                          },
+                        )
                       ],
                     ),
                   ),
                 ],
-              ),
+                
+
               const SizedBox(height: 20),
 
               // رقم الهاتف والهوية
@@ -238,30 +207,44 @@ class MotherForm extends StatelessWidget {
               const SizedBox(height: 20),
 
               // الجنس والحالة
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomInputField(
-                      label: 'الجنس',
-                      keyboardType: InputType.radio,
-                      radioOptions: const ['ذكر', 'أنثى'],
-                      selectedValue: cubit.selectedGender,
-                      onChanged: (val) => cubit.setGender(val!),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: CustomInputField(
-                      label: 'الحالة',
-                      keyboardType: InputType.radio,
-                      radioOptions: const ['غير نشط', 'نشط'],
-                      selectedValue:
-                          cubit.is_Active?.call() ?? false ? 'نشط' : 'غير نشط',
-                      onChanged: (val) => cubit.setIsActive(val == 'نشط'),
-                    ),
-                  ),
-                ],
+               // الجنس والحالة
+              BlocBuilder<MotherCubit, MotherState>(
+                builder: (context, state) {
+                  final cubit = context.read<MotherCubit>();
+
+                  return Row(
+                    children: [
+                      // الجنس
+                      Expanded(
+                        child: CustomInputField(
+                          label: 'الجنس',
+                          keyboardType: InputType.radio,
+                          radioOptions: const ['ذكر', 'أنثى'],
+                          selectedValue: cubit.selectedGender,
+                          onChanged: (val) => cubit.setGender(val!),
+                        ),
+                      ),
+
+                      const SizedBox(width: 16),
+
+                      // الحالة
+                      Expanded(
+                        child: CustomInputField(
+                          label: 'الحالة',
+                          keyboardType: InputType.radio,
+                          radioOptions: const ['غير نشط', 'نشط'],
+                          selectedValue:
+                              cubit.is_Active == 1 ? 'نشط' : 'غير نشط',
+                          onChanged: (val) {
+                            cubit.setIsActive(val == 'نشط' ? 1 : 0);
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
+
               const SizedBox(height: 20),
 
               // عدد الأطفال
@@ -276,15 +259,14 @@ class MotherForm extends StatelessWidget {
               const SizedBox(height: 20),
 
               // زر الحفظ
-              SizedBox(
+            SizedBox(
                 width: double.infinity,
                 child: CustomButton(
                   text: 'حفظ البيانات',
-                  onPressed: cubit.submitMother,
+                  onPressed: () => cubit.submitMother(context),
                 ),
               ),
             ],
-          ],
         ),
       ),
     );

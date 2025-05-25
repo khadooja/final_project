@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:collection/collection.dart';
+import 'package:new_project/Core/routing/routes.dart';
+import 'package:new_project/features/family_management/data/model/father_model.dart';
 import 'package:new_project/features/family_management/data/model/mother_model.dart';
 import 'package:new_project/features/family_management/domain/repository/motherRepository.dart';
+import 'package:new_project/features/family_management/logic/father_state.dart';
 import 'package:new_project/features/family_management/logic/mother_state.dart';
-import 'package:new_project/features/personal_management/data/models/area_model.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
 import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 import 'package:new_project/features/personal_management/data/repo/PersonHelperMixin.dart';
-import 'package:new_project/features/personal_management/domain/repositories/personal_repo.dart';
 import 'package:new_project/features/staff_management/data/model/dropdownclass.dart';
+import '../../personal_management/data/models/area_model.dart';
+import '../../personal_management/domain/repositories/personal_repo.dart';
 
 class MotherCubit extends Cubit<MotherState> with PersonHelperMixin {
   MotherCubit(this._motherRepository, PersonRepository personRepo)
@@ -30,9 +33,9 @@ class MotherCubit extends Cubit<MotherState> with PersonHelperMixin {
   final counterchlidren = TextEditingController();
   // ========== State variables ==========
   String? selectedGender;
-  bool? is_Active;
+  int? is_Active;
   int? selectedNationalityId;
-  bool isDead = false;
+  bool isDead= false;
   int childCount = 0;
   String? selectedCity;
   int? selectedCityId;
@@ -46,10 +49,11 @@ class MotherCubit extends Cubit<MotherState> with PersonHelperMixin {
     emit(MotherFormDataLoaded());
   }
 
-  void setIsActive(bool value) {
-    is_Active = value;
-    emit(MotherFormDataLoaded());
-  }
+  void setIsActive(int value) {
+  is_Active = value ;
+  emit(MotherFormDataLoaded());
+}
+
 
   void setIsDead(bool value) {
     isDead = value;
@@ -58,33 +62,33 @@ class MotherCubit extends Cubit<MotherState> with PersonHelperMixin {
 
   @override
   Future<void> setCity(String? cityName, {int? autoSelectAreaId}) async {
+  emit(MotherLoaded());
+  final city = cities.firstWhereOrNull((c) => c.city_name == cityName);
+  if (city == null) {
     emit(MotherLoaded());
-    final city = cities.firstWhereOrNull((c) => c.city_name == cityName);
-    if (city == null) {
-      emit(MotherLoaded());
-      return;
-    }
-
-    selectedCity = city.city_name;
-    await loadAreas(city.city_name);
-
-    if (autoSelectAreaId != null) {
-      final area = areas.firstWhereOrNull((a) => a.id == autoSelectAreaId);
-      if (area != null) {
-        selectedArea = area.area_name;
-        selectedAreaId = area.id;
-      }
-    }
-    emit(MotherDropdownsLoaded());
+    return;
   }
 
-  void setChildCount(String value) {
-    final parsed = int.tryParse(value);
-    if (parsed != null) {
-      childCount = parsed;
-      emit(MotherFormDataLoaded());
+  selectedCity = city.city_name;
+  await loadAreas(city.city_name);
+  
+  if (autoSelectAreaId != null) {
+    final area = areas.firstWhereOrNull((a) => a.id == autoSelectAreaId);
+    if (area != null) {
+      selectedArea = area.area_name;
+      selectedAreaId = area.id;
     }
   }
+  emit(MotherDropdownsLoaded());
+}
+void setChildCount(String value) {
+  final parsed = int.tryParse(value);
+  if (parsed != null) {
+    childCount = parsed;
+    emit(MotherFormDataLoaded());
+  }
+}
+
 
   @override
   void setArea(int? areaId) {
@@ -150,14 +154,14 @@ class MotherCubit extends Cubit<MotherState> with PersonHelperMixin {
     }
   }
 
-  // ========== Form mother ==========
+  // ========== Form father ==========
   void fillFormFromMother(SearchPersonResponse response) async {
     final mother = response.data?.mother;
-    print('====== fillFormFromMother called ======');
+    print('====== fillFormFromFather called ======');
     print(
-        'Mother data: ${mother?.first_name}, ${mother?.last_name}, ID: ${mother?.id}');
+        'Father data: ${mother?.first_name}, ${mother?.last_name}, ID: ${mother?.id}');
     if (mother != null) {
-      print(' [4.1] تم العثور على بيانات الام');
+      print(' [4.1] الام العثور على بيانات ');
       firstNameController.text = mother.first_name;
       lastNameController.text = mother.last_name;
       emailController.text = mother.email ?? '';
@@ -166,8 +170,8 @@ class MotherCubit extends Cubit<MotherState> with PersonHelperMixin {
       phoneController.text = mother.phone_number ?? '';
       identityController.text = mother.identity_card_number;
       setGender(mother.gender);
-      is_Active = mother.is_Active;
-      isDead = mother.isDeceased ?? false;
+      is_Active = mother.is_Active ;
+      isDead = mother.isDeceased ;
       selectedNationalityId = mother.nationalities_id;
       counterchlidren.text = mother.child_count.toString();
 
@@ -206,69 +210,75 @@ class MotherCubit extends Cubit<MotherState> with PersonHelperMixin {
 
     emit(MotherInitial());
   }
+Future<void> fetchMotherByIdentity(String identity) async {
+  emit(MotherLoaded());
+  
+  final result = await personRepository.searchPersonById(identity, PersonType.father);
 
-  Future<void> fetchMotherByIdentity(String identity) async {
-    emit(MotherLoaded());
+  result.when(
+    success: (response) async {
+      if (response?.data == null) {
+        clearForm(); // تنظيف الفورم
+        emit(MotherNotFound()); // إرسال حالة عدم العثور
+        return;
+      }
 
-    final result =
-        await personRepository.searchPersonById(identity, PersonType.mother);
+      final data = response!.data!;
+      
+      if (data.mother != null) {
+        fillFormFromMother(response);
+        emit(MotherDataFound(data.mother!));
+      } else if (data.person != null) {
+        fillFormFromPerson(response);
+        emit(MotherPersonFound(data.person!));
+      } else {
+        clearForm(); // تنظيف الفورم
+        emit(MotherNotFound()); // إرسال حالة عدم العثور
+      }
+    },
+    failure: (error) {
+      clearForm(); // تنظيف الفورم في حالة الخطأ
+      emit(MotherError(error.message));
+    },
+  );
+}
 
-    result.when(
-      success: (response) async {
-        if (response?.data == null) {
-          clearForm(); // تنظيف الفورم
-          emit(MotherNotFound()); // إرسال حالة عدم العثور
-          return;
-        }
+  Future<void> submitMother(BuildContext context, {String? motherId}) async {
+  try {
+    final isDeceasedInt = isDead ? 1 : 0;
+    final isActiveInt = is_Active ?? 0;
 
-        final data = response!.data!;
+    final model = MotherModel(
+      first_name: firstNameController.text,
+      last_name: lastNameController.text,
+      identity_card_number: identityController.text,
+      birthDate: birthDateController.text.isNotEmpty 
+    ? DateTime.parse(birthDateController.text)
+    : null,
+      phone_number: phoneController.text,
+      email: emailController.text,
+      nationalities_id: selectedNationalityId ?? 1,
+      location_id: selectedCityId ?? 1,
+      isDeceased: isDead,
+      is_Active: isActiveInt,
+      child_count: childCount ?? 0,
+      gender: selectedGender ?? 'ذكر',
+    );
 
-        if (data.mother != null) {
-          fillFormFromMother(response);
-          emit(MotherDataFound(data.mother!));
-        } else if (data.person != null) {
-          fillFormFromPerson(response);
-          emit(MotherPersonFound(data.person!));
-        } else {
-          clearForm(); // تنظيف الفورم
-          emit(MotherNotFound()); // إرسال حالة عدم العثور
-        }
-      },
-      failure: (error) {
-        clearForm(); // تنظيف الفورم في حالة الخطأ
-        emit(MotherError(error.message));
-      },
+    if (motherId != null) {
+      await updateMother(motherId, model);
+    } else {
+      await addMother(model);
+    }
+    
+    Navigator.pushReplacementNamed(context, Routes.addChild);
+  } catch (e) {
+    emit(MotherError('فشل في إرسال البيانات: ${e.toString()}'));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('فشل في إرسال البيانات: ${e.toString()}')),
     );
   }
-
-  Future<void> submitMother({String? motherId}) async {
-    try {
-      final model = MotherModel(
-        id: motherId != null ? int.parse(motherId) : 0,
-        first_name: firstNameController.text,
-        last_name: lastNameController.text,
-        identity_card_number: identityController.text,
-        birthDate: DateTime.parse(birthDateController.text),
-        phone_number: phoneController.text,
-        email: emailController.text,
-        nationalities_id: selectedNationalityId ?? 0,
-        location_id: selectedCityId,
-        isDeceased: isDead,
-        is_Active: is_Active ?? true,
-        child_count: childCount,
-        gender: selectedGender ?? 'female',
-      );
-
-      if (motherId != null) {
-        await updateMother(motherId, model);
-      } else {
-        await addMother(model);
-      }
-    } catch (e) {
-      emit(MotherError('فشل في إرسال البيانات: ${e.toString()}'));
-    }
-  }
-
+}
   Future<void> addMother(MotherModel model) async {
     emit(const MotherLoaded());
     final result = await _motherRepository.addMother(model);
@@ -290,7 +300,7 @@ class MotherCubit extends Cubit<MotherState> with PersonHelperMixin {
   Future<void> toggleMotherActivation(String id, bool activate) async {
     emit(const MotherLoaded());
     final result = await personRepository.toggleActivation(
-        PersonType.mother, id, activate);
+        PersonType.father, id, activate);
     result.when(
       success: (_) => emit(MotherToggleActivationSuccess()),
       failure: (error) => emit(MotherError(error.message)),
@@ -323,40 +333,21 @@ class MotherCubit extends Cubit<MotherState> with PersonHelperMixin {
     );
   }
 
-  // في mother_cubit.dart
-  Future<void> loadAreas(String cityId) async {
-    if (cityId.isEmpty) return;
-    emit(MotherLoaded());
-
-    final result =
-        await personRepository.getAreasByCity(PersonType.mother, cityId);
-
-    result.when(
-      success: (areas) {
-        this.areas =
-            areas.map((areaMap) => AreaModel.fromJson(areaMap)).toList();
-        emit(MotherAreasLoaded(
-          this.areas,
-        ));
-      },
-      failure: (error) => emit(MotherError(error.message)),
-    );
-  }
-
-  void printFormState() {
-    print('\n📋 حالة النموذج الحالية:');
-    print('- الاسم الأول: ${firstNameController.text}');
-    print('- الاسم الأخير: ${lastNameController.text}');
-    print('- الهوية: ${identityController.text}');
-    print('- الهاتف: ${phoneController.text}');
-    print('- البريد: ${emailController.text}');
-    print('- تاريخ الميلاد: ${birthDateController.text}');
-    print('- الجنس: $selectedGender');
-    print('- الجنسية ID: $selectedNationalityId');
-    print('- المدينة: $selectedCity (ID: $selectedCityId)');
-    print('- المنطقة: $selectedArea (ID: $selectedAreaId)');
-    print('- الحالة: $is_Active');
-    print('- متوفى: $isDead');
-    print('\n');
-  }
+  // في father_cubit.dart
+Future<void> loadAreas(String cityId) async {
+  if (cityId.isEmpty) return;
+  emit(MotherLoaded());
+  
+  final result = await personRepository.getAreasByCity(PersonType.mother, cityId);
+  
+  result.when(
+    success: (areas) {
+      this.areas = areas.map((areaMap) => AreaModel.fromJson(areaMap)).toList();
+      emit(MotherAreasLoaded(
+        this.areas,
+      ));
+    },
+    failure: (error) => emit(MotherError(error.message)),
+  );
+}
 }

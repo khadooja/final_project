@@ -269,7 +269,7 @@ Future<void> fetchFatherByIdentity(String identity) async {
       await addFather(model);
     }
     
-    Navigator.pushReplacementNamed(context, Routes.centerDashboard);
+    Navigator.pushReplacementNamed(context, Routes.addMother);
   } catch (e) {
     emit(FatherError('فشل في إرسال البيانات: ${e.toString()}'));
     ScaffoldMessenger.of(context).showSnackBar(

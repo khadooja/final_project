@@ -411,4 +411,13 @@ Future<FatherModel> addFather(FatherModel fatherData) async {
     final res = await _dio.get('${ApiConfig.baseUrl}healthCenter/$id/edit');
     return res.data;
   }
+
+
+  Future<Map<String, dynamic>> fetchReportData({int? centerId}) async {
+    final response = await _dio.get(
+      '${ApiConfig.baseUrl}Reports',
+      queryParameters: centerId != null ? {'healthCenter': centerId} : null,
+    );
+    return response.data;
+  }
 }
