@@ -4,6 +4,8 @@ import 'package:new_project/Core/networking/api_services.dart';
 import 'package:new_project/Core/networking/dio_factory.dart';
 import 'package:new_project/features/HelthCenter/data/repository/health_center_repository.dart';
 import 'package:new_project/features/HelthCenter/logic/cubit/health_center_cubit.dart';
+import 'package:new_project/features/reports/data/report_repository.dart';
+import 'package:new_project/features/reports/logic/report_cubit.dart';
 import 'package:new_project/features/vaccination/dose/data/repos/dose_repo.dart';
 import 'package:new_project/features/vaccination/dose/logic/cubit/dose_cubit.dart';
 import 'package:new_project/features/vaccination/stage/data/repos.dart';
@@ -65,6 +67,17 @@ Future<void> setupServiceLocator() async {
   if (!di.isRegistered<HealthCenterCubit>()) {
     di.registerFactory<HealthCenterCubit>(
       () => HealthCenterCubit(repository: di<HealthCenterRepository>()),
+    );
+  }
+  if (!di.isRegistered<ReportRepository>()) {
+    di.registerLazySingleton<ReportRepository>(
+      () => ReportRepository(api: di<ApiServiceManual>()),
+    );
+  }
+
+  if (!di.isRegistered<ReportCubit>()) {
+    di.registerFactory<ReportCubit>(
+      () => ReportCubit(repository: di<ReportRepository>()),
     );
   }
 }

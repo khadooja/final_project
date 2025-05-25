@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:new_project/Core/helpers/shared_pref__keys.dart';
 import 'package:new_project/Core/helpers/shared_pref_helper.dart';
-import 'package:new_project/Core/networking/config/api_config.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class DioFactory {
@@ -31,28 +30,33 @@ class DioFactory {
   }
 
   static Future<void> addDioHeaders() async {
-    String? token =
-        await StorageHelper.getSecuredString(SharedPrefKeys.userToken);
-    String? centerId = await StorageHelper.getString(SharedPrefKeys.centerId,
-        defaultValue: '');
+  String? token = await StorageHelper.getSecuredString(SharedPrefKeys.userToken);
+  String? centerId = await StorageHelper.getString(SharedPrefKeys.centerId, defaultValue: '');
 
-    // تأكد أن التوكن لا يحتوي على Bearer مكرر
-    if (token != null && centerId != null) {
-      if (!token.startsWith('Bearer ')) {
-        token = 'Bearer $token';
-      }
-
-      dio?.options.headers = {
-        'Accept': 'application/json',
-        'Authorization': token,
-        'X-Center-ID': centerId,
-      };
-    } else {
-      dio?.options.headers = {
-        'Accept': 'application/json',
-      };
-    }
+  // تحقق من وجود centerId
+  if (centerId == null || centerId.isEmpty) {
+    throw Exception('Center ID is missing');
   }
+
+  if (token != null) {
+    if (!token.startsWith('Bearer ')) {
+      token = 'Bearer $token';
+    }
+
+    dio?.options.headers = {
+      'Accept': 'application/json',
+      'Authorization': token,
+      'X-Center-ID': centerId, 
+      'Center-Id': centerId,    
+    };
+  } else {
+    dio?.options.headers = {
+      'Accept': 'application/json',
+      'X-Center-ID': centerId,
+      'Center-Id': centerId,
+    };
+  }
+}
 
   static void setTokenIntoHeaderAfterLogin(String token, String centerId) {
     // أيضًا تأكد هنا من أن Bearer لم تُكرر
@@ -63,6 +67,7 @@ class DioFactory {
     dio?.options.headers = {
       'Authorization': token,
       'X-Center-ID': centerId,
+      'Center-Id': centerId,
     };
   }
 

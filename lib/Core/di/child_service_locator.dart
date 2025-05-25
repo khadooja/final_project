@@ -31,5 +31,5 @@ Future<void> initChildManagementDependencies() async {
   getch.registerLazySingleton(() => SearchParentIdUseCase(getch()));
 
   // Cubit
-  getch.registerFactory(() => ChildCubit(getch(), getch()));
+  getch.registerFactory(() => ChildCubit(getch(), getch(), getch()));
 }

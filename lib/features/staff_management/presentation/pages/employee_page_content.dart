@@ -1,11 +1,6 @@
-/*import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_project/Core/commn_widgets/employeeSearchManager.dart';
-import 'package:new_project/core/commn_widgets/sideNav.dart';
-import 'package:new_project/features/staff_management/application/bloc/admin_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:new_project/Core/commn_widgets/side_nav/side_nav.dart';
 import 'package:new_project/features/staff_management/presentation/pages/add_employee_page.dart';
-import 'package:new_project/features/staff_management/presentation/pages/view_employees_page.dart';
-import 'package:new_project/Core/commn_widgets/sideNav.dart';
 
 class EmployeesPageContent extends StatefulWidget {
   final String? username;
@@ -23,12 +18,12 @@ class EmployeesPageContent extends StatefulWidget {
 
 class _EmployeesPageContentState extends State<EmployeesPageContent> {
   int selectedIndex = 0; // 0: إضافة موظف, 1: عرض الموظفين
-  late EmployeeSearchManager searchManager;
+  late AddEmployeePage searchManager;
 
   @override
   void initState() {
     super.initState();
-    searchManager = EmployeeSearchManager(context.read<AdminBloc>());
+   // searchManager = AddEmployeePage(context.read<AdminBloc>());
   }
 
   @override
@@ -37,21 +32,12 @@ class _EmployeesPageContentState extends State<EmployeesPageContent> {
       body: Row(
         children: [
           // القائمة الجانبية
-          SizedBox(
+          const SizedBox(
             width: 250, // تقليل العرض قليلاً لجعل التصميم أكثر احترافية
             child: Directionality(
               textDirection: TextDirection.rtl,
-              child: Sidenav(
-                selectedFunction:
-                    selectedIndex == 0 ? "إضافة موظف" : "عرض الموظفين",
-                onFunctionSelected: (function) {
-                  setState(() {
-                    selectedIndex = function == "إضافة موظف" ? 0 : 1;
-                  });
-                },
-                functions: const ["إضافة موظف", "عرض الموظفين"],
-                userName: widget.username ?? "غير معروف",
-                userEmail: widget.useremail ?? "غير معروف",
+              child: SideNav(
+                
               ),
             ),
           ),
@@ -65,10 +51,9 @@ class _EmployeesPageContentState extends State<EmployeesPageContent> {
                   useremail: widget.useremail ?? "",
                 ),
                 // صفحة عرض الموظفين
-                const ViewEmployeesPage(
+                const AddEmployeePage(
                   username: '',
                   useremail: '',
-                  selectedFunction: "عرض الموظفين",
                 ),
               ],
             ),
@@ -77,4 +62,4 @@ class _EmployeesPageContentState extends State<EmployeesPageContent> {
       ),
     );
   }
-}*/
+}

@@ -1,48 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; // Import BLoC
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_project/Core/commn_widgets/top_bar.dart';
 import 'package:new_project/Core/commn_widgets/sideNav.dart';
 import 'package:new_project/Core/networking/config/api_config.dart';
 import 'package:new_project/Core/theme/colors.dart';
 import 'package:new_project/features/children_managment/data/dataSources/child_remote_data_source_impl.dart';
+import 'package:new_project/features/children_managment/data/repositories/child_remote_data_source_impl.dart';
 import 'package:new_project/features/children_managment/domain/repositories/child_repository.dart';
+import 'package:new_project/features/children_managment/domain/usecase/get_child_details_usecase.dart';
 import 'package:new_project/features/children_managment/domain/usecase/get_children_usecase.dart';
-// Adjust path to your DisplayedChildModel
+import 'package:new_project/features/children_managment/presentation/pages/add_edit_child_page.dart';
+import 'package:new_project/features/children_managment/presentation/pages/child_vaccinations_page.dart';
 import '../../../../features/children_managment/data/model/displayed_child_model.dart';
-// Adjust path to your ChildCubit and ChildState
 import 'package:new_project/features/children_managment/logic/child_bloc/child_cubit.dart';
 import 'package:new_project/features/children_managment/logic/child_bloc/child_state.dart';
-// You might need to import GetChildrenUseCase and ChildRepository if you are instantiating ChildCubit directly here
-// For example, if you don't have a global DI setup for this page yet:
-import 'package:new_project/Core/networking/api_services.dart'; // For ApiServiceManual
-import 'package:new_project/features/children_managment/data/dataSources/child_data_source.dart';
-import 'package:new_project/features/children_managment/data/repositories/child_remote_data_source_impl.dart';
+import 'package:new_project/Core/networking/api_services.dart';
+import 'package:new_project/features/children_managment/data/dataSources/child_data_source.dart'; // Note: ChildRemoteDataSourceImpl is imported above, this might be for the interface
+// The following import seems to be for ChildRepositoryImpl, but the filename is unusual.
+// If ChildRepositoryImpl is in a file named 'child_repository_impl.dart', that would be more standard.
+// However, I will keep it as is, assuming it's correct in your project structure.
 import 'package:new_project/features/children_managment/domain/usecase/get_child.dart';
-import 'package:dio/dio.dart'; // If ApiServiceManual needs Dio
-import 'package:new_project/features/children_managment/data/repositories/child_remote_data_source_impl.dart'; // CORRECT IMPORT
+import 'package:dio/dio.dart';
 
 class ViewChildrenPage extends StatelessWidget {
-  // Changed to StatelessWidget for BlocProvider
   const ViewChildrenPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final dio = Dio();
-    // *** IMPORTANT: SET THE BASE URL FOR DIO ***
     dio.options.baseUrl = ApiConfig.baseUrl;
-    // You can also add interceptors here if needed (for auth tokens, logging, etc.)
-    // dio.interceptors.add(YourAuthInterceptor());
 
     final apiService = ApiServiceManual(dio: dio);
     final ChildRemoteDataSource childRemoteDataSource =
         ChildRemoteDataSourceImpl(apiService);
-    final ChildRepository childRepository =
-        ChildRepositoryImpl(childRemoteDataSource);
+    final ChildRepository childRepository = ChildRepositoryImpl(
+        childRemoteDataSource); // Ensure ChildRepositoryImpl is correctly imported
     final getChildrenUseCase = GetChildrenUseCase(childRepository);
+    final getChildDetailsUseCase = GetChildDetailsUseCase(childRepository);
 
     return BlocProvider(
-      create: (context) =>
-          ChildCubit(childRepository, getChildrenUseCase)..fetchChildrenList(),
+      create: (context) => ChildCubit(
+        childRepository,
+        getChildrenUseCase,
+        getChildDetailsUseCase,
+      )..fetchChildrenList(),
       child: const ViewChildrenPageContent(),
     );
   }
@@ -59,9 +60,8 @@ class ViewChildrenPageContent extends StatefulWidget {
 class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
   List<DisplayedChildModel> _allChildren = [];
   List<DisplayedChildModel> _paginatedChildren = [];
-  int _apiTotalChildrenCount = 0; // Total count from API
-  int _totalDisplayedChildren =
-      0; // Count of children after client-side filtering
+  int _apiTotalChildrenCount = 0;
+  int _totalDisplayedChildren = 0;
 
   int _currentPage = 1;
   int _itemsPerPage = 5;
@@ -70,14 +70,12 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
   final TextEditingController _searchController = TextEditingController();
   String _searchTerm = '';
 
-  bool _isLoading = true; // General loading state for initial fetch
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Fetch children when the widget is initialized
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
-
+    // WidgetsBinding.instance.addPostFrameCallback((_) {}); // Not strictly needed if using didChangeDependencies or BlocListener
     _searchController.addListener(() {
       setState(() {
         _searchTerm = _searchController.text;
@@ -89,10 +87,8 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_allChildren.isEmpty && _isLoading) {
-      // only fetch if not already loaded
-      context.read<ChildCubit>().fetchChildrenList();
-    }
+    // Initial fetch is handled by BlocProvider's create method.
+    // This could be used for subsequent fetches if needed, but careful with multiple calls.
   }
 
   @override
@@ -105,9 +101,8 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
       List<DisplayedChildModel> children, int totalCountFromApi) {
     setState(() {
       _allChildren = children;
-      _apiTotalChildrenCount =
-          totalCountFromApi; // Use this if API does pagination
-      _isLoading = false; // Stop global loading
+      _apiTotalChildrenCount = totalCountFromApi;
+      _isLoading = false;
       _applyFilterAndPagination();
     });
   }
@@ -129,13 +124,11 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
 
     _totalDisplayedChildren = filteredChildren.length;
 
-    if ((_currentPage - 1) * _itemsPerPage >= _totalDisplayedChildren) {
+    if ((_currentPage - 1) * _itemsPerPage >= _totalDisplayedChildren &&
+        _totalDisplayedChildren > 0) {
       _currentPage = (_totalDisplayedChildren / _itemsPerPage).ceil();
-      if (_currentPage == 0 && _totalDisplayedChildren == 0) {
-        _currentPage = 1;
-      } else if (_currentPage == 0 && _totalDisplayedChildren > 0)
-        // ignore: curly_braces_in_flow_control_structures
-        _currentPage = 1;
+    } else if (_totalDisplayedChildren == 0) {
+      _currentPage = 1;
     }
     if (_currentPage < 1) _currentPage = 1;
 
@@ -152,52 +145,61 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
     } else {
       _paginatedChildren = filteredChildren.sublist(startIndex, endIndex);
     }
-    setState(() {});
+    if (mounted) {
+      // Check if widget is still in the tree
+      setState(() {});
+    }
   }
 
-//للتنقل بين بيانات الأطفال في الجدول
   void _goToPage(int page) {
     final totalPages = (_totalDisplayedChildren / _itemsPerPage).ceil();
-    // Logic from previous response
+    if (totalPages == 0) {
+      // Handle case with no data or no pages
+      if (mounted) {
+        setState(() {
+          _currentPage = 1;
+          _applyFilterAndPagination();
+        });
+      }
+      return;
+    }
+
     if (page >= 1 && page <= totalPages) {
-      setState(() {
-        _currentPage = page;
-        _applyFilterAndPagination();
-      });
-    } else if (page < 1 && totalPages > 0) {
-      setState(() {
-        _currentPage = 1;
-        _applyFilterAndPagination();
-      });
-    } else if (page > totalPages && totalPages > 0) {
-      setState(() {
-        _currentPage = totalPages;
-        _applyFilterAndPagination();
-      });
-    } else if (totalPages == 0) {
-      setState(() {
-        _currentPage = 1;
-        _applyFilterAndPagination();
-      });
+      if (mounted) {
+        setState(() {
+          _currentPage = page;
+          _applyFilterAndPagination();
+        });
+      }
+    } else if (page < 1) {
+      if (mounted) {
+        setState(() {
+          _currentPage = 1;
+          _applyFilterAndPagination();
+        });
+      }
+    } else if (page > totalPages) {
+      if (mounted) {
+        setState(() {
+          _currentPage = totalPages;
+          _applyFilterAndPagination();
+        });
+      }
     }
   }
 
   Widget _buildPaginationControls() {
-    // Same as previous response
     final totalPages = (_totalDisplayedChildren / _itemsPerPage).ceil();
     if (totalPages <= 0 && _allChildren.isNotEmpty) {
-      return const SizedBox
-          .shrink(); // No controls if no pages, but show if data exists
+      return const SizedBox.shrink();
     }
     if (_allChildren.isEmpty && !_isLoading) {
-      return const SizedBox.shrink(); // No controls if no data and not loading
+      return const SizedBox.shrink();
     }
 
     List<Widget> pageNumberWidgets = [];
     const int maxVisiblePageNumbers = 5;
-
-    int startPage;
-    int endPage;
+    int startPage, endPage;
 
     if (totalPages <= maxVisiblePageNumbers) {
       startPage = 1;
@@ -213,14 +215,18 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
       } else {
         startPage = _currentPage - (maxVisiblePageNumbers / 2).floor();
         endPage = _currentPage + (maxVisiblePageNumbers / 2).floor();
-        if (maxVisiblePageNumbers % 2 == 0) endPage--;
+        if (maxVisiblePageNumbers % 2 == 0 && endPage < totalPages)
+          endPage--; // Adjust for even numbers
       }
     }
     if (startPage < 1) startPage = 1;
     if (endPage > totalPages) endPage = totalPages;
-    if (endPage < startPage && totalPages > 0) {
-      endPage = startPage - 1;
-    } else if (totalPages == 0) endPage = 0;
+    if (endPage < startPage && totalPages > 0)
+      endPage = startPage; // Avoid negative range
+    else if (totalPages == 0) {
+      startPage = 1;
+      endPage = 0;
+    }
 
     for (int i = startPage; i <= endPage; i++) {
       pageNumberWidgets.add(
@@ -296,11 +302,13 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
               }).toList(),
               onChanged: (int? newValue) {
                 if (newValue != null) {
-                  setState(() {
-                    _itemsPerPage = newValue;
-                    _currentPage = 1;
-                    _applyFilterAndPagination();
-                  });
+                  if (mounted) {
+                    setState(() {
+                      _itemsPerPage = newValue;
+                      _currentPage = 1;
+                      _applyFilterAndPagination();
+                    });
+                  }
                 }
               },
             ),
@@ -309,6 +317,44 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
         const SizedBox(width: 5),
         const Text('الصفوف', style: TextStyle(fontSize: 14)),
       ],
+    );
+  }
+
+  // --- Helper function to build navigable cells ---
+  DataCell _buildNavigableCell(
+      BuildContext context, String text, String childId) {
+    return DataCell(
+      InkWell(
+        onTap: () {
+          // print("DataCell: Navigating to edit child with ID: $childId");
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => AddEditChildPage(
+          //       childIdToEdit: childId,
+          //     ),
+          //   ),
+          // ).then((wasSuccessful) {
+          //   // print("Returned from AddEditChildPage (EDIT). Success: $wasSuccessful");
+          //   if (wasSuccessful == true) {
+          //     context.read<ChildCubit>().fetchChildrenList();
+          //   }
+          // });
+        },
+        child: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: Padding(
+              // Add padding to mimic default DataCell text padding
+              padding: const EdgeInsets.symmetric(
+                  vertical: 0.0, horizontal: 0.0), // Adjust as needed
+              child: Text(text, overflow: TextOverflow.ellipsis),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -327,12 +373,10 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
         body: Row(children: [
           SizedBox(
             width: 250,
-            //القائمة الجانبية (حساب الموظف)
             child: SideNav(
               userName: 'مرحباً محمد صالح',
               userRole: 'muhammed@gmail.com',
               menuItems: [
-                // Example, adapt to your SideNav's capabilities
                 {
                   'title': 'إضافة موظف',
                   'icon': Icons.person_add_alt_1_outlined,
@@ -364,35 +408,34 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 10.0),
               child: BlocConsumer<ChildCubit, ChildState>(
-                // Use BlocConsumer
                 listener: (context, state) {
                   if (state is ChildrenListLoaded) {
                     _processLoadedChildren(state.childrenResponse.data,
                         state.childrenResponse.count);
                   } else if (state is ChildrenListError) {
-                    setState(() {
-                      _isLoading = false; // Stop loading on error
-                    });
+                    if (mounted) {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                    }
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                           content:
                               Text('خطأ في تحميل البيانات: ${state.message}')),
                     );
                   } else if (state is ChildrenListLoading) {
-                    setState(() {
-                      _isLoading = true; // Start global loading
-                    });
+                    if (mounted) {
+                      setState(() {
+                        _isLoading = true;
+                      });
+                    }
                   }
                 },
                 builder: (context, state) {
-                  // Main column for content
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Top row: Add Child Button and Search Bar
-
                       Row(
-                        // ... (same as previous response)
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
@@ -401,7 +444,6 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
                                 fontSize: 22, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(width: 20),
-                          //مربع البحث
                           Expanded(
                             child: SizedBox(
                               height: 40,
@@ -434,14 +476,25 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
                             ),
                           ),
                           const SizedBox(width: 15),
-
-                          //زر الأضافة
                           ElevatedButton.icon(
                             icon: const Icon(Icons.add, color: Colors.white),
                             label: const Text('إضافة طفل جديد',
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 15)),
-                            onPressed: () {/* أذهب الى واجهة الأضافة */},
+                            onPressed: () {
+                              // print("Attempting to navigate to AddEditChildPage (for NEW child)...");
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => const AddEditChildPage(), // No childIdToEdit
+                              //   ),
+                              // ).then((wasSuccessful) {
+                              //   // print("Returned from AddEditChildPage (NEW). Success: $wasSuccessful");
+                              //   if (wasSuccessful == true) {
+                              //     context.read<ChildCubit>().fetchChildrenList();
+                              //   }
+                              // });
+                            },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primaryColor,
                                 padding: const EdgeInsets.symmetric(
@@ -452,14 +505,10 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
                         ],
                       ),
                       const SizedBox(height: 20),
-
-                      //نص لعرض عدد الأطفال
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            // Use _totalDisplayedChildren for count after client-side filter,
-                            // or _apiTotalChildrenCount if API handles filtering.
                             'عدد الأطفال: $_totalDisplayedChildren',
                             style: const TextStyle(
                                 fontSize: 16,
@@ -469,23 +518,17 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
                         ],
                       ),
                       const SizedBox(height: 15),
-
-                      // Children Table or Loading/Error
-                      //جدول عرض بيانات الأطفال
                       Expanded(
-                        child: _isLoading &&
-                                _allChildren
-                                    .isEmpty // Show loading only if data isn't there yet
+                        child: _isLoading && _allChildren.isEmpty
                             ? const Center(child: CircularProgressIndicator())
                             : state is ChildrenListError && _allChildren.isEmpty
                                 ? Center(
                                     child: Text(
-                                        'حدث خطأ: ${(state).message} \n الرجاء المحاولة مرة أخرى'))
+                                        'حدث خطأ: ${state.message} \n الرجاء المحاولة مرة أخرى'))
                                 : _allChildren.isEmpty && !_isLoading
                                     ? const Center(
                                         child: Text('لا يوجد أطفال لعرضهم.'))
                                     : Container(
-                                        // Table Container
                                         decoration: BoxDecoration(
                                           border: Border.all(
                                               color: Colors.grey[300]!),
@@ -500,7 +543,6 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
                                             child: SingleChildScrollView(
                                               scrollDirection: Axis.horizontal,
                                               child: DataTable(
-                                                // ... DataTable columns and rows from previous response ...
                                                 headingRowColor:
                                                     MaterialStateColor
                                                         .resolveWith((states) =>
@@ -510,13 +552,16 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
                                                         fontWeight:
                                                             FontWeight.bold,
                                                         color: Colors.black87,
-                                                        fontSize: 13),
+                                                        fontSize: 10),
                                                 dataTextStyle: const TextStyle(
-                                                    fontSize: 13,
+                                                    fontSize: 10,
                                                     color: Colors.black87),
                                                 dataRowMinHeight: 48,
                                                 dataRowMaxHeight: 52,
-                                                columnSpacing: 20,
+                                                columnSpacing: 15,
+                                                // Remove showCheckboxColumn: false if you don't want checkboxes at all
+                                                // This is implicitly false if onSelectChanged is null for all rows.
+                                                // showCheckboxColumn: false, // <--- explicit way to hide checkbox column header if DataRow.onSelectChanged is null
                                                 columns: const [
                                                   DataColumn(
                                                       label: Text(
@@ -546,58 +591,112 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
                                                       label: Text('الجنسية')),
                                                   DataColumn(
                                                       label: Text(
-                                                          'رقم شهادة الميلاد')),
+                                                          "رقم شهادة الميلاد")),
                                                   DataColumn(
-                                                      label: Text(
-                                                          'نوع شهادة الميلاد')),
+                                                      label:
+                                                          Text('نوع الشهادة')),
                                                   DataColumn(
                                                       label: Text(
                                                           'بلد اصدار الشهادة')),
                                                   DataColumn(
-                                                      label: Text('إجراءات')),
+                                                      label: Text('التطعيمات')),
                                                 ],
                                                 rows: _paginatedChildren
                                                     .map((child) {
-                                                  return DataRow(cells: [
-                                                    DataCell(Text(child
-                                                        .vaccineCardNumber)),
-                                                    DataCell(
-                                                        Text(child.firstName)),
-                                                    DataCell(
-                                                        Text(child.lastName)),
-                                                    DataCell(
-                                                        Text(child.gender)),
-                                                    DataCell(
-                                                        Text(child.fatherName)),
-                                                    DataCell(Text(
-                                                        child.fatherEmail)),
-                                                    DataCell(
-                                                        Text(child.motherName)),
-                                                    DataCell(Text(
-                                                        child.motherEmail)),
-                                                    DataCell(Text(
-                                                        child.hasSpecialCase)),
-                                                    DataCell(Text(
-                                                        child.nationalityName)),
-                                                    DataCell(Text(child
-                                                        .birthCertificateNumber)),
-                                                    DataCell(Text(child
-                                                        .birthCertificateType)),
-                                                    DataCell(Text(
-                                                        child.countryName)),
-                                                    DataCell(IconButton(
-                                                      icon: const Icon(
-                                                          Icons
-                                                              .edit_note_outlined,
-                                                          color: AppColors
-                                                              .textColor2,
-                                                          size: 22),
-                                                      tooltip: "تعديل/عرض",
-                                                      onPressed: () {
-                                                        /* TODO: Handle edit/view */
-                                                      },
-                                                    )),
-                                                  ]);
+                                                  final String childIdString =
+                                                      child.childId.toString();
+                                                  return DataRow(
+                                                    // onSelectChanged: null, // <--- Ensures no checkbox is shown for the row
+                                                    // No onSelectChanged means no checkbox for this row
+                                                    cells: [
+                                                      _buildNavigableCell(
+                                                          context,
+                                                          child
+                                                              .vaccineCardNumber,
+                                                          childIdString),
+                                                      _buildNavigableCell(
+                                                          context,
+                                                          child.firstName,
+                                                          childIdString),
+                                                      _buildNavigableCell(
+                                                          context,
+                                                          child.lastName,
+                                                          childIdString),
+                                                      _buildNavigableCell(
+                                                          context,
+                                                          child.gender,
+                                                          childIdString),
+                                                      _buildNavigableCell(
+                                                          context,
+                                                          child.fatherName,
+                                                          childIdString),
+                                                      _buildNavigableCell(
+                                                          context,
+                                                          child.fatherEmail,
+                                                          childIdString),
+                                                      _buildNavigableCell(
+                                                          context,
+                                                          child.motherName,
+                                                          childIdString),
+                                                      _buildNavigableCell(
+                                                          context,
+                                                          child.motherEmail,
+                                                          childIdString),
+                                                      _buildNavigableCell(
+                                                          context,
+                                                          child.hasSpecialCase
+                                                              .toString(),
+                                                          childIdString),
+                                                      _buildNavigableCell(
+                                                          context,
+                                                          child.nationalityName,
+                                                          childIdString),
+                                                      _buildNavigableCell(
+                                                          context,
+                                                          child
+                                                              .birthCertificateNumber,
+                                                          childIdString),
+                                                      _buildNavigableCell(
+                                                          context,
+                                                          child
+                                                              .birthCertificateType,
+                                                          childIdString),
+                                                      _buildNavigableCell(
+                                                          context,
+                                                          child.countryName,
+                                                          childIdString),
+                                                      DataCell(
+                                                        // Cell for actions
+                                                        IconButton(
+                                                          // Icon suggestion: Icons.vaccines_outlined or Icons.medical_services_outlined
+                                                          icon: const Icon(
+                                                            Icons
+                                                                .vaccines_outlined, // <--- Icon for vaccinations
+                                                            color: AppColors
+                                                                .primaryColor,
+                                                            size: 22,
+                                                          ),
+                                                          tooltip:
+                                                              "عرض التطعيمات", // <--- Updated tooltip
+                                                          onPressed: () {
+                                                            print(
+                                                                "IconButton: Navigating to VACCINATIONS page for child ID: $childIdString");
+                                                            // TODO: Implement navigation to the child's vaccinations page
+                                                            // Example:
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (context) =>
+                                                                    ChildVaccinationsPage(
+                                                                        childId:
+                                                                            childIdString),
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
                                                 }).toList(),
                                               ),
                                             ),
@@ -606,7 +705,6 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
                                       ),
                       ),
                       const SizedBox(height: 16),
-                      // Pagination Controls
                       if (!_isLoading && _allChildren.isNotEmpty)
                         _buildPaginationControls(),
                     ],

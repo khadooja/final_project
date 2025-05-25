@@ -1,5 +1,7 @@
 import 'package:new_project/Core/di/get_it.dart';
 import 'package:new_project/Core/networking/api_services.dart';
+import 'package:dio/dio.dart';
+import 'package:new_project/Core/networking/dio_factory.dart';
 
 // DataSources
 import 'package:new_project/features/family_management/data/dataSources/fatherRemoteDataSource.dart';
@@ -21,16 +23,17 @@ import 'package:new_project/features/family_management/domain/usecases/updateFat
 import 'package:new_project/features/family_management/domain/usecases/addMotherUseCase.dart';
 import 'package:new_project/features/family_management/domain/usecases/updateMotherUsecase.dart';
 
-
 // Cubits
 import 'package:new_project/features/family_management/logic/father_cubit.dart';
-import 'package:new_project/features/family_management/logic/mother_cubit.dart';
 import 'package:new_project/features/personal_management/domain/repositories/personal_repo.dart';
 
 Future<void> setupFamilyServiceLocator() async {
-  if (!di.isRegistered<ApiServiceManual>()) {
-    throw Exception('ApiServiceManual must be registered first!');
-  }
+  final dio = await DioFactory.getDio();
+    di.registerSingleton<Dio>(dio);
+
+    di.registerLazySingleton<ApiServiceManual>(
+      () => ApiServiceManual(dio: dio),
+    );
 
   // ========== DATASOURCES ==========
   di.registerLazySingleton<FatherRemoteDataSource>(

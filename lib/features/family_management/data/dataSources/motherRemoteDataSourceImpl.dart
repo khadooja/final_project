@@ -21,13 +21,14 @@ class MotherRemoteDataSourceImpl extends PersonRemoteDataSourceImpl
   @override
   Future<ApiResult<MotherModel>> updateMother(String id, MotherModel model) {
     return callApi(() async {
-      final response = await _api.updatePerson(
+      final person = await _api.updatePerson(
         PersonType.father,
         id,
         model.toJson(),
       );
 
-      return MotherModel.fromJson(response.toJson());
+      final json = person.toJson();
+      return MotherModel.fromJson(json);
     });
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_project/Core/helpers/shared_pref_helper.dart';
+import 'package:new_project/Core/helpers/dropdown_helper/dropdown_storage_helper.dart';
 import 'package:new_project/features/guardian_management.dart/domain/repositories/child_guardian_repository.dart';
 import 'package:new_project/features/guardian_management.dart/logic/child_guardian_state.dart';
 
@@ -25,7 +25,7 @@ class ChildGuardianCubit extends Cubit<ChildGuardianState> {
     emit(ChildGuardianLoadingRelationships());
 
     // تحقق من التخزين المحلي أولاً
-    final cached = await StorageHelper.getRelationshipTypes();
+    final cached = await DropdownStorageHelper.getRelationshipTypes();
     if (cached != null && cached.isNotEmpty) {
       emit(ChildGuardianLoadedRelationships(cached));
       return;
@@ -36,7 +36,7 @@ class ChildGuardianCubit extends Cubit<ChildGuardianState> {
     result.when(
       success: (relationships) async {
         // خزنها محليًا بعد التحميل
-        await StorageHelper.setRelationshipTypes(relationships);
+        await DropdownStorageHelper.setRelationshipTypes(relationships);
         emit(ChildGuardianLoadedRelationships(relationships));
       },
       failure: (error) => emit(
@@ -47,7 +47,7 @@ class ChildGuardianCubit extends Cubit<ChildGuardianState> {
 
   Future<void> clearRelationshipTypes() async {
     emit(ChildGuardianLoadingRelationships());
-    await StorageHelper.clearRelationshipTypes();
+    await DropdownStorageHelper.clearRelationshipTypes();
     emit(ChildGuardianInitial());
   }
 }
