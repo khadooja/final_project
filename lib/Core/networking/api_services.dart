@@ -46,14 +46,46 @@ class ApiServiceManual {
   }
 
   // Father
-  Future<FatherModel> addFather(FatherModel fatherData) async {
+  /*Future<FatherModel> addFather(FatherModel fatherData) async {
+  try {
+    // 1. إعداد الـ headers مع Center-Id
+    final options = Options(headers: {
+      'Center-Id': '1', // أو القيمة الصحيحة لمركزك
+      'Authorization': 'Bearer ${_dio.options.headers['Authorization']}',
+      'Content-Type': 'application/json',
+    });
+
+    // 2. إرسال الطلب مع الـ headers
     final response = await _dio.post(
       ApiEndpoints.parent.addFather,
       data: fatherData.toJson(),
+      options: options, // إضافة الـ options هنا
+    );
+
+    // 3. معالجة الاستجابة
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return FatherModel.fromJson(response.data);
+    } else {
+      throw Exception('فشل في إضافة الأب: ${response.statusCode}');
+    }
+  } on DioException catch (e) {
+    // 4. معالجة الأخطاء
+    if (e.response != null) {
+      throw Exception('خطأ من الخادم: ${e.response?.data}');
+    } else {
+      throw Exception('خطأ في الاتصال: ${e.message}');
+    }
+  }
+}*/
+Future<FatherModel> addFather(FatherModel fatherData) async {
+    final response = await _dio.post(
+      ApiEndpoints.parent.addFather,
+      data: fatherData.toJson(),
+      
     );
     return FatherModel.fromJson(response.data);
-  }
-
+ 
+}
   // Mother
   Future<MotherModel> addMother(MotherModel motherData) async {
     final response = await _dio.post(
@@ -97,13 +129,11 @@ class ApiServiceManual {
     return NationalitiesAndCitiesModel.fromJson(response.data);
   }
 
-  Future<List<String>> getAreasByCity(PersonType type, String cityName) async {
-    final response = await _dio.get(
-      '/${type.endpoint}/areas',
-      queryParameters: {'city_name': cityName},
-    );
-    return (response.data as List).map((item) => item.toString()).toList();
-  }
+
+  Future<List<Map<String, dynamic>>> getAreasByCity(PersonType type, String cityName) async {
+  final response = await _dio.get('${ApiEndpoints.personal.areasByCity}/$cityName');
+  return (response.data as List).cast<Map<String, dynamic>>(); // التحويل الصريح
+}
 
   Future<void> toggleActivationPerson(
       PersonType type, String id, Map<String, dynamic> data) async {
@@ -195,12 +225,7 @@ class ApiServiceManual {
     );
   }
 
-  Future<CommonDropdownsChidModel> getNationalitiesAndCitiesUseCase(
-      PersonType type) async {
-    final response =
-        await _dio.get(ApiEndpoints.personal.nationalitiesAndCities);
-    return CommonDropdownsChidModel.fromJson(response.data);
-  }
+
 
   // Future<Map<String, dynamic>> post(
   //     String path, Map<String, dynamic> data) async {
@@ -385,5 +410,14 @@ class ApiServiceManual {
   Future<Map<String, dynamic>> getHealthEditData(int id) async {
     final res = await _dio.get('${ApiConfig.baseUrl}healthCenter/$id/edit');
     return res.data;
+  }
+
+
+  Future<Map<String, dynamic>> fetchReportData({int? centerId}) async {
+    final response = await _dio.get(
+      '${ApiConfig.baseUrl}Reports',
+      queryParameters: centerId != null ? {'healthCenter': centerId} : null,
+    );
+    return response.data;
   }
 }

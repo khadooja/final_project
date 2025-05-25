@@ -1,11 +1,9 @@
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:new_project/Core/commn_widgets/header.dart';
-import 'package:new_project/Core/commn_widgets/personalCheckWidget.dart';
-import 'package:new_project/Core/commn_widgets/sideNav.dart';
+import 'package:new_project/Core/commn_widgets/side_nav/side_nav.dart';
+import 'package:new_project/Core/commn_widgets/top_bar.dart';
 import 'package:new_project/features/staff_management/application/bloc/admin_bloc.dart';
 import 'package:new_project/features/staff_management/data/model/employee_model.dart';
-import 'package:new_project/features/staff_management/presentation/pages/view_employees_page.dart';
 import 'package:new_project/features/staff_management/presentation/widget/add_employee_form.dart';
 
 class AddEmployeePage extends StatefulWidget {
@@ -45,21 +43,18 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       backgroundColor: Colors.white,
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(60.0),
-        child: TopBar(),
+        child: TopBar(
+          title: 'إضافة موظف',
+        ),
       ),
       body: Row(
         children: [
           // Sidebar
-          SizedBox(
+          const SizedBox(
             width: 250,
             child: Directionality(
               textDirection: TextDirection.rtl,
-              child: Sidenav(
-                onFunctionSelected: _handleFunctionSelectionWrapper,
-                functions: const ["إضافة موظف", "عرض الموظفين"],
-                selectedFunction: "إضافة موظف",
-                userName: widget.username,
-                userEmail: widget.useremail,
+              child: SideNav(
               ),
             ),
           ),
@@ -86,26 +81,18 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   Widget _buildSearchSection() {
     return EmployeeSearchScreen(
       idController: idController,
-      onPersonFound: (employee) {
+      onPersonFound: (EmployeeModel employee) {
         setState(() {
           employeeData = employee;
-          _isLoading = false;
         });
       },
       onPersonNotFound: () {
         setState(() {
           employeeData = null;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('لم يتم العثور على الموظف')),
-          );
         });
       },
-      buildPersonnelForm: () {
-        return const EmployeeRegistrationForm();
-      },
-      buildFullForm: () {
-        return const EmployeeRegistrationForm();
-      },
+      buildPersonnelForm: () => const SizedBox.shrink(),
+      buildFullForm: () => const SizedBox.shrink(),
     );
   }
 
@@ -149,11 +136,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => ViewEmployeesPage(
-            username: widget.username,
-            useremail: widget.useremail,
-            selectedFunction: function,
-          ),
+          builder: (context) => const EmployeeRegistrationForm(), // استبدل هذا بالصفحة المناسبة لعرض الموظفين
         ),
       );
     }
@@ -163,4 +146,46 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     _handleFunctionSelection(context, function);
   }
 }
-*/
+
+class EmployeeSearchScreen extends StatelessWidget {
+  final TextEditingController idController;
+  final Function(EmployeeModel) onPersonFound;
+  final Function() onPersonNotFound;
+  final Widget Function() buildPersonnelForm;
+  final Widget Function() buildFullForm;
+
+  const EmployeeSearchScreen({
+    super.key,
+    required this.idController,
+    required this.onPersonFound,
+    required this.onPersonNotFound,
+    required this.buildPersonnelForm,
+    required this.buildFullForm,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        TextField(
+          controller: idController,
+          decoration: const InputDecoration(
+            labelText: 'البحث برقم الهوية',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(height: 8),
+        ElevatedButton(
+          onPressed: () {
+            // هنا يمكنك إضافة منطق البحث عن الموظف
+            // إذا تم العثور على الموظف، استدعِ onPersonFound
+            // وإذا لم يتم العثور عليه، استدعِ onPersonNotFound
+          },
+          child: const Text('بحث'),
+        ),
+      ],
+    );
+  }
+}
+

@@ -145,8 +145,10 @@ class ChildRemoteDataSourceImpl extends PersonRemoteDataSourceImpl
   Future<ApiResult<CommonDropdownsChidModel>> getNationalitiesAndCitiesandCases(
       PersonType type) async {
     try {
-      final result = await _apiService.getNationalitiesAndCitiesUseCase(type);
-      return ApiResult.success(result);
+      final result = await _apiService.getRelationshipTypes();
+      //final result = await _apiService.getNationalitiesAndCitiesUseCase(type);
+      return ApiResult.success(
+          CommonDropdownsChidModel.fromJson(result as Map<String, dynamic>));
     } catch (e) {
       return ApiResult.failure(ErrorHandler.handle(e));
     }

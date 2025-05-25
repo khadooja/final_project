@@ -1,9 +1,8 @@
-/*import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_project/Core/commn_widgets/custom_text_field.dart';
 import 'package:new_project/features/personal_management/data/models/person_model.dart';
-import 'package:new_project/Core/networking/locationService.dart';
 import 'package:new_project/features/staff_management/application/bloc/admin_bloc.dart';
 import 'package:new_project/features/staff_management/data/model/employee_model.dart';
 
@@ -30,6 +29,8 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   late TextEditingController _idNumberController;
   late String? _selectedNationalityId;
   String? _selectedCity;
+  String? _selectedCityId;
+  String? _selectedNationality;
   String? _selectedArea;
   String? _selectedStatus;
   final List<String> nationalities = ["سعودي", "يمني", "مصري", "سوري"];
@@ -42,18 +43,18 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
     super.initState();
     _initializeControllers();
     _selectedStatus = widget.employee.isActive ? "نشط" : "غير نشط";
-    _loadCities();
+    //_loadCities();
   }
 
   void _initializeControllers() {
     _firstnameController =
         TextEditingController(text: widget.employee.personData?.firstName);
     _lastnameController =
-        TextEditingController(text: widget.employee.personData?.lastName);
+        TextEditingController(text: widget.employee.personData?.last_name);
     _emailController =
         TextEditingController(text: widget.employee.personData?.email);
     _phoneNumberController =
-        TextEditingController(text: widget.employee.personData?.phoneNumber);
+        TextEditingController(text: widget.employee.personData?.phone_number);
     _employmentDateController = TextEditingController(
       text: _formatDate(widget.employee.employmentDate),
     );
@@ -67,44 +68,15 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
         TextEditingController(text: widget.employee.personData?.gender);
     _idNumberController = TextEditingController(
         text: widget.employee.personData?.identityCardNumber);
+    _selectedNationalityId = widget.employee.personData?.nationalities_id
+        ?.toString(); // Assuming this
+    _selectedCity = widget.employee.personData?.location.toString();
   }
 
   String _formatDate(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
-  Future<void> _loadCities() async {
-    try {
-      final locations = await LocationService(dio: Dio()).fetchAllLocations();
-      setState(() {
-        cities = locations.cast<String>();
-        if (cities.isNotEmpty) {
-          _selectedCity = cities.first;
-          _loadAreas(_selectedCity!);
-        }
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل تحميل المدن: ${e.toString()}')),
-      );
-    }
-  }
-
-  Future<void> _loadAreas(String city) async {
-    try {
-      final areasList = await LocationService(dio: Dio()).getAreasByCity(city);
-      setState(() {
-        areas = areasList.cast<String>();
-        if (areas.isNotEmpty) {
-          _selectedArea = areas.first;
-        }
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل تحميل الأحياء: ${e.toString()}')),
-      );
-    }
-  }
 
   void _updateEmployee() {
     if (_formKey.currentState!.validate()) {
@@ -115,18 +87,17 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
         isActive: _selectedStatus == "نشط",
         healthCenterId: int.parse(_centerController.text),
         personData: PersonModel(
-          id: int.tryParse(widget.employee.personData?.id.toString() ?? '0') ??
-              0,
-          firstName: _firstnameController.text,
-          lastName: _lastnameController.text,
+          id: widget.employee.personData?.id,
+          first_name: _firstnameController.text,
+          last_name: _lastnameController.text,
           email: _emailController.text,
-          birthDate: DateTime.parse(
-              _birthDateController.text), // Use the new birthDate parameter
-          phoneNumber: _phoneNumberController.text,
-          locationId: int.tryParse(_locationController.text) ?? 0,
+          phone_number: _phoneNumberController.text,
+          identity_card_number: _idNumberController.text,
           gender: _genderController.text,
-          identityCardNumber: _idNumberController.text,
-          nationalitiesId: int.tryParse(_selectedNationalityId ?? '0') ?? 0,
+          nationalities_id: int.tryParse(_selectedNationalityId ?? '') ?? 0,
+          location_id:int.parse(_centerController.text), // Assuming this is the city ID
+          isDeceased: false, // Assuming this is not applicable for employees
+          birthDate: DateTime.parse(_birthDateController.text),
         ),
       );
 
@@ -233,4 +204,4 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
       ),
     );
   }
-}*/
+}

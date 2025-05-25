@@ -1,8 +1,8 @@
+import 'package:new_project/features/personal_management/data/models/SimpleNationalityModel.dart';
 import 'package:new_project/features/personal_management/data/models/city_model.dart';
-import 'package:new_project/features/personal_management/data/models/nationality_model.dart';
 
 class NationalitiesAndCitiesModel {
-  final List<NationalityModel> nationalities;
+  final List<SimpleNationalityModel> nationalities;
   final List<CityModel> cities;
 
   NationalitiesAndCitiesModel({
@@ -12,9 +12,10 @@ class NationalitiesAndCitiesModel {
 
   // التحويل من JSON إلى Model (يدوي)
   factory NationalitiesAndCitiesModel.fromJson(Map<String, dynamic> json) {
+    print('JSON NationalitiesAndCitiesModel..............................: $json');
     return NationalitiesAndCitiesModel(
       nationalities: (json['nationalities'] as List)
-          .map((item) => NationalityModel.fromJson(item))
+          .map((item) => SimpleNationalityModel.fromJson(item))
           .toList(),
       cities: (json['cities'] as List)
           .map((item) => CityModel.fromJson(item))

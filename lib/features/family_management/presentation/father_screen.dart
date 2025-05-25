@@ -32,8 +32,10 @@ class _FatherScreenState extends State<FatherScreen> {
   void initState() {
     super.initState();
     _loadUserData();
-    _fatherCubit.loadDropdowns();
+   // _personCubit.getNationalitiesAndCities(PersonType.father);
   }
+
+
 
   Future<void> _loadUserData() async {
     userName = await StorageHelper.getData(
@@ -112,6 +114,8 @@ void handleSearchResult(SearchPersonResponse? person) {
   setState(() {
     _searchResult = person;
     showForm = true;
+    
+    //_personCubit.getNationalitiesAndCities(PersonType.father);
   });
 }
 
@@ -120,10 +124,11 @@ void handleSearchResult(SearchPersonResponse? person) {
   return AnimatedSwitcher(
     duration: const Duration(milliseconds: 300),
     child: showForm
-        ? FatherFormSection(
-            key: const ValueKey('form'),
-            searchResult: _searchResult,
-          )
+        ?  FatherFormSection(
+    key: const ValueKey('form'),
+    searchResult: _searchResult, // تمرير النتيجة هنا
+  )
+
         : const Center(
             key: ValueKey("empty"),
             child: Text(
@@ -133,6 +138,5 @@ void handleSearchResult(SearchPersonResponse? person) {
           ),
   );
 }
-
 
 }

@@ -1,6 +1,6 @@
+import 'package:new_project/features/personal_management/data/models/SimpleNationalityModel.dart';
 import 'package:new_project/features/personal_management/data/models/area_model.dart';
 import 'package:new_project/features/personal_management/data/models/city_model.dart';
-import 'package:new_project/features/personal_management/data/models/nationality_model.dart';
 import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 
 abstract class PersonState {}
@@ -20,7 +20,7 @@ class PersonalLoading extends PersonState {}
 class PersonToggleActivationSuccess extends PersonState {}
 
 class PersonNationalitiesAndCitiesLoaded extends PersonState {
-  final List<NationalityModel> nationalities;
+  final List<SimpleNationalityModel> nationalities;
   final List<CityModel> cities;
 
   PersonNationalitiesAndCitiesLoaded(this.nationalities, this.cities);

@@ -1,4 +1,4 @@
-/*import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_project/features/guardian_management.dart/data/model/gurdian_model.dart';
 import 'package:new_project/features/guardian_management.dart/data/model/relationship_type_model.dart';
@@ -72,7 +72,7 @@ class _GuardianScreenState extends State<GuardianScreen> {
   }
 
   void _onSearch(String identity) {
-    context.read<PersonCubit>().searchPersonById(PersonType.guardian, identity);
+    context.read<PersonCubit>().searchPersonById(PersonType.guardian as String, identity as PersonType);
   }
 
   void _onSubmit() {
@@ -99,28 +99,15 @@ class _GuardianScreenState extends State<GuardianScreen> {
         padding: const EdgeInsets.all(16),
         child: MultiBlocListener(
           listeners: [
-            BlocListener<PersonCubit, PersonState>(
-              listener: (context, state) {
-                if (state is GuardianFound) {
-                  setState(() {
-                    _guardian = state.guardian;
-                  });
-                } else if (state is GuardianNotFound) {
-                  setState(() {
-                    _guardian = GurdianModel.empty();
-                  });
-                } else if (state is PersonNationalitiesAndCitiesLoaded) {
-                  setState(() {
-                    _nationalities = state.nationalities;
-                    _cities = state.cities;
-                  });
-                } else if (state is PersonAreasLoaded) {
-                  setState(() {
-                    _areas = state.areas;
-                  });
-                }
-              },
-            ),
+           BlocListener<PersonCubit, PersonState>(
+  listener: (context, state) {
+    if (state is GuardianNotFound) {
+      setState(() {
+        _guardian = GurdianModel.empty();
+      });
+    } 
+  },
+),
             BlocListener<ChildGuardianCubit, ChildGuardianState>(
               listener: (context, state) {
                 if (state is ChildGuardianLoadedRelationships) {
@@ -156,12 +143,6 @@ class _GuardianScreenState extends State<GuardianScreen> {
                 if (_showForm) ...[
                   const SizedBox(height: 20),
                   GuardianForm(
-                    formKey: _formKey,
-                    guardian: _guardian,
-                    cities: _cities,
-                    nationalities: _nationalities,
-                    areas: _areas,
-                    onCityChanged: _onCityChanged,
                     firstNameController: _firstNameController,
                     lastNameController: _lastNameController,
                     identityNumberController: _identityNumberController,
@@ -171,18 +152,21 @@ class _GuardianScreenState extends State<GuardianScreen> {
                     childCountController: _childCountController,
                     endDateController: _endDateController,
                     selectedGender: _selectedGender,
+                    selectedLocationId: int.parse(_selectedLocationId ?? '0'),
+                    selectedNationalityId:int.tryParse(_selectedNationalityId ?? '') ,
+                    nationalities: const [],
                     onGenderChanged: (gender) {
                       setState(() {
                         _selectedGender = gender;
                       });
                     },
-                    selectedNationalityId: _selectedNationalityId,
+                    //selectedNationalityId: _selectedNationalityId,
                     onNationalityChanged: (id) {
                       setState(() {
                         _selectedNationalityId = id;
                       });
                     },
-                    selectedLocationId: _selectedLocationId,
+                    //selectedLocationId: _selectedLocationId,
                     locations: _locations,
                     onLocationChanged: (id) {
                       setState(() {
@@ -206,16 +190,8 @@ class _GuardianScreenState extends State<GuardianScreen> {
                   const SizedBox(height: 20),
                   GuardianRelationshipSection(
                     relationshipTypes: _relationshipTypes,
-                    selectedTypeId: _relationshipTypeId,
-                    onChanged: (id) => setState(() => _relationshipTypeId = id),
-                    startDate: _startDate,
-                    endDate: _endDate,
-                    onStartDateChanged: (date) => setState(() => _startDate = date),
-                    onEndDateChanged: (date) => setState(() => _endDate = date),
-                    isActive: _isActive,
-                    onActiveChanged: (val) => setState(() => _isActive = val ?? true),
-                    proofDocController: _proofController,
-                    noteController: _noteController,
+                    selectedTypeId: int.tryParse(_relationshipTypeId ?? ''), // Try to parse the string to an integer
+                    onChanged: (id) => setState(() => _relationshipTypeId = id?.toString()),
                   ),
                   const SizedBox(height: 30),
                   BlocBuilder<ChildGuardianCubit, ChildGuardianState>(
@@ -236,4 +212,3 @@ class _GuardianScreenState extends State<GuardianScreen> {
     );
   }
 }
-*/

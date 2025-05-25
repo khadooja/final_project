@@ -1,12 +1,12 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'location_model.dart';
+import 'package:new_project/features/personal_management/data/models/area_model.dart';
 import 'nationality_model.dart';
 
-part 'person_model.g.dart';
+//part 'person_model.g.dart';
 
 @JsonSerializable()
 class PersonModel {
-  final int id;
+  final int? id;
   final String first_name;
   final String last_name;
   final String gender;
@@ -20,7 +20,7 @@ class PersonModel {
    final DateTime? birthDate;
   
   @JsonKey(name: 'location')
-  final Location? location;
+  final AreaModel? location;
   
   @JsonKey(name: 'nationality')
   final NationalityModel? nationality;
@@ -41,7 +41,8 @@ class PersonModel {
     this.birthDate,
   });
 
- factory PersonModel.fromJson(Map<String, dynamic> json) => PersonModel(
+
+  factory PersonModel.fromJson(Map<String, dynamic> json) => PersonModel(
   id: (json['id'] as num).toInt(),
   first_name: json['first_name'] as String,
   last_name: json['last_name'] as String,
@@ -49,12 +50,15 @@ class PersonModel {
   email: json['email'] as String?,
   phone_number: json['phone_number'] as String?,
   identity_card_number: json['identity_card_number'] as String,
-  isDeceased: json['isDeceased'] == 1,  // تحويل من 1/0 إلى bool
+
+  isDeceased: json['isDeceased'] == 1, 
+
   nationalities_id: (json['nationalities_id'] as num).toInt(),
   location_id: (json['location_id'] as num?)?.toInt(),
   location: json['location'] == null
       ? null
-      : Location.fromJson(json['location'] as Map<String, dynamic>),
+      : AreaModel.fromJson(json['location'] as Map<String, dynamic>),
+
   nationality: json['nationality'] == null
       ? null
       : NationalityModel.fromJson(json['nationality'] as Map<String, dynamic>),
@@ -63,5 +67,26 @@ class PersonModel {
       : DateTime.parse(json['birthDate'] as String),
 );
 
-  Map<String, dynamic> toJson() => _$PersonModelToJson(this);
+  get firstName => null;
+
+  get identityCardNumber => null;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'first_name': first_name,
+      'last_name': last_name,
+      'gender': gender,
+      'email': email,
+      'phone_number': phone_number,
+      'identity_card_number': identity_card_number,
+      'isDeceased': isDeceased,
+      'nationalities_id': nationalities_id,
+      'location_id': location_id,
+      //'location': location?.toJson(),
+      'nationality': nationality?.toJson(),
+      'birthDate': birthDate?.toIso8601String(),
+
+    };
+  }
 }

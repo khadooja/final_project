@@ -7,7 +7,7 @@ part of 'mother_model.dart';
 // **************************************************************************
 
 MotherModel _$MotherModelFromJson(Map<String, dynamic> json) => MotherModel(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       first_name: json['first_name'] as String,
       last_name: json['last_name'] as String,
       gender: json['gender'] as String,
@@ -20,8 +20,8 @@ MotherModel _$MotherModelFromJson(Map<String, dynamic> json) => MotherModel(
           ? null
           : DateTime.parse(json['birthDate'] as String),
       isDeceased: json['isDeceased'] as bool,
-      isActive: json['isActive'] as bool,
-      childCount: (json['childCount'] as num).toInt(),
+      is_Active: (json['is_Active'] as num).toInt(),
+      child_count: (json['child_count'] as num).toInt(),
     );
 
 Map<String, dynamic> _$MotherModelToJson(MotherModel instance) =>
@@ -36,7 +36,7 @@ Map<String, dynamic> _$MotherModelToJson(MotherModel instance) =>
       'nationalities_id': instance.nationalities_id,
       'location_id': instance.location_id,
       'isDeceased': instance.isDeceased,
-      'isActive': instance.isActive,
-      'childCount': instance.childCount,
+      'is_Active': instance.is_Active,
+      'child_count': instance.child_count,
       'birthDate': instance.birthDate?.toIso8601String(),
     };
