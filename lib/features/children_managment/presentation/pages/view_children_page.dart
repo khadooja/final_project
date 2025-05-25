@@ -9,17 +9,12 @@ import 'package:new_project/features/children_managment/data/repositories/child_
 import 'package:new_project/features/children_managment/domain/repositories/child_repository.dart';
 import 'package:new_project/features/children_managment/domain/usecase/get_child_details_usecase.dart';
 import 'package:new_project/features/children_managment/domain/usecase/get_children_usecase.dart';
-import 'package:new_project/features/children_managment/presentation/pages/add_edit_child_page.dart';
 import 'package:new_project/features/children_managment/presentation/pages/child_vaccinations_page.dart';
 import '../../../../features/children_managment/data/model/displayed_child_model.dart';
 import 'package:new_project/features/children_managment/logic/child_bloc/child_cubit.dart';
 import 'package:new_project/features/children_managment/logic/child_bloc/child_state.dart';
 import 'package:new_project/Core/networking/api_services.dart';
 import 'package:new_project/features/children_managment/data/dataSources/child_data_source.dart'; // Note: ChildRemoteDataSourceImpl is imported above, this might be for the interface
-// The following import seems to be for ChildRepositoryImpl, but the filename is unusual.
-// If ChildRepositoryImpl is in a file named 'child_repository_impl.dart', that would be more standard.
-// However, I will keep it as is, assuming it's correct in your project structure.
-import 'package:new_project/features/children_managment/domain/usecase/get_child.dart';
 import 'package:dio/dio.dart';
 
 class ViewChildrenPage extends StatelessWidget {

@@ -43,7 +43,7 @@ class _AddChildFormState extends State<AddChildForm> {
   Widget build(BuildContext context) {
     return BlocConsumer<ChildCubit, ChildState>(
       listener: (context, state) {
-        if (state is ChildSuccess) {
+        if (state is ChildSaveSuccess) {
           Navigator.pop(context, true);
         } else if (state is ChildFailure) {
           ScaffoldMessenger.of(context).showSnackBar(

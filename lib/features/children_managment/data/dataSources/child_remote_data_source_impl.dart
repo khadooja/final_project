@@ -5,6 +5,7 @@ import 'package:new_project/Core/networking/api_error_handler.dart';
 import 'package:new_project/Core/networking/config/api_config.dart';
 import 'package:new_project/features/children_managment/data/dataSources/child_data_source.dart';
 import 'package:new_project/features/children_managment/data/model/CommonDropdownsChidModel.dart';
+import 'package:new_project/features/children_managment/data/model/child_edit_details_model.dart';
 import 'package:new_project/features/children_managment/data/model/child_list_response_model.dart';
 import 'package:new_project/features/children_managment/data/model/child_model.dart';
 import 'package:new_project/features/personal_management/data/datasources/person_remote_datasource_impl.dart';
@@ -152,5 +153,11 @@ class ChildRemoteDataSourceImpl extends PersonRemoteDataSourceImpl
     } catch (e) {
       return ApiResult.failure(ErrorHandler.handle(e));
     }
+  }
+
+  @override
+  Future<ApiResult<ChildEditDetailsModel>> getChildDetailsById(String childId) {
+    // TODO: implement getChildDetailsById
+    throw UnimplementedError();
   }
 }
