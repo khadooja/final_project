@@ -6,6 +6,7 @@ import 'package:new_project/features/HelthCenter/data/repository/health_center_r
 import 'package:new_project/features/HelthCenter/logic/cubit/health_center_cubit.dart';
 import 'package:new_project/features/reports/data/report_repository.dart';
 import 'package:new_project/features/reports/logic/report_cubit.dart';
+import 'package:new_project/features/staff_management/data/repo/employeeRepositoryImpl.dart';
 import 'package:new_project/features/vaccination/dose/data/repos/dose_repo.dart';
 import 'package:new_project/features/vaccination/dose/logic/cubit/dose_cubit.dart';
 import 'package:new_project/features/vaccination/stage/data/repos.dart';

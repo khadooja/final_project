@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:new_project/Core/di/employee_service_locator.dart';
 import 'package:new_project/Core/routing/routes.dart';
+import 'package:new_project/features/staff_management/logic/employee_cubit.dart';
 
 import 'Core/di/auth_service_locator.dart';
 import 'Core/di/child_service_locator.dart';
@@ -38,6 +40,7 @@ Future<void> _initAppDependencies() async {
   await setupAuthServiceLocator();
   await setupPersonServiceLocatorInject();
   await setupFamilyServiceLocator();
+  await setupEmployeeServiceLocator();
 
   debugPrint('✅ Dependencies initialized');
 }
@@ -62,6 +65,7 @@ class MyMainApp extends StatelessWidget {
             BlocProvider<PersonCubit>(create: (_) => di<PersonCubit>()),
             BlocProvider<FatherCubit>(create: (_) => di<FatherCubit>()),
             BlocProvider<MotherCubit>(create: (_) => di<MotherCubit>()),
+            BlocProvider<EmployeeCubit>(create: (_) => di<EmployeeCubit>()),
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -99,6 +103,7 @@ class AppBootstrapper extends StatelessWidget {
       'PersonCubit': GetIt.I.isRegistered<PersonCubit>(),
       'FatherCubit': GetIt.I.isRegistered<FatherCubit>(),
       'MotherCubit': GetIt.I.isRegistered<MotherCubit>(),
+      'EmployeeCubit': GetIt.I.isRegistered<EmployeeCubit>(),
     };
 
     for (var entry in checks.entries) {
@@ -129,6 +134,7 @@ class AppBootstrapper extends StatelessWidget {
     );
   }
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -139,18 +145,17 @@ class MyApp extends StatelessWidget {
   }
 }
 
-  List<BlocProvider> _getBlocProviders() {
-    final di = GetIt.I;
-    return [
-      BlocProvider<LoginCubit>(create: (_) => di<LoginCubit>()),
-      BlocProvider<PersonCubit>(create: (_) => di<PersonCubit>()),
-      BlocProvider<FatherCubit>(create: (_) => di<FatherCubit>()),
-      BlocProvider<MotherCubit>(create: (_) => di<MotherCubit>()),
-    ];
-  }
+List<BlocProvider> _getBlocProviders() {
+  final di = GetIt.I;
+  return [
+    BlocProvider<LoginCubit>(create: (_) => di<LoginCubit>()),
+    BlocProvider<PersonCubit>(create: (_) => di<PersonCubit>()),
+    BlocProvider<FatherCubit>(create: (_) => di<FatherCubit>()),
+    BlocProvider<MotherCubit>(create: (_) => di<MotherCubit>()),
+    BlocProvider<EmployeeCubit>(create: (_) => di<EmployeeCubit>()),
+  ];
+}
 
-
-  Widget _getHomeScreen() {
-    return const LoginScreen(); 
-  }
-
+Widget _getHomeScreen() {
+  return const LoginScreen();
+}

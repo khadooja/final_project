@@ -22,10 +22,9 @@ class Routes {
   static const String addCenter = '/addCenter';
   static const String viewReports = '/viewReports';
   static const String addVaccination = '/addVaccination';
+  static const String addEmployeeSupervisor = '/addEmployee';
 
   // Family Management
   static const String addFather = '/addFather';
   static const String addMother = '/addMother';
-
-
 }
