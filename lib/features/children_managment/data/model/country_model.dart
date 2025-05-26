@@ -1,8 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'country_model.g.dart';
-
-@JsonSerializable(explicitToJson: true)
 class CountryModel {
   final String name;
 
@@ -10,10 +5,17 @@ class CountryModel {
     required this.name,
   });
 
-  factory CountryModel.fromJson(Map<String, dynamic> json) =>
-      _$CountryModelFromJson(json);
+ factory CountryModel.fromJson(Map<String, dynamic> json) {
+  print('CountryModel.fromJson: $json');
+  if (!json.containsKey('name')) {
+    throw Exception('Missing required key: name');
+  }
+  return CountryModel(name: json['name']);
+}
 
   get id => null;
 
-  Map<String, dynamic> toJson() => _$CountryModelToJson(this);
+  Map<String, dynamic> toJson() => {
+    'name': name,
+  };
 }

@@ -49,32 +49,57 @@ class ChildCubit extends Cubit<ChildState> {
     );
   }
 
-  Future<void> loadInitialDropdownData() async {
-    emit(ChildLoadingDropdowns());
+ Future<void> loadInitialDropdownData() async {
+  emit(ChildLoadingDropdowns());
+  try {
+    // تحميل البيانات من التخزين المحلي
+    final nationalities = await DropdownStorageHelper.getNationalities();
+    final countries = await DropdownStorageHelper.getCountries();
+    final specialCases = await DropdownStorageHelper.getSpecialCases();
 
-    try {
-      final nationalities = await DropdownStorageHelper.getNationalities();
-      final countries = await DropdownStorageHelper.getCountries();
-      final specialCases = await DropdownStorageHelper.getSpecialCases();
+    final bool hasCachedData =
+        nationalities != null && countries != null && specialCases != null;
 
-      if (nationalities == null || countries == null || specialCases == null) {
-        final result = await _repository.getNationalitiesAndCitiesandCases();
-        result.when(
-          success: (data) async {
-            await Future.wait([
-              DropdownStorageHelper.setNationalities(data.nationalities),
-              DropdownStorageHelper.setCountry(data.countries),
-             // DropdownStorageHelper.setSpecialCases(data.specialCases),
-            ]);
-          },
-          failure: (error) => emit(
-            ChildFailure(error.message),
-          ),
-        );
-      }
-    } catch (e) {
-      emit(ChildFailure("حدث خطأ أثناء تحميل البيانات"));
+    if (hasCachedData) {
+      print('📦 تم تحميل البيانات من التخزين المحلي');
+      emit(ChildLoadedDropdowns(
+        nationalities: nationalities!,
+        countries: countries!,
+        specialCases: specialCases!,
+      ));
+      return;
     }
+
+    // تحميل من الـ API
+    final result = await _repository.getNationalitiesAndCitiesandCases();
+
+    result.when(
+      success: (data) async {
+        print('✅ تم تحميل البيانات من API');
+
+        // تخزين البيانات
+        await Future.wait([
+          DropdownStorageHelper.setNationalities(data.nationalities),
+          DropdownStorageHelper.setCountry(data.countries),
+          DropdownStorageHelper.setSpecialCases(data.specialCases),
+        ]);
+
+        emit(ChildLoadedDropdowns(
+          nationalities: data.nationalities,
+          countries: data.countries,
+          specialCases: data.specialCases,
+        ));
+      },
+      failure: (error) {
+        print('💥 فشل تحميل البيانات من API: ${error.message}');
+        emit(ChildFailure(error.message));
+      },
+    );
+  } catch (e) {
+    print('💣 خطأ غير متوقع: $e');
+    emit(ChildFailure("حدث خطأ أثناء تحميل البيانات"));
   }
+}
+
   
 }

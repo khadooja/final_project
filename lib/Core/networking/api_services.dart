@@ -5,6 +5,7 @@ import 'package:new_project/Core/networking/config/api_config.dart';
 import 'package:new_project/features/children_managment/data/model/CommonDropdownsChidModel.dart';
 import 'package:new_project/features/family_management/data/model/mother_model.dart';
 import 'package:new_project/features/guardian_management.dart/data/model/gurdian_model.dart';
+import 'package:new_project/features/guardian_management.dart/data/model/relation_model.dart';
 import 'package:new_project/features/personal_management/data/models/nationalitiesAndcities_model.dart';
 import 'package:new_project/features/personal_management/data/models/person_model.dart';
 import 'package:new_project/features/auth/data/model/login_request_body.dart';
@@ -12,7 +13,6 @@ import 'package:new_project/features/auth/data/model/login_response.dart';
 import 'package:new_project/features/children_managment/data/model/child_model.dart';
 import 'package:new_project/features/family_management/data/model/father_model.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
-import 'package:new_project/features/guardian_management.dart/data/model/relationship_type_model.dart';
 import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 import 'package:new_project/features/vaccination/stage/model/StageModel.dart';
 import 'package:new_project/features/vaccination/vaccine/model/SimpleVaccineModel.dart';
@@ -145,7 +145,7 @@ Future<FatherModel> addFather(FatherModel fatherData) async {
   }
 
   // Child
-  Future<CommonDropdownsChidModel> getDropdownsData() async {
+  Future<CommonDropdownsChidModel> getDropdownsData( PersonType type) async {
   final response = await _dio.get(ApiEndpoints.child.getDropdownsData);
   return CommonDropdownsChidModel.fromJson(response.data['data']);
 }
@@ -206,10 +206,10 @@ Future<FatherModel> addFather(FatherModel fatherData) async {
   }
 
   // Relationship Types
-  Future<List<RelationshipTypeModel>> getRelationshipTypes() async {
+  Future<List<RelationModel>> getRelationshipTypes() async {
     final response = await _dio.get(ApiEndpoints.guardian.guardiancreate);
     return (response.data as List)
-        .map((item) => RelationshipTypeModel.fromJson(item))
+        .map((item) => RelationModel.fromJson(item))
         .toList();
   }
 

@@ -26,7 +26,7 @@ class MenuItemsHelper {
         ];
       default:
         return [
-          {"icon": Icons.person, "label": "الرئيسية", "route": Routes.adminDashboard},
+          {"icon": Icons.person, "label": "الرئيسية", "route": Routes.managerDashboard},
         ];
     }
   }

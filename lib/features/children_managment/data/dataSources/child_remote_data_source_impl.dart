@@ -141,22 +141,23 @@ class ChildRemoteDataSourceImpl extends PersonRemoteDataSourceImpl
   }
 
   @override
-  Future<ApiResult<CommonDropdownsChidModel>> getNationalitiesAndCitiesandCases(
-      PersonType type) async {
-    try {
-      print(
-          '🌍 ChildRemoteDataSourceImpl: Fetching nationalities and cities for type: $type');
-      final result = await _apiService.getRelationshipTypes();
-      //final result = await _apiService.getNationalitiesAndCitiesUseCase(type);
-      return ApiResult.success(
-        
-          CommonDropdownsChidModel.fromJson(result as Map<String, dynamic>));
-    } catch (e) {
-      print('❌ ChildRemoteDataSourceImpl getNationalitiesAndCities error: $e');
-      return ApiResult.failure(ErrorHandler.handle(e));
-    }
+  @override
+Future<ApiResult<CommonDropdownsChidModel>> getNationalitiesAndCitiesandCases(
+    PersonType type) async {
+  try {
+    print('🌍 ChildRemoteDataSourceImpl: Fetching data for type: $type');
+
+    final result = await _apiService.getDropdownsData(type);
+    
+    return ApiResult.success(
+      CommonDropdownsChidModel.fromJson(result as Map<String, dynamic>),
+    );
+  } catch (e) {
+    print('❌ ChildRemoteDataSourceImpl error: $e');
+    return ApiResult.failure(ErrorHandler.handle(e));
   }
-  
+}
+
   @override
   Future<ApiResult<ChildEditDetailsModel>> getChildDetailsById(String childId) {
     // TODO: implement getChildDetailsById
