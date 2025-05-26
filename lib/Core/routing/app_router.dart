@@ -13,6 +13,8 @@ import 'package:new_project/features/family_management/presentation/mother_scree
 import 'package:new_project/features/personal_management/logic/personal_cubit.dart';
 import 'package:new_project/features/profile/presentation/screens/profile.dart';
 import 'package:new_project/features/reports/presentation/report_screen.dart';
+import 'package:new_project/features/staff_management/presentation/employee_screen.dart';
+import 'package:new_project/features/staff_management/presentation/form_present_employee.dart';
 import 'package:new_project/features/vaccination/vaccine/presentation/screens/vaccine_screen.dart';
 import 'routes.dart';
 
@@ -44,12 +46,12 @@ class AppRouter {
             child: const AdminDashboardScreen(),
           ),
         );*/
-        case Routes.managerDashboard:
+      case Routes.managerDashboard:
         return _buildRoute(const AdminDashboardScreen());
 
       case Routes.centerDashboard:
         return _buildRoute(
-            const SuperDashboardScreen(),
+          const SuperDashboardScreen(),
         );
       case Routes.employeeDashboard:
         return _buildRoute(
@@ -63,7 +65,6 @@ class AppRouter {
         );*/
 
       // Staff Management
-      
 
       /*case Routes.addEmployee:
         return _buildRoute(
@@ -107,6 +108,14 @@ class AppRouter {
       case Routes.viewReports:
         return _buildRoute(
           const ReportScreen(),
+        );
+      case Routes.addEmployee:
+        return _buildRoute(
+          const EmployeeScreen(),
+        );
+      case Routes.addEmployeeSupervisor:
+        return _buildRoute(
+          const EmployeeScreen(),
         );
       default:
         return MaterialPageRoute(

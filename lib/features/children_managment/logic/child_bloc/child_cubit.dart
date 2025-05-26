@@ -10,22 +10,17 @@ class ChildCubit extends Cubit<ChildState> {
   final ChildRepository _repository;
   final GetChildrenUseCase _getChildrenUseCase;
 
-  ChildCubit(this._repository, this._getChildrenUseCase, GetChildDetailsUseCase getChildDetailsUseCase)
+  //new
+  final GetChildDetailsUseCase _getChildDetailsUseCase;
+
+  ChildCubit(
+      this._repository,
+      this._getChildrenUseCase,
+      GetChildDetailsUseCase getChildDetailsUseCase,
+      this._getChildDetailsUseCase)
       : super(ChildInitial());
 
 //جلب الأطفال
-  Future<void> fetchChildrenList() async {
-    emit(ChildrenListLoading());
-    final result = await _getChildrenUseCase.execute();
-    result.when(
-      success: (childListResponse) {
-        emit(ChildrenListLoaded(childListResponse));
-      },
-      failure: (error) {
-        emit(ChildrenListError(error.message));
-      },
-    );
-  }
 
   Future<void> addChild(ChildModel childData) async {
     emit(ChildLoading());
@@ -42,64 +37,99 @@ class ChildCubit extends Cubit<ChildState> {
     emit(ChildLoading());
     final result = await _repository.updateChild(id, childData);
     result.when(
-      success: (_) => emit(const ChildSaveError( "تم التعديل بنجاح")),
+      success: (_) => emit(const ChildSaveError("تم التعديل بنجاح")),
       failure: (error) => emit(
         ChildFailure(error.message),
       ),
     );
   }
 
- Future<void> loadInitialDropdownData() async {
-  emit(ChildLoadingDropdowns());
-  try {
-    // تحميل البيانات من التخزين المحلي
-    final nationalities = await DropdownStorageHelper.getNationalities();
-    final countries = await DropdownStorageHelper.getCountries();
-    final specialCases = await DropdownStorageHelper.getSpecialCases();
+  Future<void> loadInitialDropdownData() async {
+    emit(ChildLoadingDropdowns());
+    try {
+      // تحميل البيانات من التخزين المحلي
+      final nationalities = await DropdownStorageHelper.getNationalities();
+      final countries = await DropdownStorageHelper.getCountries();
+      final specialCases = await DropdownStorageHelper.getSpecialCases();
 
-    final bool hasCachedData =
-        nationalities != null && countries != null && specialCases != null;
+      final bool hasCachedData =
+          nationalities != null && countries != null && specialCases != null;
 
-    if (hasCachedData) {
-      print('📦 تم تحميل البيانات من التخزين المحلي');
-      emit(ChildLoadedDropdowns(
-        nationalities: nationalities!,
-        countries: countries!,
-        specialCases: specialCases!,
-      ));
-      return;
-    }
-
-    // تحميل من الـ API
-    final result = await _repository.getNationalitiesAndCitiesandCases();
-
-    result.when(
-      success: (data) async {
-        print('✅ تم تحميل البيانات من API');
-
-        // تخزين البيانات
-        await Future.wait([
-          DropdownStorageHelper.setNationalities(data.nationalities),
-          DropdownStorageHelper.setCountry(data.countries),
-          DropdownStorageHelper.setSpecialCases(data.specialCases),
-        ]);
-
+      if (hasCachedData) {
+        print('📦 تم تحميل البيانات من التخزين المحلي');
         emit(ChildLoadedDropdowns(
-          nationalities: data.nationalities,
-          countries: data.countries,
-          specialCases: data.specialCases,
+          nationalities: nationalities!,
+          countries: countries!,
+          specialCases: specialCases!,
         ));
+        return;
+      }
+
+      // تحميل من الـ API
+      final result = await _repository.getNationalitiesAndCitiesandCases();
+
+      result.when(
+        success: (data) async {
+          print('✅ تم تحميل البيانات من API');
+
+          // تخزين البيانات
+          await Future.wait([
+            DropdownStorageHelper.setNationalities(data.nationalities),
+            DropdownStorageHelper.setCountry(data.countries),
+            DropdownStorageHelper.setSpecialCases(data.specialCases),
+          ]);
+
+          emit(ChildLoadedDropdowns(
+            nationalities: data.nationalities,
+            countries: data.countries,
+            specialCases: data.specialCases,
+          ));
+        },
+        failure: (error) {
+          print('💥 فشل تحميل البيانات من API: ${error.message}');
+          emit(ChildFailure(error.message));
+        },
+      );
+    } catch (e) {
+      print('💣 خطأ غير متوقع: $e');
+      emit(ChildFailure("حدث خطأ أثناء تحميل البيانات"));
+    }
+  }
+
+  //new
+  // ... rest of the cubit
+
+//جلب الأطفال
+  Future<void> fetchChildrenList() async {
+    emit(ChildrenListLoading());
+    final result = await _getChildrenUseCase
+        .execute(); // Assuming GetChildrenUseCase also has 'execute'
+    // If it has 'call', change to _getChildrenUseCase.call()
+    result.when(
+      success: (childListResponse) {
+        emit(ChildrenListLoaded(childListResponse));
       },
       failure: (error) {
-        print('💥 فشل تحميل البيانات من API: ${error.message}');
-        emit(ChildFailure(error.message));
+        emit(ChildrenListError(error.message));
       },
     );
-  } catch (e) {
-    print('💣 خطأ غير متوقع: $e');
-    emit(ChildFailure("حدث خطأ أثناء تحميل البيانات"));
   }
-}
 
-  
+  Future<void> fetchChildDetails(String childId) async {
+    emit(ChildDetailsLoading()); // Use the generic ChildDetailsLoading state
+    final result = await _getChildDetailsUseCase.call(childId); // Use 'call'
+    result.when(
+      success: (detailsModel) {
+        // The state should emit ChildEditDetailsModel if that's what your UI expects
+        // Or if AddEditChildPage now uses ChildEditDetailsModel, this is fine.
+        emit(ChildDetailsForEditLoaded(
+            detailsModel)); // Assuming ChildDetailsForEditLoaded takes ChildEditDetailsModel
+      },
+      failure: (error) {
+        print("Error in fetchChildDetails Cubit: ${error.message}");
+        emit(ChildDetailsError(
+            error.message)); // Use the generic ChildDetailsError state
+      },
+    );
+  }
 }

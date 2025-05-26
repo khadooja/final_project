@@ -20,6 +20,8 @@ import 'package:new_project/features/vaccination/vaccine/model/vaccine_model.dar
 
 import '../../features/HelthCenter/model/helth_center.dart';
 import '../../features/HelthCenter/model/location.dart';
+import '../../features/staff_management/data/model/CreateEmployeeDataModel.dart';
+import '../../features/staff_management/data/model/employee_model.dart';
 
 class ApiServiceManual {
   final Dio _dio;
@@ -77,42 +79,41 @@ class ApiServiceManual {
     }
   }
 }*/
-Future<FatherModel> addFather(FatherModel fatherData) async {
+  Future<FatherModel> addFather(FatherModel fatherData) async {
     final response = await _dio.post(
       ApiEndpoints.parent.addFather,
       data: fatherData.toJson(),
-      
     );
     return FatherModel.fromJson(response.data);
- 
-}
+  }
+
   // Mother
   Future<MotherModel> addMother(MotherModel motherData) async {
     final response = await _dio.post(
       ApiEndpoints.parent.addMother,
       data: motherData.toJson(),
-      
     );
     return MotherModel.fromJson(response.data);
   }
 
   // Person Operations (Generic)
   Future<SearchPersonResponse> searchPerson(
-  String identity_card_number,
-  PersonType person_type,
-) async {
-  print('📡 ApiServiceManual - searchPerson - البيانات المرسلة: $identity_card_number$person_type');
+    String identity_card_number,
+    PersonType person_type,
+  ) async {
+    print(
+        '📡 ApiServiceManual - searchPerson - البيانات المرسلة: $identity_card_number$person_type');
 
-  final response = await _dio.post(
-    ApiEndpoints.personal.searchPerson,
-    data: {
-      'identity_card_number': identity_card_number,
-      'person_type': person_type.name,
-    },
-  );
+    final response = await _dio.post(
+      ApiEndpoints.personal.searchPerson,
+      data: {
+        'identity_card_number': identity_card_number,
+        'person_type': person_type.name,
+      },
+    );
 
-  return SearchPersonResponse.fromJson(response.data);
-}
+    return SearchPersonResponse.fromJson(response.data);
+  }
 
   Future<PersonModel> updatePerson(
       PersonType type, String id, Map<String, dynamic> data) async {
@@ -130,11 +131,13 @@ Future<FatherModel> addFather(FatherModel fatherData) async {
     return NationalitiesAndCitiesModel.fromJson(response.data);
   }
 
-
-  Future<List<Map<String, dynamic>>> getAreasByCity(PersonType type, String cityName) async {
-  final response = await _dio.get('${ApiEndpoints.personal.areasByCity}/$cityName');
-  return (response.data as List).cast<Map<String, dynamic>>(); // التحويل الصريح
-}
+  Future<List<Map<String, dynamic>>> getAreasByCity(
+      PersonType type, String cityName) async {
+    final response =
+        await _dio.get('${ApiEndpoints.personal.areasByCity}/$cityName');
+    return (response.data as List)
+        .cast<Map<String, dynamic>>(); // التحويل الصريح
+  }
 
   Future<void> toggleActivationPerson(
       PersonType type, String id, Map<String, dynamic> data) async {
@@ -145,10 +148,10 @@ Future<FatherModel> addFather(FatherModel fatherData) async {
   }
 
   // Child
-  Future<CommonDropdownsChidModel> getDropdownsData( PersonType type) async {
-  final response = await _dio.get(ApiEndpoints.child.getDropdownsData);
-  return CommonDropdownsChidModel.fromJson(response.data['data']);
-}
+  Future<CommonDropdownsChidModel> getDropdownsData(PersonType type) async {
+    final response = await _dio.get(ApiEndpoints.child.getDropdownsData);
+    return CommonDropdownsChidModel.fromJson(response.data['data']);
+  }
 
   Future<ChildModel> addChild(ChildModel childData) async {
     final response = await _dio.post(
@@ -225,8 +228,6 @@ Future<FatherModel> addFather(FatherModel fatherData) async {
       },
     );
   }
-
-
 
   Future<Map<String, dynamic>> post(
       String path, Map<String, dynamic> data) async {
@@ -398,8 +399,7 @@ Future<FatherModel> addFather(FatherModel fatherData) async {
     return res.data;
   }
 
-
- Future<Map<String, dynamic>> fetchReportData({int? centerId}) async {
+Future<Map<String, dynamic>> fetchReportData({int? centerId}) async {
     try {
       final response = await _dio.get(
         '${ApiConfig.baseUrl}Reports',
@@ -417,4 +417,20 @@ Future<FatherModel> addFather(FatherModel fatherData) async {
       throw Exception('حدث خطأ أثناء استرجاع البيانات: $e');
     }
   }
-}
+
+  Future<EmployeeModel> addEmployee(EmployeeModel EmployeeData) async {
+    final response = await _dio.post(
+      '${ApiConfig.baseUrl}employees/store',
+      data: EmployeeData.toJson(),
+    );
+    return EmployeeModel.fromJson(response.data);
+  }
+
+  Future<CreateEmployeeDataModel> fetchCreateEmployeeData() async {
+    final response = await _dio.get('${ApiConfig.baseUrl}employees/create');
+
+    final data = response.data;
+    return CreateEmployeeDataModel.fromJson(data);
+  }
+
+} 

@@ -38,6 +38,7 @@ class ViewChildrenPage extends StatelessWidget {
         childRepository,
         getChildrenUseCase,
         getChildDetailsUseCase,
+        apiService as GetChildDetailsUseCase, // <-- Add the missing 4th argument (adjust if another dependency is required)
       )..fetchChildrenList(),
       child: const ViewChildrenPageContent(),
     );
