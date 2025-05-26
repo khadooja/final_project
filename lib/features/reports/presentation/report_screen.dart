@@ -16,8 +16,15 @@ class ReportScreen extends StatelessWidget {
   }
 }
 
-class _ReportContent extends StatelessWidget {
+class _ReportContent extends StatefulWidget {
   const _ReportContent({super.key});
+
+  @override
+  _ReportContentState createState() => _ReportContentState();
+}
+
+class _ReportContentState extends State<_ReportContent> {
+  int? selectedHealthCenter;
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +39,28 @@ class _ReportContent extends StatelessWidget {
           } else if (state is ReportLoaded) {
             final general = state.report.generalStats;
             final centers = state.report.centerStats;
+            print('selectedHealthCenter: $selectedHealthCenter');
+print('centers: ${centers.map((c) => c.centerId).toList()}');
+            if (selectedHealthCenter != null && !centers.any((c) => c.centerId == selectedHealthCenter)) {
+  selectedHealthCenter = null;if (selectedHealthCenter != null && !centers.any((c) => c.centerId == selectedHealthCenter)) {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    setState(() {
+      selectedHealthCenter = null;
+    });
+  });
+}
+}
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 24),
+                  const Text("الإحصائيات العامة",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
                   Wrap(
                     spacing: 12,
                     runSpacing: 12,
@@ -61,6 +84,38 @@ class _ReportContent extends StatelessWidget {
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
+                  // Dropdown for Health Center selection
+                  
+                  DropdownButton<int>(
+                    
+                    hint: const Text('اختيار المركز الصحي'),
+                    value: centers.isNotEmpty &&
+                            centers.any((c) => c.centerId == selectedHealthCenter)
+                        ? selectedHealthCenter
+                        : null,
+                    onChanged: centers.isNotEmpty
+                        ? (newValue) {
+                            setState(() {
+                              selectedHealthCenter = newValue;
+                            });
+                            if (selectedHealthCenter != null) {
+                              context
+                                  .read<ReportCubit>()
+                                  .loadReports(centerId: selectedHealthCenter);
+                            }
+                          }
+                        : null,
+                    items: centers.isNotEmpty
+                        ? centers.map<DropdownMenuItem<int>>((center) {
+                            return DropdownMenuItem<int>(
+                              value: center.centerId,
+                              child: Text(center.centerName),
+                            );
+                          }).toList()
+                        : [],
+                    disabledHint: const Text('لا توجد مراكز صحية'),
+                  ),
+                  const SizedBox(height: 24),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: DataTable(

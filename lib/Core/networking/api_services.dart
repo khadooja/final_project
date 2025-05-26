@@ -399,11 +399,22 @@ Future<FatherModel> addFather(FatherModel fatherData) async {
   }
 
 
-  Future<Map<String, dynamic>> fetchReportData({int? centerId}) async {
-    final response = await _dio.get(
-      '${ApiConfig.baseUrl}Reports',
-      queryParameters: centerId != null ? {'healthCenter': centerId} : null,
-    );
-    return response.data;
+ Future<Map<String, dynamic>> fetchReportData({int? centerId}) async {
+    try {
+      final response = await _dio.get(
+        '${ApiConfig.baseUrl}Reports',
+        queryParameters: centerId != null ? {'healthCenter': centerId} : null,
+      );
+
+      // تحقق من حالة الاستجابة
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw Exception('فشل في تحميل البيانات: ${response.statusCode}');
+      }
+    } catch (e) {
+      // في حالة حدوث خطأ في الاتصال أو المعالجة
+      throw Exception('حدث خطأ أثناء استرجاع البيانات: $e');
+    }
   }
 }

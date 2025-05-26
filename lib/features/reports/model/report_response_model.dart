@@ -9,13 +9,16 @@ class ReportResponseModel {
     required this.generalStats,
     required this.centerStats,
   });
+  
 
   factory ReportResponseModel.fromJson(Map<String, dynamic> json) {
-    return ReportResponseModel(
-      generalStats: GeneralReportModel.fromJson(json),
-      centerStats: List<CenterReportModel>.from(
-        json['healthCentersReports'].map((e) => CenterReportModel.fromJson(e)),
-      ),
-    );
-  }
+  return ReportResponseModel(
+    generalStats: GeneralReportModel.fromJson(json),
+    centerStats: (json['healthCentersReports'] as List<dynamic>? ?? [])
+        .map((e) => CenterReportModel.fromJson(e))
+        .toList(),
+  );
+}
+    
+  
 }
