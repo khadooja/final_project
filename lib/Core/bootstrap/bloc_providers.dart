@@ -14,6 +14,6 @@ List<BlocProvider> getBlocProviders() {
     BlocProvider<PersonCubit>(create: (_) => di<PersonCubit>()),
     BlocProvider<FatherCubit>(create: (_) => di<FatherCubit>()),
     BlocProvider<MotherCubit>(create: (_) => di<MotherCubit>()),
-    BlocProvider<GuardianCubit>(create: (_) => di<GuardianCubit>()),
+    //BlocProvider<GuardianCubit>(create: (_) => di<GuardianCubit>()),
   ];
 }

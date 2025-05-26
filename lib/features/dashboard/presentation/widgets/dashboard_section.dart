@@ -38,7 +38,7 @@ class DashboardSection extends StatelessWidget {
         break;
       default:
         cards = [
-          DashboardCard(icon: Icons.person, title: "الرئيسية", onTap: () => context.pushNamed(Routes.adminDashboard)),
+          DashboardCard(icon: Icons.person, title: "الرئيسية", onTap: () => context.pushNamed(Routes.managerDashboard)),
         ];
         break;
     }

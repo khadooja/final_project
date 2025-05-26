@@ -10,6 +10,12 @@ class StorageHelper {
   StorageHelper._(); // Prevent instantiation
 
   static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+  static late SharedPreferences prefs;
+
+  // 🟡 هذه الدالة تحتاج تناديها في البداية
+  static Future<void> init() async {
+    prefs = await SharedPreferences.getInstance();
+  }
 
   // ===================== Unified Storage =====================
 

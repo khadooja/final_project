@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:new_project/features/childSpecialCase/data/model/special_case.dart';
 import 'package:new_project/features/children_managment/data/model/child_edit_details_model.dart';
 import 'package:new_project/features/children_managment/data/model/child_list_response_model.dart';
+import 'package:new_project/features/children_managment/data/model/child_model.dart';
 import 'package:new_project/features/children_managment/data/model/country_model.dart';
 import 'package:new_project/features/personal_management/data/models/nationality_model.dart';
 
@@ -64,13 +65,11 @@ class ChildDetailsError extends ChildState {
 
 // Save/Update states
 class ChildSaveSuccess extends ChildState {
-  final String message;
-  final bool isEdit;
-  const ChildSaveSuccess(
-      {required this.message, required this.isEdit}); // Add const
-  @override
-  List<Object?> get props => [message, isEdit];
+  final ChildModel child;
+
+  ChildSaveSuccess(this.child);
 }
+
 
 class ChildSaveError extends ChildState {
   final String message;

@@ -1,6 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'special_case.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class SpecialCase {
@@ -14,8 +13,23 @@ class SpecialCase {
     required this.description,
   });
 
-  factory SpecialCase.fromJson(Map<String, dynamic> json) =>
-      _$SpecialCaseFromJson(json);
+  factory SpecialCase.fromJson(Map<String, dynamic> json) {
+    print('SpecialCase.fromJson: $json');
+    return 
+SpecialCase(
+      id: json['id'] as int,
+      caseName: json['caseName'] as String,
+      description: json['description'] as String,
+    );
+  }
+      
 
-  Map<String, dynamic> toJson() => _$SpecialCaseToJson(this);
+  Map<String, dynamic> toJson() {
+    print('SpecialCase.toJson: $this');
+    return {
+      'id': id,
+      'caseName': caseName,
+      'description': description,
+    };
+  }
 }

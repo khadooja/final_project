@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:new_project/Core/di/get_it.dart';
 import 'package:new_project/features/HelthCenter/presentation/showHelthCenters.dart';
+import 'package:new_project/features/auth/logic/cubit/login_cubit.dart';
 import 'package:new_project/features/children_managment/presentation/pages/add_chlid_page.dart';
 import 'package:new_project/features/dashboard/presentation/screens/admin_dashboard_screen.dart';
 import 'package:new_project/features/auth/presentation/login_screen.dart';
@@ -22,7 +23,12 @@ class AppRouter {
     switch (settings.name) {
       // Auth Routes
       case Routes.login:
-        return _buildRoute(const LoginScreen());
+        return _buildRoute(
+          BlocProvider(
+            create: (context) => GetIt.I<LoginCubit>(),
+            child: const LoginScreen(),
+          ),
+        );
 
       case Routes.profile:
         if (args is String) {
@@ -31,13 +37,16 @@ class AppRouter {
         return _errorRoute("Invalid role data passed");
 
       // Admin Routes
-      case Routes.adminDashboard:
+      /*case Routes.managerDashboard:
         return _buildRoute(
           BlocProvider(
             create: (context) => di<PersonCubit>(),
             child: const AdminDashboardScreen(),
           ),
-        );
+        );*/
+        case Routes.managerDashboard:
+        return _buildRoute(const AdminDashboardScreen());
+
       case Routes.centerDashboard:
         return _buildRoute(
             const SuperDashboardScreen(),
@@ -100,7 +109,11 @@ class AppRouter {
           const ReportScreen(),
         );
       default:
-        return _errorRoute("Page not found");
+        return MaterialPageRoute(
+          builder: (_) => const Scaffold(
+            body: Center(child: Text('Route not found')),
+          ),
+        );
     }
   }
 

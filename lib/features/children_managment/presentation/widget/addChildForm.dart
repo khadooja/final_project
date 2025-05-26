@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:new_project/features/auth/presentation/login_screen.dart';
 import 'package:new_project/features/children_managment/data/model/child_model.dart';
 import 'package:new_project/features/children_managment/logic/child_bloc/child_cubit.dart';
 import 'package:new_project/features/children_managment/logic/child_bloc/child_state.dart';
+import 'package:new_project/features/guardian_management.dart/presentation/screens/childGuardiansScreen.dart';
 
 class AddChildForm extends StatefulWidget {
   final int fatherId;
@@ -45,7 +47,16 @@ class _AddChildFormState extends State<AddChildForm> {
     return BlocConsumer<ChildCubit, ChildState>(
       listener: (context, state) {
         if (state is ChildSaveSuccess) {
-          Navigator.pop(context, true);
+  final child = state.child;
+
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (_) => LoginScreen(),
+      //ChildGuardiansScreen(childId:'$child.id'),
+    ),
+  );
+
         } else if (state is ChildFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message)),
@@ -108,34 +119,36 @@ class _AddChildFormState extends State<AddChildForm> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        final childData = {
-                          "first_name": _firstName.text,
-                          "last_name": _lastName.text,
-                          "birth_date": _birthDate.text,
-                          "gender": _gender,
-                          "has_specail_case": _hasSpecialCase ? 1 : 0,
-                          "birth_certificate_number": _certificateNumber.text,
-                          "birth_certificate_type": _certificateType,
-                          "health_centers_id": 1,
-                          "nationalities_id": _selectedNationality,
-                          "fathers_id": widget.fatherId,
-                          "mothers_id": widget.motherId,
-                          "countries_id": _selectedCountry,
-                          "foreing_birth_country_id": _selectedForeignBirthCountry,
-                        };
+  if (_formKey.currentState!.validate()) {
+    final childData = {
+      "first_name": _firstName.text.trim(),
+      "last_name": _lastName.text.trim(),
+      "birth_date": _birthDate.text,
+      "gender": _gender,
+      "has_specail_case": _hasSpecialCase ? 1 : 0,
+      "birth_certificate_number": _certificateNumber.text.trim(),
+      "birth_certificate_type": _certificateType,
+      "health_centers_id": 1,
+      "nationalities_id": _selectedNationality,
+      "fathers_id": widget.fatherId,
+      "mothers_id": widget.motherId,
+      "countries_id": _selectedCountry,
+      "foreing_birth_country_id": _selectedForeignBirthCountry,
+    };
 
-                        if (_hasSpecialCase) {
-                          childData.addAll({
-                            "case_name": state.specialCases.firstWhere((e) => e.id == _selectedSpecialCase).caseName,
-                            "description": _description.text,
-                            "start_date": _startDate.text,
-                          });
-                        }
+    if (_hasSpecialCase) {
+      final caseName = state.specialCases.firstWhere((e) => e.id == _selectedSpecialCase).caseName;
+      childData.addAll({
+        "case_name": caseName,
+        "description": _description.text.trim(),
+        "start_date": _startDate.text,
+      });
+    }
 
-                        context.read<ChildCubit>().addChild(ChildModel.fromJson(childData));
-                      }
-                    },
+    context.read<ChildCubit>().addChild(ChildModel.fromJson(childData));
+  }
+}
+,
                     child: const Text("إضافة الطفل"),
                   )
                 ],

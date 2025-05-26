@@ -13,7 +13,7 @@ import 'package:new_project/features/vaccination/stage/logic/cubit/StageCubit.da
 import 'package:new_project/features/vaccination/vaccine/data/vaccine_repository.dart';
 import 'package:new_project/features/vaccination/vaccine/logic/vaccine_cubit.dart';
 
-Future<void> setupServiceLocator() async {
+Future<void> setupNetworkModule() async {
   if (!di.isRegistered<Dio>()) {
     final dio = await DioFactory.getDio();
     di.registerSingleton<Dio>(dio);

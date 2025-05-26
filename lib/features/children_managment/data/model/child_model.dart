@@ -1,4 +1,5 @@
 class ChildModel {
+  final int? id;
   final String firstName;
   final String lastName;
   final String birthDate;
@@ -6,7 +7,6 @@ class ChildModel {
   final int hasSpecialCase;
   final String birthCertificateNumber;
   final String birthCertificateType;
-  final int healthCentersId;
   final int nationalitiesId;
   final int fathersId;
   final int mothersId;
@@ -17,6 +17,7 @@ class ChildModel {
   final String? startDate;
 
   ChildModel({
+    this.id,
     required this.firstName,
     required this.lastName,
     required this.birthDate,
@@ -24,7 +25,6 @@ class ChildModel {
     required this.hasSpecialCase,
     required this.birthCertificateNumber,
     required this.birthCertificateType,
-    required this.healthCentersId,
     required this.nationalitiesId,
     required this.fathersId,
     required this.mothersId,
@@ -38,6 +38,7 @@ class ChildModel {
   factory ChildModel.fromJson(Map<String, dynamic> json) {
     print("ChildModel.fromJson: $json");
     return ChildModel(
+      id: json['id'],
       firstName: json['first_name'],
       lastName: json['last_name'],
       birthDate: json['birth_date'],
@@ -45,7 +46,6 @@ class ChildModel {
       hasSpecialCase: json['has_specail_case'],
       birthCertificateNumber: json['birth_certificate_number'],
       birthCertificateType: json['birth_certificate_type'],
-      healthCentersId: json['health_centers_id'],
       nationalitiesId: json['nationalities_id'],
       fathersId: json['fathers_id'],
       mothersId: json['mothers_id'],
@@ -59,6 +59,7 @@ class ChildModel {
 
   Map<String, dynamic> toJson() {
     return {
+      "id": id,
       "first_name": firstName,
       "last_name": lastName,
       "birth_date": birthDate,
@@ -66,7 +67,6 @@ class ChildModel {
       "has_specail_case": hasSpecialCase,
       "birth_certificate_number": birthCertificateNumber,
       "birth_certificate_type": birthCertificateType,
-      "health_centers_id": healthCentersId,
       "nationalities_id": nationalitiesId,
       "fathers_id": fathersId,
       "mothers_id": mothersId,

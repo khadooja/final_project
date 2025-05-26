@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:new_project/Core/di/get_it.dart';
 import 'package:new_project/Core/networking/api_services.dart';
 import 'package:new_project/Core/networking/dio_factory.dart';
 
@@ -24,50 +25,37 @@ import 'package:new_project/features/personal_management/domain/usecases/toggleA
 import 'package:new_project/features/personal_management/logic/personal_cubit.dart';
 
 Future<void> setupPersonServiceLocatorInject() async {
-  final getIt = GetIt.instance;
-
-  // ========== Dio & ApiService ==========
-  if (!getIt.isRegistered<Dio>()) {
-    final dio = await DioFactory.getDio();
-    getIt.registerSingleton<Dio>(dio);
-  }
-
-  if (!getIt.isRegistered<ApiServiceManual>()) {
-    getIt.registerLazySingleton<ApiServiceManual>(
-      () => ApiServiceManual(dio: getIt<Dio>()),
-    );
-  }
 
   // ========== DataSources ==========
-  getIt.registerLazySingleton<PersonRemoteDataSource>(
-    () => PersonRemoteDataSourceImpl(getIt<ApiServiceManual>()),
+  di.registerLazySingleton<PersonRemoteDataSource>(
+    () => PersonRemoteDataSourceImpl(di<ApiServiceManual>()),
   );
 
   // ========== Repository ==========
-  getIt.registerLazySingleton<PersonRepository>(
-    () => PersonRepositoryImpl(getIt<PersonRemoteDataSource>()),
+  di.registerLazySingleton<PersonRepository>(
+    () => PersonRepositoryImpl(di<PersonRemoteDataSource>()),
   );
 
   // ========== UseCases ==========
-  getIt.registerLazySingleton<SearchPersonByIdUseCase>(
-    () => SearchPersonByIdUseCase(getIt<PersonRepository>()),
+  di.registerLazySingleton<SearchPersonByIdUseCase>(
+    () => SearchPersonByIdUseCase(di<PersonRepository>()),
   );
 
-  getIt.registerLazySingleton<GetAreasByCityUseCase>(
-    () => GetAreasByCityUseCase(getIt<PersonRepository>()),
+  di.registerLazySingleton<GetAreasByCityUseCase>(
+    () => GetAreasByCityUseCase(di<PersonRepository>()),
   );
 
-  getIt.registerLazySingleton<GetNationalitiesAndCitiesUseCase>(
-    () => GetNationalitiesAndCitiesUseCase(getIt<PersonRepository>()),
+  di.registerLazySingleton<GetNationalitiesAndCitiesUseCase>(
+    () => GetNationalitiesAndCitiesUseCase(di<PersonRepository>()),
   );
 
-  getIt.registerLazySingleton<ToggleActivationPersonUseCase>(
-    () => ToggleActivationPersonUseCase(getIt<PersonRepository>()),
+  di.registerLazySingleton<ToggleActivationPersonUseCase>(
+    () => ToggleActivationPersonUseCase(di<PersonRepository>()),
   );
 
   // ========== Cubits ==========
-  getIt.registerFactory<PersonCubit>(
-    () => PersonCubit(getIt<PersonRepository>()),
+  di.registerFactory<PersonCubit>(
+    () => PersonCubit(di<PersonRepository>()),
   );
 
   debugPrint('✅ Person dependencies injected successfully');

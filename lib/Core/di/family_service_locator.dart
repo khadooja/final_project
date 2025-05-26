@@ -1,3 +1,4 @@
+import 'package:get_it/get_it.dart';
 import 'package:new_project/Core/di/get_it.dart';
 import 'package:new_project/Core/networking/api_services.dart';
 import 'package:dio/dio.dart';
@@ -28,12 +29,6 @@ import 'package:new_project/features/family_management/logic/father_cubit.dart';
 import 'package:new_project/features/personal_management/domain/repositories/personal_repo.dart';
 
 Future<void> setupFamilyServiceLocator() async {
-  final dio = await DioFactory.getDio();
-    di.registerSingleton<Dio>(dio);
-
-    di.registerLazySingleton<ApiServiceManual>(
-      () => ApiServiceManual(dio: dio),
-    );
 
   // ========== DATASOURCES ==========
   di.registerLazySingleton<FatherRemoteDataSource>(

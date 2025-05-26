@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:new_project/features/childSpecialCase/data/model/special_case.dart';
 import 'package:new_project/features/children_managment/data/model/country_model.dart';
-import 'package:new_project/features/guardian_management.dart/data/model/relationship_type_model.dart';
+import 'package:new_project/features/guardian_management.dart/data/model/relation_model.dart';
 import 'package:new_project/features/personal_management/data/models/city_model.dart';
 import 'package:new_project/features/personal_management/data/models/nationalitiesAndcities_model.dart';
 import 'package:new_project/features/personal_management/data/models/nationality_model.dart';
@@ -31,23 +32,23 @@ class DropdownStorageHelper {
   }
 
   static Future<void> saveRelationshipTypes(
-      List<RelationshipTypeModel> data) async {
+      List<RelationModel> data) async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = jsonEncode(data.map((e) => e.toJson()).toList());
     await prefs.setString(DropdownKeys.relationshipTypes, jsonString);
   }
 
-  static Future<List<RelationshipTypeModel>?> getRelationshipTypes() async {
+  static Future<List<RelationModel>?> getRelationshipTypes() async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(DropdownKeys.relationshipTypes);
     if (jsonString == null) return null;
 
     final decoded = jsonDecode(jsonString) as List;
-    return decoded.map((e) => RelationshipTypeModel.fromJson(e)).toList();
+    return decoded.map((e) => RelationModel.fromJson(e)).toList();
   }
 
   static Future<void> setRelationshipTypes(
-      List<RelationshipTypeModel> list) async {
+      List<RelationModel> list) async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = jsonEncode(list.map((e) => e.toJson()).toList());
     await prefs.setString(DropdownKeys.nationalitiesKey, jsonString);
@@ -123,49 +124,58 @@ class DropdownStorageHelper {
     debugPrint("Saved ${countries.length} cities to local storage");
   }
 
-  static Future<Iterable<dynamic>?> getCountries() async {
+ static Future<List<CountryModel>?> getCountries() async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(DropdownKeys.areaKey);
     if (jsonString == null) return null;
 
     try {
       final List decoded = jsonDecode(jsonString);
-      return decoded.map((e) => DropdownKeys.cityiesKey);
+      return decoded.map((e) => CountryModel.fromJson(e)).toList();
     } catch (e) {
-      debugPrint("Error parsing countries: $e");
+      debugPrint("❌ Error decoding countries: $e");
       return null;
     }
   }
-
   static Future<void> clearCountries() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(DropdownKeys.areaKey);
   }
 
 // ===================== Special Cases =====================
-  static Future<void> setSpecialCases(List<DropdownKeys> specialCases) async {
+  static Future<void> setSpecialCases(List<SpecialCase>  specialCases) async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = jsonEncode(specialCases.map((e) => e).toList());
     await prefs.setString(DropdownKeys.specialCasesKey, jsonString);
     debugPrint("Saved ${specialCases.length} special cases to local storage");
   }
 
-  static Future<List<DropdownKeys>?> getSpecialCases() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(DropdownKeys.specialCasesKey);
-    if (jsonString == null) return null;
+static Future<List<SpecialCase>?> getSpecialCases() async {
+  final prefs = await SharedPreferences.getInstance();
+  final jsonString = prefs.getString(DropdownKeys.specialCasesKey);
+  if (jsonString == null) return null;
 
-    try {
-      final List decoded = jsonDecode(jsonString);
-      //return decoded.map((e) => SpecialCase.fromJson(e)).toList();
-    } catch (e) {
-      debugPrint("Error parsing special cases: $e");
-      return null;
-    }
+  try {
+    final List decoded = jsonDecode(jsonString);
+    return decoded.map((e) => SpecialCase.fromJson(e)).toList();
+  } catch (e) {
+    debugPrint("Error parsing special cases: $e");
+    return null;
   }
+}
+
 
   static Future<void> clearSpecialCases() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(DropdownKeys.specialCasesKey);
   }
+
+
+  static Future<void> clearAllDropdowns() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(DropdownKeys.nationalitiesKey);
+    await prefs.remove(DropdownKeys.cityiesKey);
+    await prefs.remove(DropdownKeys.specialCasesKey);
+  }
 }
+

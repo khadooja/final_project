@@ -38,6 +38,7 @@ class ChildRepositoryImpl implements ChildRepository {
   @override
   Future<ApiResult<CommonDropdownsChidModel>>
       getNationalitiesAndCitiesandCases() {
+  print("Fetching nationalities, cities, and cases for children");
     return _remoteDataSource
         .getNationalitiesAndCitiesandCases(PersonType.child);
   }

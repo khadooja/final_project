@@ -11,12 +11,13 @@ import '../logic/cubit/login_cubit.dart';
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+@override
+Widget build(BuildContext context) {
+  return LoginBlocListener(
+    child: Scaffold(
       appBar: AppBar(
         title: const Text('تسجيل الدخول'),
-        backgroundColor:AppColors.primaryColor,
+        backgroundColor: AppColors.primaryColor,
       ),
       body: Stack(
         children: [
@@ -30,7 +31,7 @@ class LoginScreen extends StatelessWidget {
               width: 0.4.sw,
               padding: EdgeInsets.all(24.w),
               decoration: BoxDecoration(
-                color:AppColors.white,
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(16.r),
                 boxShadow: [
                   BoxShadow(
@@ -54,7 +55,6 @@ class LoginScreen extends StatelessWidget {
                       onPressed: () => _validateThenLogin(context),
                     ),
                     const VerticalSpace(24),
-                    const LoginBlocListener(),
                   ],
                 ),
               ),
@@ -62,8 +62,10 @@ class LoginScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   void _validateThenLogin(BuildContext context) {
     final cubit = context.read<LoginCubit>();
