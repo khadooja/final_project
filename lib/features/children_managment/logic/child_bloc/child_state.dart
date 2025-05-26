@@ -21,6 +21,13 @@ class ChildDetailsLoading
 
 class ChildLoadingDropdowns extends ChildState {}
 
+class ChildFailure extends ChildState {
+  final String message;
+  const ChildFailure(this.message); // Add const
+  @override
+  List<Object?> get props => [message];
+}
+
 // List states
 class ChildrenListLoading extends ChildState {}
 

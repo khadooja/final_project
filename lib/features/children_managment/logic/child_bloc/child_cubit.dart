@@ -1,7 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_project/Core/helpers/dropdown_helper/dropdown_storage_helper.dart';
-import 'package:new_project/Core/helpers/shared_pref_helper.dart';
+import 'package:new_project/features/children_managment/data/model/child_model.dart';
 import 'package:new_project/features/children_managment/domain/repositories/child_repository.dart';
+import 'package:new_project/features/children_managment/domain/usecase/get_child_details_usecase.dart';
 import 'package:new_project/features/children_managment/domain/usecase/get_children_usecase.dart';
 import 'package:new_project/features/children_managment/logic/child_bloc/child_state.dart';
 
@@ -9,7 +10,7 @@ class ChildCubit extends Cubit<ChildState> {
   final ChildRepository _repository;
   final GetChildrenUseCase _getChildrenUseCase;
 
-  ChildCubit(this._repository, this._getChildrenUseCase)
+  ChildCubit(this._repository, this._getChildrenUseCase, GetChildDetailsUseCase getChildDetailsUseCase)
       : super(ChildInitial());
 
 //جلب الأطفال
@@ -26,11 +27,11 @@ class ChildCubit extends Cubit<ChildState> {
     );
   }
 
-  Future<void> addChild(Map<String, dynamic> childData) async {
+  Future<void> addChild(ChildModel childData) async {
     emit(ChildLoading());
     final result = await _repository.addChild(childData);
     result.when(
-      success: (_) => emit(ChildSuccess(message: "تمت إضافة الطفل بنجاح")),
+      success: (_) => emit(const ChildSaveError("Child saved successfully")),
       failure: (error) => emit(
         ChildFailure(error.message),
       ),
@@ -41,7 +42,7 @@ class ChildCubit extends Cubit<ChildState> {
     emit(ChildLoading());
     final result = await _repository.updateChild(id, childData);
     result.when(
-      success: (_) => emit(ChildSuccess(message: "تم التعديل بنجاح")),
+      success: (_) => emit(const ChildSaveError( "تم التعديل بنجاح")),
       failure: (error) => emit(
         ChildFailure(error.message),
       ),
@@ -63,7 +64,7 @@ class ChildCubit extends Cubit<ChildState> {
             await Future.wait([
               DropdownStorageHelper.setNationalities(data.nationalities),
               DropdownStorageHelper.setCountry(data.countries),
-              //DropdownStorageHelper.setSpecialCases(data.specialCases),
+             // DropdownStorageHelper.setSpecialCases(data.specialCases),
             ]);
           },
           failure: (error) => emit(
@@ -71,14 +72,9 @@ class ChildCubit extends Cubit<ChildState> {
           ),
         );
       }
-
-      //emit(ChildLoadedDropdowns(
-      //  nationalities: await DropdownStorageHelper.getNationalities() ?? [],
-       // countries: await DropdownStorageHelper.getCountries() ?? [],
-        //specialCases: await DropdownStorageHelper.getSpecialCases() ?? [],
-     // ));
     } catch (e) {
       emit(ChildFailure("حدث خطأ أثناء تحميل البيانات"));
     }
   }
+  
 }

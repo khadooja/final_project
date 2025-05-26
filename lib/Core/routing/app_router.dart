@@ -12,8 +12,6 @@ import 'package:new_project/features/family_management/presentation/mother_scree
 import 'package:new_project/features/personal_management/logic/personal_cubit.dart';
 import 'package:new_project/features/profile/presentation/screens/profile.dart';
 import 'package:new_project/features/reports/presentation/report_screen.dart';
-import 'package:new_project/features/staff_management/application/bloc/admin_bloc.dart';
-import 'package:new_project/features/dashboard/presentation/screens/staff_dashboard_screen.dart';
 import 'package:new_project/features/vaccination/vaccine/presentation/screens/vaccine_screen.dart';
 import 'routes.dart';
 
@@ -42,17 +40,11 @@ class AppRouter {
         );
       case Routes.centerDashboard:
         return _buildRoute(
-          BlocProvider(
-            create: (context) => GetIt.I<AdminBloc>(),
-            child: const SuperDashboardScreen(),
-          ),
+            const SuperDashboardScreen(),
         );
       case Routes.employeeDashboard:
         return _buildRoute(
-          BlocProvider(
-            create: (context) => GetIt.I<AdminBloc>(),
-            child: const AdminDashboardScreen(),
-          ),
+          const AdminDashboardScreen(),
         );
 
       // Children Management
@@ -62,13 +54,7 @@ class AppRouter {
         );*/
 
       // Staff Management
-      case Routes.staffDashboard:
-        return _buildRoute(
-          BlocProvider(
-            create: (context) => GetIt.I<AdminBloc>(),
-            child: const Staffdashboardscreen(),
-          ),
-        );
+      
 
       /*case Routes.addEmployee:
         return _buildRoute(

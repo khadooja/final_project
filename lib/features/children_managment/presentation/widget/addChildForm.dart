@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:new_project/features/children_managment/data/model/child_model.dart';
 import 'package:new_project/features/children_managment/logic/child_bloc/child_cubit.dart';
 import 'package:new_project/features/children_managment/logic/child_bloc/child_state.dart';
 
@@ -43,7 +44,7 @@ class _AddChildFormState extends State<AddChildForm> {
   Widget build(BuildContext context) {
     return BlocConsumer<ChildCubit, ChildState>(
       listener: (context, state) {
-        if (state is ChildSuccess) {
+        if (state is ChildSaveSuccess) {
           Navigator.pop(context, true);
         } else if (state is ChildFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -132,7 +133,7 @@ class _AddChildFormState extends State<AddChildForm> {
                           });
                         }
 
-                        context.read<ChildCubit>().addChild(childData);
+                        context.read<ChildCubit>().addChild(ChildModel.fromJson(childData));
                       }
                     },
                     child: const Text("إضافة الطفل"),

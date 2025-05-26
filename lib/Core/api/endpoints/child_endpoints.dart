@@ -1,7 +1,7 @@
 import 'package:new_project/Core/networking/config/api_config.dart';
 
 class ChildEndpoints {
-  String addChildren = '${ApiConfig.baseUrl}children';
+  String addChildren = '${ApiConfig.baseUrl}childern/store';
   String getChildById = '${ApiConfig.baseUrl}children/{id}';
 
   String updateChild = '${ApiConfig.baseUrl}children/{id}';
