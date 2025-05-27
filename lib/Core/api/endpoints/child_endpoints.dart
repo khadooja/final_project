@@ -10,7 +10,6 @@ class ChildEndpoints {
   String getChildByName = '${ApiConfig.baseUrl}children/name/{name}';
   String getDropdownsData = '${ApiConfig.baseUrl}children/create';
 
-
   //new
   String getChildren = '${ApiConfig.baseUrl}childern';
   // String editChildren = '${ApiConfig.baseUrl}childern/{id}/edit';
