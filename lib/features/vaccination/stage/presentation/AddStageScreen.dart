@@ -13,7 +13,7 @@ class AddStageScreen extends StatelessWidget {
       create: (_) => di<Stagecubit>(),
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(title: const Text('إضافة مرحلة')),
+        //appBar: AppBar(title: const Text('إضافة مرحلة')),
         body: const Padding(
           padding: EdgeInsets.all(16.0),
           child: StageForm(),

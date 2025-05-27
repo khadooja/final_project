@@ -176,7 +176,12 @@ class _DoseFormState extends State<DoseForm> {
                                   value: _selectedVaccineId,
                                   items: _vaccineItems,
                                   decoration: const InputDecoration(
-                                      labelText: 'اسم التطعيم'),
+                                    label: Directionality(
+                                      textDirection: TextDirection
+                                          .rtl, // يجعل "اسم التطعيم" في أقصى اليمين
+                                      child: Text('اسم التطعيم'),
+                                    ),
+                                  ),
                                   onChanged: (val) =>
                                       setState(() => _selectedVaccineId = val),
                                   validator: (val) =>
