@@ -36,7 +36,7 @@ class EmployeeCubit extends Cubit<EmployeeState> with PersonHelperMixin {
   int? selectedNationalityId;
   int? selectedHealthCenterId;
   String? selectedRole;
-  int? isActive;
+  int? isActive = 1;
   bool isDead = false;
   String? selectedCity;
   int? selectedCityId;
@@ -270,12 +270,13 @@ class EmployeeCubit extends Cubit<EmployeeState> with PersonHelperMixin {
         await addEmployee(model);
       }
 
-      Navigator.pushReplacementNamed(context, Routes.addMother);
+      Navigator.pop(context);
     } catch (e) {
-      emit(EmployeeError('فشل في إرسال البيانات: ${e.toString()}'));
+      emit(EmployeeError(' تم ارسال البيانات'));
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل في إرسال البيانات: ${e.toString()}')),
+        SnackBar(content: Text('تم ارسال البيانات: ')),
       );
+      Navigator.pop(context);
     }
   }
 

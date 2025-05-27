@@ -90,12 +90,19 @@ class _StageFormState extends State<StageForm> {
                           label: 'الوصف (اختياري)',
                           // maxLines: 2,
                         ),
-
                         const SizedBox(height: 16),
-
                         // الصف الثاني: العمر من - العمر إلى
                         Row(
                           children: [
+                            Expanded(
+                              child: CustomInputField(
+                                controller: _endAgeController,
+                                label: 'العمر إلى (أشهر)',
+                                validator: (val) =>
+                                    val!.isEmpty ? 'مطلوب' : null,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
                             Expanded(
                               child: CustomInputField(
                                 controller: _startAgeController,
@@ -105,19 +112,9 @@ class _StageFormState extends State<StageForm> {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            Expanded(
-                              child: CustomInputField(
-                                controller: _endAgeController,
-                                label: 'العمر إلى (أشهر)',
-                                validator: (val) =>
-                                    val!.isEmpty ? 'مطلوب' : null,
-                              ),
-                            ),
                           ],
                         ),
-
                         const SizedBox(height: 24),
-
                         // زر الإضافة
                         state is StageLoading
                             ? const Center(child: CircularProgressIndicator())

@@ -270,7 +270,6 @@ class EmployeeForm extends StatelessWidget {
               BlocBuilder<EmployeeCubit, EmployeeState>(
                 builder: (context, state) {
                   final cubit = context.read<EmployeeCubit>();
-
                   return Row(
                     children: [
                       // الجنس
@@ -291,9 +290,9 @@ class EmployeeForm extends StatelessWidget {
                         child: CustomInputField(
                           label: 'الحالة',
                           keyboardType: InputType.radio,
-                          radioOptions: const ['غير نشط', 'نشط'],
+                          radioOptions: const [' نشط', 'غير نشط'],
                           selectedValue:
-                              cubit.isActive == 1 ? 'نشط' : 'غير نشط',
+                              cubit.isActive == 1 ? ' نشط' : 'غير نشط',
                           onChanged: (val) {
                             cubit.setIsActive(val == 'نشط' ? 1 : 0);
                           },
