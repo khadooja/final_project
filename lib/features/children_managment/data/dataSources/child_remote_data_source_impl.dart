@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:new_project/Core/api/endpoints/child_endpoints.dart';
 import 'package:new_project/Core/networking/api_result.dart';
 import 'package:new_project/Core/networking/api_services.dart';
@@ -58,27 +59,81 @@ class ChildRemoteDataSourceImpl extends PersonRemoteDataSourceImpl
   }
 
   //new
+  // @override
+  // Future<ApiResult<ChildListResponseModel>> getChildren() async {
+  //   try {
+  //     // Assumes _apiService.get() takes a path relative to its configured baseUrl
+  //     // And ChildEndpoints.getChildren provides the full URL.
+  //     String endpointPath = _childEndpoints.getChildren;
+  //     if (endpointPath.startsWith(ApiConfig.baseUrl)) {
+  //       endpointPath = endpointPath.substring(ApiConfig.baseUrl.length);
+  //     }
+  //     // Ensure path is clean (e.g. remove leading '/' if base URL ends with '/')
+  //     if (ApiConfig.baseUrl.endsWith('/') && endpointPath.startsWith('/')) {
+  //       endpointPath = endpointPath.substring(1);
+  //     }
+
+  //     // final response = await _apiService.get(_childEndpoints.getChildren); // If your service takes full URL
+  //     final response = await _apiService
+  //         .get(endpointPath); // If your service takes relative path
+  //     final childListResponse =
+  //         ChildListResponseModel.fromJson(response as Map<String, dynamic>);
+  //     return ApiResult.success(childListResponse);
+  //   } catch (e) {
+  //     return ApiResult.failure(ErrorHandler.handle(e));
+  //   }
+  // }
+
+  // @override
+  // Future<ApiResult<ChildEditDetailsModel>> getChildDetailsById(
+  //     String childId) async {
+  //   try {
+  //     // Use the endpoint that returns the detailed JSON for editing
+  //     String path = _childEndpoints.getChildById(childId);
+  //     // If your ApiServiceManual.get expects a relative path and Dio has baseUrl:
+  //     if (path.startsWith(ApiConfig.baseUrl)) {
+  //       path = path.substring(ApiConfig.baseUrl.length);
+  //       if (ApiConfig.baseUrl.endsWith('/') && path.startsWith('/'))
+  //         path = path.substring(1);
+  //     }
+
+  //     final responseData = await _apiService.get(path);
+  //     if (responseData is Map<String, dynamic>) {
+  //       final details = ChildEditDetailsModel.fromJson(responseData);
+  //       return ApiResult.success(details);
+  //     } else {
+  //       return ApiResult.failure(
+  //           ErrorHandler.handle("Invalid response format for child details."));
+  //     }
+  //   } catch (e) {
+  //     return ApiResult.failure(ErrorHandler.handle(e));
+  //   }
+  // }
+
+  // في ChildRemoteDataSourceImpl.dart
+
+// ... (باقي الدوال) ...
+
   @override
   Future<ApiResult<ChildListResponseModel>> getChildren() async {
     try {
-      // Assumes _apiService.get() takes a path relative to its configured baseUrl
-      // And ChildEndpoints.getChildren provides the full URL.
-      String endpointPath = _childEndpoints.getChildren;
-      if (endpointPath.startsWith(ApiConfig.baseUrl)) {
-        endpointPath = endpointPath.substring(ApiConfig.baseUrl.length);
-      }
-      // Ensure path is clean (e.g. remove leading '/' if base URL ends with '/')
-      if (ApiConfig.baseUrl.endsWith('/') && endpointPath.startsWith('/')) {
-        endpointPath = endpointPath.substring(1);
-      }
+      // بما أن Dio مهيأ بـ baseUrl، و _childEndpoints.getChildren يُرجع المسار النسبي،
+      // يمكنك استدعاء _apiService.get مباشرة بالمسار النسبي.
+      final String relativePath =
+          _childEndpoints.getChildren; // يجب أن تكون هذه الآن "children"
+      print(
+          "ChildRemoteDataSourceImpl: Calling _apiService.get with relative path: $relativePath");
 
-      // final response = await _apiService.get(_childEndpoints.getChildren); // If your service takes full URL
-      final response = await _apiService
-          .get(endpointPath); // If your service takes relative path
+      final response = await _apiService.get(relativePath);
       final childListResponse =
           ChildListResponseModel.fromJson(response as Map<String, dynamic>);
       return ApiResult.success(childListResponse);
     } catch (e) {
+      print("❌ ChildRemoteDataSourceImpl.getChildren error: $e");
+      if (e is DioException) {
+        print("DioError Response: ${e.response?.data}");
+        print("DioError Request Options: ${e.requestOptions.uri}");
+      }
       return ApiResult.failure(ErrorHandler.handle(e));
     }
   }
@@ -87,16 +142,12 @@ class ChildRemoteDataSourceImpl extends PersonRemoteDataSourceImpl
   Future<ApiResult<ChildEditDetailsModel>> getChildDetailsById(
       String childId) async {
     try {
-      // Use the endpoint that returns the detailed JSON for editing
-      String path = _childEndpoints.getChildById(childId);
-      // If your ApiServiceManual.get expects a relative path and Dio has baseUrl:
-      if (path.startsWith(ApiConfig.baseUrl)) {
-        path = path.substring(ApiConfig.baseUrl.length);
-        if (ApiConfig.baseUrl.endsWith('/') && path.startsWith('/'))
-          path = path.substring(1);
-      }
+      final String relativePath = _childEndpoints
+          .getChildById(childId); // يجب أن تُرجع "children/{childId}/edit"
+      print(
+          "ChildRemoteDataSourceImpl: Calling _apiService.get with relative path: $relativePath for ID: $childId");
 
-      final responseData = await _apiService.get(path);
+      final responseData = await _apiService.get(relativePath);
       if (responseData is Map<String, dynamic>) {
         final details = ChildEditDetailsModel.fromJson(responseData);
         return ApiResult.success(details);
@@ -105,6 +156,12 @@ class ChildRemoteDataSourceImpl extends PersonRemoteDataSourceImpl
             ErrorHandler.handle("Invalid response format for child details."));
       }
     } catch (e) {
+      print(
+          "❌ ChildRemoteDataSourceImpl.getChildDetailsById error: $e for ID: $childId");
+      if (e is DioException) {
+        print("DioError Response: ${e.response?.data}");
+        print("DioError Request Options: ${e.requestOptions.uri}");
+      }
       return ApiResult.failure(ErrorHandler.handle(e));
     }
   }

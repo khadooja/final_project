@@ -9,15 +9,10 @@ import 'package:new_project/features/children_managment/logic/child_bloc/child_s
 class ChildCubit extends Cubit<ChildState> {
   final ChildRepository _repository;
   final GetChildrenUseCase _getChildrenUseCase;
-
-  //new
   final GetChildDetailsUseCase _getChildDetailsUseCase;
 
   ChildCubit(
-      this._repository,
-      this._getChildrenUseCase,
-      GetChildDetailsUseCase getChildDetailsUseCase,
-      this._getChildDetailsUseCase)
+      this._repository, this._getChildrenUseCase, this._getChildDetailsUseCase)
       : super(ChildInitial());
 
 //جلب الأطفال

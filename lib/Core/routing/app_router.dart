@@ -17,6 +17,8 @@ import 'package:new_project/features/staff_management/presentation/employee_scre
 import 'package:new_project/features/staff_management/presentation/form_present_employee.dart';
 import 'package:new_project/features/vaccination/vaccine/presentation/screens/vaccine_screen.dart';
 import 'routes.dart';
+// في بداية AppRouter.dart
+import 'package:new_project/features/children_managment/presentation/pages/view_children_page.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -117,6 +119,10 @@ class AppRouter {
         return _buildRoute(
           const EmployeeScreen(),
         );
+      case Routes.viewChildren: // <--- أضف هذا الـ case
+        return _buildRoute(const ViewChildrenPage());
+
+      // ...
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

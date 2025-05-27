@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:new_project/Core/commn_widgets/side_nav/side_nav.dart';
 import 'package:new_project/Core/commn_widgets/top_bar.dart';
-import 'package:new_project/Core/commn_widgets/sideNav.dart';
+import 'package:new_project/Core/commn_widgets/side_nav/function_card.dart';
+import 'package:new_project/Core/commn_widgets/side_nav/logout_button.dart';
+import 'package:new_project/Core/commn_widgets/side_nav/user_header.dart';
 import 'package:new_project/Core/networking/config/api_config.dart';
 import 'package:new_project/Core/theme/colors.dart';
 import 'package:new_project/features/children_managment/data/dataSources/child_remote_data_source_impl.dart';
 import 'package:new_project/features/children_managment/data/repositories/child_remote_data_source_impl.dart';
 import 'package:new_project/features/children_managment/domain/repositories/child_repository.dart';
+import 'package:new_project/features/children_managment/domain/usecase/add_child.dart';
 import 'package:new_project/features/children_managment/domain/usecase/get_child_details_usecase.dart';
 import 'package:new_project/features/children_managment/domain/usecase/get_children_usecase.dart';
 import 'package:new_project/features/children_managment/presentation/pages/child_vaccinations_page.dart';
@@ -16,6 +20,7 @@ import 'package:new_project/features/children_managment/logic/child_bloc/child_s
 import 'package:new_project/Core/networking/api_services.dart';
 import 'package:new_project/features/children_managment/data/dataSources/child_data_source.dart'; // Note: ChildRemoteDataSourceImpl is imported above, this might be for the interface
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 
 class ViewChildrenPage extends StatelessWidget {
   const ViewChildrenPage({super.key});
@@ -32,14 +37,10 @@ class ViewChildrenPage extends StatelessWidget {
         childRemoteDataSource); // Ensure ChildRepositoryImpl is correctly imported
     final getChildrenUseCase = GetChildrenUseCase(childRepository);
     final getChildDetailsUseCase = GetChildDetailsUseCase(childRepository);
-
+    final addChildUseCase = AddChildUseCase(childRepository);
     return BlocProvider(
-      create: (context) => ChildCubit(
-        childRepository,
-        getChildrenUseCase,
-        getChildDetailsUseCase,
-        apiService as GetChildDetailsUseCase, // <-- Add the missing 4th argument (adjust if another dependency is required)
-      )..fetchChildrenList(),
+      // استرجع ChildCubit المسجل في GetIt
+      create: (context) => GetIt.I<ChildCubit>()..fetchChildrenList(),
       child: const ViewChildrenPageContent(),
     );
   }
@@ -367,39 +368,41 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
           ),
         ),
         body: Row(children: [
-          SizedBox(
-            width: 250,
-            child: SideNav(
-              userName: 'مرحباً محمد صالح',
-              userRole: 'muhammed@gmail.com',
-              menuItems: [
-                {
-                  'title': 'إضافة موظف',
-                  'icon': Icons.person_add_alt_1_outlined,
-                  'isSelected': false,
-                  'onTap': () {}
-                },
-                {
-                  'title': 'إضافة أطفال',
-                  'icon': Icons.escalator_warning_outlined,
-                  'isSelected': false,
-                  'onTap': () {}
-                },
-                {
-                  'title': 'عرض بيانات الموظفين',
-                  'icon': Icons.group_outlined,
-                  'isSelected': false,
-                  'onTap': () {}
-                },
-                {
-                  'title': 'عرض بيانات الأطفال',
-                  'icon': Icons.child_care_outlined,
-                  'isSelected': true,
-                  'onTap': () {}
-                },
-              ],
-            ),
-          ),
+          const SizedBox(width: 300, child: SideNav()),
+
+          // SizedBox(
+          //   width: 250,
+          //   child: SideNav(
+          //     userName: 'مرحباً محمد صالح',
+          //     userRole: 'muhammed@gmail.com',
+          //     menuItems: [
+          //       {
+          //         'title': 'إضافة موظف',
+          //         'icon': Icons.person_add_alt_1_outlined,
+          //         'isSelected': false,
+          //         'onTap': () {}
+          //       },
+          //       {
+          //         'title': 'إضافة أطفال',
+          //         'icon': Icons.escalator_warning_outlined,
+          //         'isSelected': false,
+          //         'onTap': () {}
+          //       },
+          //       {
+          //         'title': 'عرض بيانات الموظفين',
+          //         'icon': Icons.group_outlined,
+          //         'isSelected': false,
+          //         'onTap': () {}
+          //       },
+          //       {
+          //         'title': 'عرض بيانات الأطفال',
+          //         'icon': Icons.child_care_outlined,
+          //         'isSelected': true,
+          //         'onTap': () {}
+          //       },
+          //     ],
+          //   ),
+          // ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 10.0),

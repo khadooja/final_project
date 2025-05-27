@@ -8,7 +8,7 @@ part of 'displayed_child_model.dart';
 
 DisplayedChildModel _$DisplayedChildModelFromJson(Map<String, dynamic> json) =>
     DisplayedChildModel(
-      childId: (json['childId'] as num).toInt(),
+      childId: (json['child_id'] as num).toInt(),
       vaccineCardNumber: json['vaccine_card_number'] as String? ?? 'N/A',
       firstName: json['first_name'] as String? ?? 'N/A',
       lastName: json['last_name'] as String? ?? 'N/A',
@@ -28,7 +28,7 @@ DisplayedChildModel _$DisplayedChildModelFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$DisplayedChildModelToJson(
         DisplayedChildModel instance) =>
     <String, dynamic>{
-      'childId': instance.childId,
+      'child_id': instance.childId,
       'vaccine_card_number': instance.vaccineCardNumber,
       'first_name': instance.firstName,
       'last_name': instance.lastName,
