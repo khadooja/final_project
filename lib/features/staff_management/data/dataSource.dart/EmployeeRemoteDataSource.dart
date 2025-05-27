@@ -8,4 +8,8 @@ abstract class EmployeeRemoteDataSource extends PersonRemoteDataSource {
   Future<ApiResult<EmployeeModel>> updateEmployee(
       String employeeId, EmployeeModel employeeModel);
   Future<ApiResult<CreateEmployeeDataModel>> fetchCreateEmployeeData();
+
+
+ 
+  Future<ApiResult<List<EmployeeModel>>> getEmployees();
 }

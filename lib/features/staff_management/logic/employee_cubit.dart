@@ -386,4 +386,26 @@ class EmployeeCubit extends Cubit<EmployeeState> with PersonHelperMixin {
     print('- متوفى: $isDead');
     print('\n');
   }
+Future<void> fetchEmployeesList() async {
+  emit(EmployeesListLoading());
+
+  try {
+    final result = await _EmployeeRepository.getEmployees(); // تأكد من أن الدالة ترجع بيانات صحيحة
+    
+    result.when(
+      success: (employees) {
+        // في حال نجاح جلب البيانات
+        emit(EmployeesListLoaded(employees)); // <<< إرسال البيانات المحملة
+      },
+      failure: (error) {
+        // في حال حدوث خطأ في جلب البيانات
+        emit(EmployeesListError(error.message ?? 'حدث خطأ غير معروف'));
+      },
+    );
+  } catch (e) {
+    // معالجة الأخطاء في حالة حدوث استثناءات في الكود
+    emit(EmployeesListError(e.toString()));
+  }
+}
+
 }

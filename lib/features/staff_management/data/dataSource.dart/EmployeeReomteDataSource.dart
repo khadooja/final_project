@@ -1,3 +1,4 @@
+import 'package:new_project/Core/networking/api_error_handler.dart';
 import 'package:new_project/Core/networking/api_result.dart';
 import 'package:new_project/Core/networking/api_services.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
@@ -42,4 +43,38 @@ class EmployeeRemoteDataSourceImpl extends PersonRemoteDataSourceImpl
       return result;
     });
   }
+    @override
+Future<ApiResult<List<EmployeeModel>>> getEmployees() async {
+  try {
+    final employeeList = await _api.fetchEmployees(); // employeeList is List<Map<String, dynamic>>
+
+    // إذا احتجت تحويل الأسماء، حول هنا
+    final convertedList = employeeList.map<Map<String, dynamic>>((e) {
+      return {
+        'id': e['Employee Id'],
+        'first_name': e['First Name'],
+        'last_name': e['Last Name'],
+        'gender': e['Gender'],
+        'email': e['Email'],
+        'phone_number': e['Phone Number'] ?? '',
+        'identity_card_number': e['Identity Card Number'] ?? 'N/A',
+        'nationalities_id': e['Nationalities Id'] ?? 0,
+        'location_id': e['Location Id'],
+        'role': e['Position'] ?? 'موظف',
+        'date_of_birth': e['Date of Birth'],
+        'employment_date': e['Employment Date'],
+        'isActive': e['isActive'],
+        'health_center_id': e['Health Center Id'],
+      };
+    }).toList();
+
+    final employees = convertedList
+        .map<EmployeeModel>((e) => EmployeeModel.fromCustomJson(e))
+        .toList();
+
+    return ApiResult.success(employees);
+  } catch (e) {
+    return ApiResult.failure(ErrorHandler(message: e.toString()));
+  }
 }
+} 

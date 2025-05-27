@@ -7,4 +7,5 @@ abstract class EmployeeRepository {
   Future<ApiResult<EmployeeModel>> updateEmployee(
       String id, EmployeeModel employee);
   Future<ApiResult<CreateEmployeeDataModel>> fetchCreateEmployeeData();
+Future<ApiResult<List<EmployeeModel>>> getEmployees();
 }

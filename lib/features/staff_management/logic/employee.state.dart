@@ -13,7 +13,17 @@ abstract class EmployeeState extends Equatable {
   @override
   List<Object?> get props => [];
 }
+class EmployeesListLoading extends EmployeeState {}
 
+class EmployeesListLoaded extends EmployeeState {
+  final List<EmployeeModel> employees;
+  EmployeesListLoaded(this.employees);
+}
+
+class EmployeesListError extends EmployeeState {
+  final String message;
+  EmployeesListError(this.message);
+}
 // الحالة الابتدائية
 class EmployeeInitial extends EmployeeState {}
 
@@ -144,4 +154,5 @@ class EmployeeError extends EmployeeState {
 
   @override
   List<Object?> get props => [message];
+  
 }

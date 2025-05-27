@@ -24,4 +24,9 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   Future<ApiResult<CreateEmployeeDataModel>> fetchCreateEmployeeData() {
     return remoteDataSource.fetchCreateEmployeeData();
   }
+
+  @override
+  Future<ApiResult<List<EmployeeModel>>> getEmployees() {
+    return remoteDataSource.getEmployees();
+  }
 }

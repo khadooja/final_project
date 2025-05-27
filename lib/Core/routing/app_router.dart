@@ -15,6 +15,7 @@ import 'package:new_project/features/profile/presentation/screens/profile.dart';
 import 'package:new_project/features/reports/presentation/report_screen.dart';
 import 'package:new_project/features/staff_management/presentation/employee_screen.dart';
 import 'package:new_project/features/staff_management/presentation/form_present_employee.dart';
+import 'package:new_project/features/staff_management/presentation/pages/ViewEmployeesPage.dart';
 import 'package:new_project/features/vaccination/vaccine/presentation/screens/vaccine_screen.dart';
 import 'routes.dart';
 // في بداية AppRouter.dart
@@ -121,6 +122,8 @@ class AppRouter {
         );
       case Routes.viewChildren: // <--- أضف هذا الـ case
         return _buildRoute(const ViewChildrenPage());
+ case Routes.viewEmployees: // <--- أضف هذا الـ case
+        return _buildRoute(const EmployeesScreen());
 
       // ...
       default:
