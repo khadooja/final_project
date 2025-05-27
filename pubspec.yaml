@@ -58,6 +58,9 @@ dependencies:
   # for adapting screen and font size.
   flutter_screenutil: ^5.9.3
   jwt_decoder: ^2.0.1
+  pdf: ^3.11.3
+  open_filex: ^4.7.0
+
 
 dev_dependencies:
   flutter_test:

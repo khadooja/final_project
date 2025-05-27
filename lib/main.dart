@@ -41,6 +41,7 @@ Future<void> _initAppDependencies() async {
   await setupPersonServiceLocatorInject();
   await setupFamilyServiceLocator();
   await setupEmployeeServiceLocator();
+  await initChildManagementDependencies();
 
   debugPrint('✅ Dependencies initialized');
 }
