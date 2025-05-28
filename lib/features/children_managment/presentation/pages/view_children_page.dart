@@ -564,7 +564,7 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
                                                 columns: const [
                                                   DataColumn(
                                                       label: Text(
-                                                          'رقم بطاقة التطعيم')),
+                                                          ' بطاقة التطعيم')),
                                                   DataColumn(
                                                       label:
                                                           Text('الاسم الاول')),
@@ -590,13 +590,13 @@ class _ViewChildrenPageContentState extends State<ViewChildrenPageContent> {
                                                       label: Text('الجنسية')),
                                                   DataColumn(
                                                       label: Text(
-                                                          "رقم شهادة الميلاد")),
+                                                          " شهادة الميلاد")),
                                                   DataColumn(
                                                       label:
                                                           Text('نوع الشهادة')),
                                                   DataColumn(
-                                                      label: Text(
-                                                          'بلد اصدار الشهادة')),
+                                                      label:
+                                                          Text('بلد  الشهادة')),
                                                   DataColumn(
                                                       label: Text('التطعيمات')),
                                                 ],

@@ -1,18 +1,25 @@
+import 'dart:io'; // For File operations
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // For rootBundle to load fonts
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart' as intl_pkg;
-import 'package:new_project/Core/theme/colors.dart'; // Your AppColors
-import '../../data/model/child_vaccination_details_model.dart'; // Adjust path
+import 'package:new_project/Core/theme/colors.dart';
+import '../../data/model/child_vaccination_details_model.dart';
 
-// Placeholder for your logo asset - replace with actual path
-const String gorahLogoPath = 'assets/images/logo.png'; // مثال
+// PDF Generation
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw; // Note the 'as pw' to avoid conflicts
+import 'package:path_provider/path_provider.dart';
+import 'package:open_filex/open_filex.dart';
+// import 'package:permission_handler/permission_handler.dart'; // Uncomment if needed
+
+const String gorahLogoPath = 'assets/images/logo.png';
 
 class ChildVaccinationsPage extends StatefulWidget {
   final String childId;
-
   const ChildVaccinationsPage({Key? key, required this.childId})
       : super(key: key);
-
   @override
   _ChildVaccinationsPageState createState() => _ChildVaccinationsPageState();
 }
@@ -22,16 +29,30 @@ class _ChildVaccinationsPageState extends State<ChildVaccinationsPage> {
   bool _isLoading = true;
   String? _errorMessage;
   final Dio _dio = Dio();
-
-  // For editable notes
   Map<String, TextEditingController> _notesControllers = {};
-  // To manage focus for TextFields
   Map<String, FocusNode> _notesFocusNodes = {};
+
+  pw.Font? _arabicFont; // To store the loaded Arabic font
 
   @override
   void initState() {
     super.initState();
+    _loadArabicFont(); // Load font on init
     _fetchVaccinationDetails();
+  }
+
+  // Load the Arabic font from assets
+  Future<void> _loadArabicFont() async {
+    try {
+      final fontData = await rootBundle
+          .load("assets/fonts/Amiri-Regular.ttf"); // تأكد من أن المسار صحيح
+      _arabicFont = pw.Font.ttf(fontData);
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error loading Arabic font: $e");
+      }
+      // Handle font loading error if necessary, e.g., fallback to a default font
+    }
   }
 
   @override
@@ -129,6 +150,187 @@ class _ChildVaccinationsPageState extends State<ChildVaccinationsPage> {
     return "${date.year}/${date.month}/${date.day} م";
   }
 
+  Future<void> _saveChanges() async {
+    if (_vaccinationDetails == null || widget.childId.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("لا توجد بيانات لحفظها أو خطأ في معرّف الطفل.")),
+        );
+      }
+      return;
+    }
+
+    // 1. جمع الجرعات التي تم تعديلها
+    List<Map<String, dynamic>> updatedDosesData = [];
+    for (var stage in _vaccinationDetails!.stages) {
+      for (var vaccine in stage.vaccines) {
+        // تحقق مما إذا كانت الجرعة قد تغيرت وهل هي من النوع القابل للتعديل (isDelay)
+        // إذا لم تكن isDelay، يجب ألا يتم تضمينها حتى لو تغيرت (حسب منطق التطبيق)
+        if (vaccine.hasChanged && vaccine.isDelay) {
+          updatedDosesData.add({
+            "svd_id": vaccine.svdId, //  معرّف الجرعة الفريد
+            "status": vaccine.status,
+            "visit_date": vaccine.status == 1 && vaccine.visitDate != null
+                ? intl_pkg.DateFormat('yyyy-MM-dd')
+                    .format(vaccine.visitDate!) // تنسيق YYYY-MM-DD
+                : null, // أرسل null إذا لم يكن هناك تاريخ أو الحالة ليست 1
+            "notes": vaccine.notes?.trim().isEmpty ?? true
+                ? null
+                : vaccine.notes!.trim(), // أرسل null إذا كانت الملاحظات فارغة
+          });
+        }
+      }
+    }
+
+    if (updatedDosesData.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("لا توجد تغييرات لحفظها.")),
+        );
+      }
+      return;
+    }
+
+    // 2. بناء الـ Payload النهائي
+    // محاولة تحويل child_id إلى int. تأكد أن widget.childId يمكن تحويله.
+    final int? childIdInt = int.tryParse(widget.childId);
+    if (childIdInt == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("خطأ: معرّف الطفل غير صالح.")),
+        );
+      }
+      return;
+    }
+
+    final Map<String, dynamic> payload = {
+      "child_id": childIdInt,
+      "doses": updatedDosesData,
+    };
+
+    if (kDebugMode) {
+      // طباعة الـ payload فقط في وضع الـ debug
+      print("الـ Payload الذي سيتم إرساله:");
+      print(payload);
+    }
+
+    if (mounted) {
+      // إظهار مؤشر التحميل
+      setState(() {
+        _isLoading = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("جاري حفظ التعديلات...")),
+      );
+    }
+
+    try {
+      // 3. إجراء طلب الـ API
+      const String updateApiUrl =
+          "http://127.0.0.1:8000/api/childVaccination/update";
+
+      // استخدم dio.put أو dio.post حسب تصميم الـ API.
+      // بما أنه "update"، فـ PUT هو الأنسب عادةً.
+      final response = await _dio.put(
+        updateApiUrl,
+        data: payload,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            // 'Authorization': 'Bearer YOUR_TOKEN_IF_NEEDED' // إذا كان الـ API يتطلب توثيق
+          },
+        ),
+      );
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false; // إخفاء مؤشر التحميل
+        });
+      }
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // أو أي status code للنجاح يرسله الـ API
+        // 4. التعامل مع النجاح
+        // تحديث القيم الأصلية في النموذج بعد الحفظ الناجح
+        for (var stage in _vaccinationDetails!.stages) {
+          for (var vaccine in stage.vaccines) {
+            if (vaccine.hasChanged && vaccine.isDelay) {
+              vaccine
+                  .updateOriginals(); // لتحديث _originalStatus, _originalNotes, _originalVisitDate
+            }
+          }
+        }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text("تم حفظ التعديلات بنجاح!"),
+                backgroundColor: Colors.green),
+          );
+          // يمكنك اختيارياً إعادة جلب البيانات لتحديث الواجهة بالكامل من الخادم:
+          // _fetchVaccinationDetails();
+        }
+      } else {
+        // 5. التعامل مع خطأ من الـ API (ولكن الطلب تم بنجاح)
+        if (mounted) {
+          String serverMessage = "فشل حفظ التعديلات.";
+          if (response.data != null &&
+              response.data is Map &&
+              response.data['message'] != null) {
+            serverMessage += " السبب: ${response.data['message']}";
+          } else {
+            serverMessage += " (Code: ${response.statusCode})";
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(serverMessage), backgroundColor: Colors.orange),
+          );
+        }
+      }
+    } on DioError catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false; // إخفاء مؤشر التحميل
+        });
+        String errorMessage = "خطأ في الشبكة أو من الخادم عند الحفظ: ";
+        if (e.response != null &&
+            e.response?.data != null &&
+            e.response?.data is Map) {
+          errorMessage += (e.response?.data['message'] ??
+              e.response?.statusMessage ??
+              e.message ??
+              "Error");
+        } else if (e.message != null) {
+          errorMessage += e.message!;
+        } else {
+          errorMessage += "Unknown Dio error";
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+        );
+        if (kDebugMode) {
+          print("DioError during save: $e");
+          if (e.response != null) print("DioError response: ${e.response}");
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false; // إخفاء مؤشر التحميل
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text("حدث خطأ غير متوقع أثناء الحفظ: $e"),
+              backgroundColor: Colors.red),
+        );
+        if (kDebugMode) {
+          print("Generic error during save: $e");
+        }
+      }
+    }
+  }
+
   Widget _buildInfoRow(String label, String value, {double valueFlex = 2}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3.0),
@@ -176,72 +378,332 @@ class _ChildVaccinationsPageState extends State<ChildVaccinationsPage> {
     }
   }
 
-  Future<void> _saveChanges() async {
-    if (_vaccinationDetails == null) return;
+  // Future<void> _saveChanges() async {
+  //   if (_vaccinationDetails == null) return;
 
-    List<Map<String, dynamic>> updatedVaccinesData = [];
-    for (var stage in _vaccinationDetails!.stages) {
-      for (var vaccine in stage.vaccines) {
-        // Check if anything actually changed for this vaccine
-        if (vaccine.hasChanged) {
-          updatedVaccinesData.add({
-            "child_id": widget.childId, // Important to identify the child
-            "stage_id":
-                stage.stageId, // Important to identify the vaccine record
-            "vaccine_name":
-                vaccine.vaccineName, // Or some unique vaccine ID from your DB
-            "dose_number": vaccine.doseNumber, // Or some unique dose ID
-            "status": vaccine.status,
-            "visit_date": vaccine.status == 1 && vaccine.visitDate != null
-                ? intl_pkg.DateFormat('yyyy-MM-dd')
-                    .format(vaccine.visitDate!) // Format for backend
-                : null,
-            "notes": vaccine.notes,
-          });
-        }
-      }
-    }
+  //   List<Map<String, dynamic>> updatedVaccinesData = [];
+  //   for (var stage in _vaccinationDetails!.stages) {
+  //     for (var vaccine in stage.vaccines) {
+  //       // Check if anything actually changed for this vaccine
+  //       if (vaccine.hasChanged) {
+  //         updatedVaccinesData.add({
+  //           "child_id": widget.childId, // Important to identify the child
+  //           "stage_id":
+  //               stage.stageId, // Important to identify the vaccine record
+  //           "vaccine_name":
+  //               vaccine.vaccineName, // Or some unique vaccine ID from your DB
+  //           "dose_number": vaccine.doseNumber, // Or some unique dose ID
+  //           "status": vaccine.status,
+  //           "visit_date": vaccine.status == 1 && vaccine.visitDate != null
+  //               ? intl_pkg.DateFormat('yyyy-MM-dd')
+  //                   .format(vaccine.visitDate!) // Format for backend
+  //               : null,
+  //           "notes": vaccine.notes,
+  //         });
+  //       }
+  //     }
+  //   }
 
-    if (updatedVaccinesData.isEmpty) {
+  //   if (updatedVaccinesData.isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text("لا توجد تغييرات لحفظها.")),
+  //     );
+  //     return;
+  //   }
+
+  //   // TODO: Implement the actual API call to save data
+  //   print("سيتم إرسال البيانات التالية للباك اند:");
+  //   print(updatedVaccinesData);
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(content: Text("جاري حفظ التعديلات... (محاكاة)")),
+  //   );
+
+  //   // --- SIMULATE API CALL ---
+  //   await Future.delayed(Duration(seconds: 2)); // Simulate network delay
+  //   bool success = true; // Simulate API success
+
+  //   if (success) {
+  //     // Update original values in the model after successful save
+  //     for (var stage in _vaccinationDetails!.stages) {
+  //       for (var vaccine in stage.vaccines) {
+  //         if (vaccine.hasChanged) {
+  //           vaccine.updateOriginals();
+  //         }
+  //       }
+  //     }
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //           content: Text("تم حفظ التعديلات بنجاح!"),
+  //           backgroundColor: Colors.green),
+  //     );
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //           content: Text("فشل حفظ التعديلات. الرجاء المحاولة مرة أخرى."),
+  //           backgroundColor: Colors.red),
+  //     );
+  //   }
+  //   // After API call (success or failure), you might want to refresh or update UI state
+  // }
+  Future<void> _exportToPdf() async {
+    if (_vaccinationDetails == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("لا توجد تغييرات لحفظها.")),
+        const SnackBar(content: Text("لا توجد بيانات لتصديرها.")),
       );
       return;
     }
-
-    // TODO: Implement the actual API call to save data
-    print("سيتم إرسال البيانات التالية للباك اند:");
-    print(updatedVaccinesData);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("جاري حفظ التعديلات... (محاكاة)")),
-    );
-
-    // --- SIMULATE API CALL ---
-    await Future.delayed(Duration(seconds: 2)); // Simulate network delay
-    bool success = true; // Simulate API success
-
-    if (success) {
-      // Update original values in the model after successful save
-      for (var stage in _vaccinationDetails!.stages) {
-        for (var vaccine in stage.vaccines) {
-          if (vaccine.hasChanged) {
-            vaccine.updateOriginals();
-          }
-        }
-      }
+    if (_arabicFont == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text("تم حفظ التعديلات بنجاح!"),
-            backgroundColor: Colors.green),
+        const SnackBar(
+            content: Text(
+                "جاري تحميل الخط العربي، يرجى المحاولة مرة أخرى بعد لحظات.")),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text("فشل حفظ التعديلات. الرجاء المحاولة مرة أخرى."),
-            backgroundColor: Colors.red),
+      // Attempt to load font again or handle more gracefully
+      await _loadArabicFont();
+      if (_arabicFont == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  "فشل تحميل الخط العربي. لا يمكن إنشاء PDF بالنصوص العربية.")),
+        );
+        return;
+      }
+    }
+
+    final pdf = pw.Document();
+    final ByteData logoData = await rootBundle.load(gorahLogoPath);
+    final Uint8List logoBytes = logoData.buffer.asUint8List();
+    final logoImage = pw.MemoryImage(logoBytes);
+
+    // Define styles with Arabic font
+    final baseStyle = pw.TextStyle(font: _arabicFont, fontSize: 10);
+    final boldStyle = pw.TextStyle(
+        font: _arabicFont, fontWeight: pw.FontWeight.bold, fontSize: 11);
+    final headerStyle = pw.TextStyle(
+        font: _arabicFont,
+        fontWeight: pw.FontWeight.bold,
+        fontSize: 14,
+        color: PdfColors.white);
+    final tableHeaderStyle = pw.TextStyle(
+        font: _arabicFont,
+        fontWeight: pw.FontWeight.bold,
+        fontSize: 9,
+        color: PdfColors.white);
+    final tableCellStyle = pw.TextStyle(font: _arabicFont, fontSize: 8);
+
+    // Helper function to build info rows for PDF, similar to _buildInfoRow
+    pw.Widget _buildPdfInfoRow(String label, String value) {
+      return pw.Padding(
+        padding: const pw.EdgeInsets.symmetric(vertical: 2.0),
+        child: pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          children: [
+            pw.Text(value,
+                style: baseStyle.copyWith(fontWeight: pw.FontWeight.bold),
+                textDirection: pw.TextDirection.rtl),
+            pw.Text(label,
+                style: baseStyle, textDirection: pw.TextDirection.rtl),
+          ],
+        ),
       );
     }
-    // After API call (success or failure), you might want to refresh or update UI state
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        textDirection:
+            pw.TextDirection.rtl, // Set text direction for the whole page
+        theme: pw.ThemeData.withFont(
+          base: _arabicFont!, // Default font for the page
+          bold: _arabicFont!, // Font for bold text
+        ),
+        header: (pw.Context context) {
+          return pw.Container(
+              alignment: pw.Alignment.centerRight,
+              margin: const pw.EdgeInsets.only(bottom: 20.0),
+              child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('بطاقة تطعيمات الطفل',
+                        style: boldStyle.copyWith(fontSize: 18),
+                        textDirection: pw.TextDirection.rtl),
+                    pw.SizedBox(
+                      height: 50,
+                      width: 80,
+                      child: pw.Image(logoImage),
+                    ),
+                  ]));
+        },
+        build: (pw.Context context) => [
+          pw.Header(
+            level: 0,
+            child: pw.Text('بيانات الطفل',
+                style: boldStyle.copyWith(fontSize: 16),
+                textDirection: pw.TextDirection.rtl),
+          ),
+          pw.SizedBox(height: 10),
+          pw.Container(
+              padding: const pw.EdgeInsets.all(8),
+              decoration: pw.BoxDecoration(
+                border: pw.Border.all(color: PdfColors.grey600, width: 0.5),
+                borderRadius: pw.BorderRadius.circular(5),
+              ),
+              child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    _buildPdfInfoRow(
+                        _vaccinationDetails!.childName, "اسم الطفل:"),
+                    _buildPdfInfoRow(
+                        _formatDate(_vaccinationDetails!.birthDate),
+                        "تاريخ الميلاد:"),
+                    _buildPdfInfoRow(
+                        _vaccinationDetails!.countryName, "محل الميلاد:"),
+                    _buildPdfInfoRow(
+                        _vaccinationDetails!.healthCenters, "المركز الصحي:"),
+                    _buildPdfInfoRow(
+                        _formatDate(_vaccinationDetails!.renderDate),
+                        "تاريخ الاصدار:"),
+                    _buildPdfInfoRow(
+                        _vaccinationDetails!.vaccineCardNumber, "رقم البطاقة:"),
+                  ])),
+          pw.SizedBox(height: 20),
+          pw.Header(
+            level: 0,
+            child: pw.Text('جدول التطعيمات',
+                style: boldStyle.copyWith(fontSize: 16),
+                textDirection: pw.TextDirection.rtl),
+          ),
+          pw.Table.fromTextArray(
+            border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
+            headerDecoration: const pw.BoxDecoration(
+                color: PdfColor.fromInt(0xFF56A8D8)), // لون الهيدر الأزرق
+            headerHeight: 25,
+            cellHeight: 20,
+            cellAlignments: {
+              0: pw.Alignment.centerRight,
+              1: pw.Alignment.centerRight,
+              2: pw.Alignment.centerRight,
+              3: pw.Alignment.center,
+              4: pw.Alignment.center,
+              5: pw.Alignment.center,
+              6: pw.Alignment.center,
+              7: pw.Alignment.center,
+              8: pw.Alignment.centerRight,
+            },
+            headerStyle: tableHeaderStyle,
+            cellStyle: tableCellStyle,
+            columnWidths: {
+              // Adjust column widths as needed
+              0: const pw.FlexColumnWidth(2.5),
+              1: const pw.FlexColumnWidth(0.8),
+              2: const pw.FlexColumnWidth(1.5),
+              3: const pw.FlexColumnWidth(1.5),
+              4: const pw.FlexColumnWidth(1.5),
+              5: const pw.FlexColumnWidth(1),
+              6: const pw.FlexColumnWidth(2),
+              7: const pw.FlexColumnWidth(1.5),
+              8: const pw.FlexColumnWidth(1.5),
+            },
+            headers: [
+              'ملاحظات',
+              'الحالة',
+              'تاريخ الزيارة',
+              'اخر موعد',
+              'موعد الجرعة',
+              'الجرعة',
+              'اللقاح',
+              'العمر الموصى به',
+              'المرحلة'
+            ]
+                .map((header) => header)
+                .toList(), // Map to ensure TextDirection is applied if needed by headerStyle
+            data: _vaccinationDetails!.stages.expand((stage) {
+              return stage.vaccines.map((vaccine) {
+                return [
+                  vaccine.notes ?? '---',
+                  vaccine.status == 1 ? 'تم' : 'لم يتم',
+                  _formatDate(vaccine.visitDate,
+                      fallback: vaccine.status == 1
+                          ? _formatDate(DateTime.now())
+                          : '---'),
+                  _formatDate(vaccine.lastDateForVaccine),
+                  _formatDate(vaccine.vaccinationDate),
+                  vaccine.doseNumber,
+                  vaccine.vaccineName,
+                  stage.recommendedAge,
+                  stage.stageName,
+                ];
+              }).toList();
+            }).toList(),
+          ),
+          pw.SizedBox(height: 30),
+          pw.Paragraph(
+            text:
+                "ملاحظة: هذه البطاقة تم إنشاؤها إلكترونياً وقد لا تغني عن البطاقة الورقية الرسمية حسب متطلبات الجهات المعنية.",
+            style: baseStyle.copyWith(fontSize: 8, color: PdfColors.grey600),
+            textAlign: pw.TextAlign.center,
+          ),
+        ],
+        footer: (pw.Context context) {
+          return pw.Container(
+              alignment: pw.Alignment.centerRight,
+              margin: const pw.EdgeInsets.only(top: 1.0 * PdfPageFormat.cm),
+              child: pw.Text(
+                  'صفحة ${context.pageNumber} من ${context.pagesCount}',
+                  style: baseStyle.copyWith(color: PdfColors.grey)));
+        },
+      ),
+    );
+
+    try {
+      // /*  // Uncomment if you need storage permissions
+      // if (Platform.isAndroid) {
+      //   var status = await Permission.storage.status;
+      //   if (!status.isGranted) {
+      //     status = await Permission.storage.request();
+      //   }
+      //   if (!status.isGranted) {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       const SnackBar(content: Text("إذن التخزين مطلوب لحفظ الملف.")),
+      //     );
+      //     return;
+      //   }
+      // }
+      // */
+
+      final outputDir =
+          await getTemporaryDirectory(); // Or getApplicationDocumentsDirectory()
+      final outputFile =
+          File('${outputDir.path}/vaccination_card_${widget.childId}.pdf');
+      await outputFile.writeAsBytes(await pdf.save());
+
+      if (kDebugMode) {
+        print('PDF сохранен в: ${outputFile.path}');
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('تم حفظ الـ PDF في: ${outputFile.path}')),
+      );
+
+      // Open the PDF file
+      final result = await OpenFilex.open(outputFile.path);
+      if (result.type != ResultType.done) {
+        if (kDebugMode) {
+          print('Could not open file: ${result.message}');
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'لم يتم العثور على تطبيق لفتح ملف PDF: ${result.message}')),
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error saving or opening PDF: $e');
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('خطأ أثناء إنشاء أو حفظ الـ PDF: $e')),
+      );
+    }
   }
 
   @override
@@ -612,16 +1074,7 @@ class _ChildVaccinationsPageState extends State<ChildVaccinationsPage> {
                                     ),
                                     SizedBox(height: 12),
                                     OutlinedButton(
-                                      onPressed: () {
-                                        // TODO: Implement PDF export functionality
-                                        print("تصدير PDF...");
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  "وظيفة تصدير PDF لم تنفذ بعد.")),
-                                        );
-                                      },
+                                      onPressed: _exportToPdf,
                                       child: Text("تصدير pdf",
                                           style: TextStyle(
                                               fontSize: 18,
