@@ -421,4 +421,34 @@ class ApiServiceManual {
     final data = response.data;
     return CreateEmployeeDataModel.fromJson(data);
   }
+
+  Future<List<Map<String, dynamic>>> fetchEmployees() async {
+    try {
+      print("🚀 Sending request to API...");
+      final response = await _dio.get('${ApiConfig.baseUrl}employees/index');
+      print("✅ Got response with status code: ${response.statusCode}");
+      print("Response Data: ${response.data}");
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data is Map && data.containsKey('Employees')) {
+          final extracted = data['Employees'];
+          if (extracted is List) {
+            return extracted.cast<Map<String, dynamic>>();
+          } else {
+            throw Exception('البيانات المستخرجة ليست قائمة');
+          }
+        } else if (data is List) {
+          return data.cast<Map<String, dynamic>>();
+        } else {
+          throw Exception('تنسيق البيانات غير مدعوم');
+        }
+      } else {
+        throw Exception('الـAPI رد بخطأ: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("❌ Error: $e");
+      throw Exception('فشل في جلب الموظفين: $e');
+    }
+  }
 }

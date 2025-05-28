@@ -2,6 +2,7 @@ import 'package:new_project/Core/networking/api_result.dart';
 import 'package:new_project/features/staff_management/data/dataSource.dart/EmployeeRemoteDataSource.dart';
 import 'package:new_project/features/staff_management/data/model/CreateEmployeeDataModel.dart';
 import 'package:new_project/features/staff_management/data/model/employee_model.dart';
+import 'package:new_project/features/staff_management/data/model/showEmployeeModel.dart';
 import 'package:new_project/features/staff_management/domain/repository/employeeRepository.dart';
 
 class EmployeeRepositoryImpl implements EmployeeRepository {
@@ -23,5 +24,10 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
   @override
   Future<ApiResult<CreateEmployeeDataModel>> fetchCreateEmployeeData() {
     return remoteDataSource.fetchCreateEmployeeData();
+  }
+
+  @override
+  Future<ApiResult<List<Showemployeemodel>>> getEmployees() {
+    return remoteDataSource.getEmployees();
   }
 }

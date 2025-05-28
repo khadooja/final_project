@@ -371,6 +371,14 @@ class EmployeeCubit extends Cubit<EmployeeState> with PersonHelperMixin {
     );
   }
 
+/*Future<void> fetchEmployeesList() async {
+  emit(EmployeesListLoading());
+  final result = await _EmployeeRepository.getEmployees();
+  result.when(
+    success: (employees) => emit(EmployeesListLoaded(employees)),
+    failure: (error) => emit(EmployeesListError(error.message)),
+  );
+}*/
   void printFormState() {
     print('\n📋 حالة النموذج الحالية:');
     print('- الاسم الأول: ${firstNameController.text}');
@@ -386,5 +394,29 @@ class EmployeeCubit extends Cubit<EmployeeState> with PersonHelperMixin {
     print('- الحالة: $isActive');
     print('- متوفى: $isDead');
     print('\n');
+  }
+
+  Future<void> fetchEmployeesList() async {
+    emit(EmployeesListLoading());
+
+    try {
+      final result = await _EmployeeRepository
+          .getEmployees(); // تأكد من أن الدالة ترجع بيانات صحيحة
+
+      result.when(
+        success: (employees) {
+          // في حال نجاح جلب البيانات
+          emit(
+              EmployeesListLoadedshow(employees)); // <<< إرسال البيانات المحملة
+        },
+        failure: (error) {
+          // في حال حدوث خطأ في جلب البيانات
+          emit(EmployeesListError(error.message ?? 'حدث خطأ غير معروف'));
+        },
+      );
+    } catch (e) {
+      // معالجة الأخطاء في حالة حدوث استثناءات في الكود
+      emit(EmployeesListError(e.toString()));
+    }
   }
 }

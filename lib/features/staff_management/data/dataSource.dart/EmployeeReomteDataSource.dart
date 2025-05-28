@@ -1,3 +1,4 @@
+import 'package:new_project/Core/networking/api_error_handler.dart';
 import 'package:new_project/Core/networking/api_result.dart';
 import 'package:new_project/Core/networking/api_services.dart';
 import 'package:new_project/features/personal_management/data/models/personalTyp.dart';
@@ -5,6 +6,7 @@ import 'package:new_project/features/personal_management/data/datasources/person
 import 'package:new_project/features/staff_management/data/dataSource.dart/EmployeeRemoteDataSource.dart';
 import 'package:new_project/features/staff_management/data/model/CreateEmployeeDataModel.dart';
 import 'package:new_project/features/staff_management/data/model/employee_model.dart';
+import 'package:new_project/features/staff_management/data/model/showEmployeeModel.dart';
 
 class EmployeeRemoteDataSourceImpl extends PersonRemoteDataSourceImpl
     implements EmployeeRemoteDataSource {
@@ -41,5 +43,34 @@ class EmployeeRemoteDataSourceImpl extends PersonRemoteDataSourceImpl
       final result = await _api.fetchCreateEmployeeData();
       return result;
     });
+  }
+
+  @override
+  Future<ApiResult<List<Showemployeemodel>>> getEmployees() async {
+    try {
+      final employeeList = await _api
+          .fetchEmployees(); // employeeList is List<Map<String, dynamic>>
+
+      // إذا احتجت تحويل الأسماء، حول هنا
+      final convertedList = employeeList.map<Map<String, dynamic>>((e) {
+        return {
+          'id': e['Employee Id'],
+          'first_name': e['First Name'],
+          'last_name': e['Last Name'],
+          'gender': e['Gender'],
+          'email': e['Email'],
+          'isActive': e['isActive'],
+          'healthCenterName': e['Health Center Name'],
+        };
+      }).toList();
+
+      final employees = convertedList
+          .map<Showemployeemodel>((e) => Showemployeemodel.fromJson(e))
+          .toList();
+
+      return ApiResult.success(employees);
+    } catch (e) {
+      return ApiResult.failure(ErrorHandler(message: e.toString()));
+    }
   }
 }

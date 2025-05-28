@@ -61,4 +61,36 @@ class EmployeeModel extends PersonModel {
       health_center_id: health_center_id,
     );
   }
+factory EmployeeModel.fromCustomJson(Map<String, dynamic> json) {
+  return EmployeeModel(
+    id: json['Employee Id'] is int
+        ? json['Employee Id']
+        : int.tryParse(json['Employee Id']?.toString() ?? '0') ?? 0,
+    first_name: json['First Name']?.toString() ?? '',
+    last_name: json['Last Name']?.toString() ?? '',
+    gender: json['Gender']?.toString() ?? '',
+    email: json['Email']?.toString() ?? '',
+    phone_number: json['Phone Number']?.toString() ?? '',
+    identity_card_number: json['Identity Card Number']?.toString() ?? 'N/A',
+    nationalities_id: json['Nationalities Id'] is int
+        ? json['Nationalities Id']
+        : int.tryParse(json['Nationalities Id']?.toString() ?? '0') ?? 0,
+    location_id: json['Location Id'] is int
+        ? json['Location Id']
+        : int.tryParse(json['Location Id']?.toString() ?? ''),
+    role: json['Position']?.toString() ?? 'موظف',
+    date_of_birth: json['Date of Birth'] != null && json['Date of Birth'].toString().isNotEmpty
+        ? DateTime.tryParse(json['Date of Birth'].toString())
+        : null,
+    employment_date: json['Employment Date'] != null && json['Employment Date'].toString().isNotEmpty
+        ? DateTime.tryParse(json['Employment Date'].toString())
+        : DateTime.now(),
+    isActive: json['isActive'] is int
+        ? json['isActive']
+        : int.tryParse(json['isActive']?.toString() ?? '0') ?? 0,
+    health_center_id: json['Health Center Id'] is int
+        ? json['Health Center Id']
+        : int.tryParse(json['Health Center Id']?.toString() ?? ''),
+  );
+}
 }

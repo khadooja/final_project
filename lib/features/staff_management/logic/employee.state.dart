@@ -6,12 +6,30 @@ import 'package:new_project/features/personal_management/data/models/person_mode
 import 'package:new_project/features/personal_management/data/models/searchPersonResponse.dart';
 import 'package:new_project/features/staff_management/data/model/CreateEmployeeDataModel.dart';
 import 'package:new_project/features/staff_management/data/model/employee_model.dart';
+import 'package:new_project/features/staff_management/data/model/showEmployeeModel.dart';
 
 abstract class EmployeeState extends Equatable {
   const EmployeeState();
 
   @override
   List<Object?> get props => [];
+}
+
+class EmployeesListLoading extends EmployeeState {}
+
+class EmployeesListLoaded extends EmployeeState {
+  final List<EmployeeModel> employees;
+  EmployeesListLoaded(this.employees);
+}
+
+class EmployeesListLoadedshow extends EmployeeState {
+  final List<Showemployeemodel> employees;
+  EmployeesListLoadedshow(this.employees);
+}
+
+class EmployeesListError extends EmployeeState {
+  final String message;
+  EmployeesListError(this.message);
 }
 
 // الحالة الابتدائية
