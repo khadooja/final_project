@@ -1,4 +1,5 @@
 class CenterReportModel {
+  final int centerId;
   final String centerName;
   final int childrenCount;
   final int allDosesCount;
@@ -7,6 +8,7 @@ class CenterReportModel {
   final int childrenWithDelayedVaccinations;
 
   CenterReportModel({
+    required this.centerId,
     required this.centerName,
     required this.childrenCount,
     required this.allDosesCount,
@@ -17,12 +19,14 @@ class CenterReportModel {
 
   factory CenterReportModel.fromJson(Map<String, dynamic> json) {
     return CenterReportModel(
-      centerName: json['centerName'],
-      childrenCount: json['childrenCount'],
-      allDosesCount: json['allDosesCount'],
-      completedChildrenCount: json['completedChildrenCount'],
-      childrenWithSpecialCasesCount: json['childrenWithSpecialCasesCount'],
-      childrenWithDelayedVaccinations: json['childrenWithDelayedVaccinations'],
+      centerId: json['centerId'] ?? 0,
+      centerName: json['centerName'] ?? '',
+      childrenCount: json['childrenCount'] ?? 0,
+      allDosesCount: json['allDosesCount'] ?? 0,
+      completedChildrenCount: json['completedChildrenCount'] ?? 0,
+      childrenWithSpecialCasesCount: json['childrenWithSpecialCasesCount'] ?? 0,
+      childrenWithDelayedVaccinations:
+          json['childrenWithDelayedVaccinations'] ?? 0,
     );
   }
 }

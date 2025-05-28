@@ -13,9 +13,9 @@ class ReportResponseModel {
   factory ReportResponseModel.fromJson(Map<String, dynamic> json) {
     return ReportResponseModel(
       generalStats: GeneralReportModel.fromJson(json),
-      centerStats: List<CenterReportModel>.from(
-        json['healthCentersReports'].map((e) => CenterReportModel.fromJson(e)),
-      ),
+      centerStats: (json['healthCentersReports'] as List<dynamic>? ?? [])
+          .map((e) => CenterReportModel.fromJson(e))
+          .toList(),
     );
   }
 }

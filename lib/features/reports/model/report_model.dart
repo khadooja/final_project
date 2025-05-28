@@ -15,11 +15,12 @@ class GeneralReportModel {
 
   factory GeneralReportModel.fromJson(Map<String, dynamic> json) {
     return GeneralReportModel(
-      childrenCount: json['childrenCount'],
-      allDosesCount: json['allDosesCount'],
-      completedChildrenCount: json['completedChildrenCount'],
-      childrenWithSpecialCasesCount: json['childrenWithSpecialCasesCount'],
-      childrenWithDelayedVaccinations: json['childrenWithDelayedVaccinations'],
+      childrenCount: json['childrenCount'] ?? 0,
+      allDosesCount: json['allDosesCount'] ?? 0,
+      completedChildrenCount: json['completedChildrenCount'] ?? 0,
+      childrenWithSpecialCasesCount: json['childrenWithSpecialCasesCount'] ?? 0,
+      childrenWithDelayedVaccinations:
+          json['childrenWithDelayedVaccinations'] ?? 0,
     );
   }
 }
