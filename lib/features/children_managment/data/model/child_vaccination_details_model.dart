@@ -57,7 +57,8 @@ class Stage {
   final int stageId;
   final String stageName;
   final String recommendedAge;
-  List<Vaccine> vaccines; // Made non-final to allow modification of vaccines within it
+  List<Vaccine>
+      vaccines; // Made non-final to allow modification of vaccines within it
 
   Stage({
     required this.stageId,
@@ -72,13 +73,15 @@ class Stage {
       stageName: json['stage_name'] as String? ?? 'N/A',
       recommendedAge: json['recommended_age'] as String? ?? 'N/A',
       vaccines: (json['vaccines'] as List<dynamic>? ?? [])
-          .map((vaccineJson) => Vaccine.fromJson(vaccineJson as Map<String, dynamic>))
+          .map((vaccineJson) =>
+              Vaccine.fromJson(vaccineJson as Map<String, dynamic>))
           .toList(),
     );
   }
 }
 
 class Vaccine {
+  final int svdId; // <--- ****** أضف هذا الحقل ******
   final String vaccineName;
   final String doseNumber;
   final DateTime? vaccinationDate; // موعد الجرعة
@@ -88,13 +91,13 @@ class Vaccine {
   String? notes; // ملاحظات (Mutable)
   final bool isDelay;
 
-  // To keep track of original values if needed for checking changes before save
+  // To keep track of original values
   late int _originalStatus;
   late String? _originalNotes;
   late DateTime? _originalVisitDate;
 
-
   Vaccine({
+    required this.svdId, // <--- ****** أضف هذا إلى الكونستركتور ******
     required this.vaccineName,
     required this.doseNumber,
     this.vaccinationDate,
@@ -109,14 +112,16 @@ class Vaccine {
     _originalVisitDate = visitDate;
   }
 
-
   factory Vaccine.fromJson(Map<String, dynamic> json) {
     return Vaccine(
+      svdId: json['svd_id']
+          as int, // <--- ****** أضف قراءة هذا الحقل ****** (تأكد من أنه دائمًا int وليس null)
       vaccineName: json['vaccine_name'] as String? ?? 'N/A',
       doseNumber: json['dose_number'] as String? ?? 'N/A',
       vaccinationDate: _parseDateSafe(json['vaccination_date'] as String?),
       visitDate: _parseDateSafe(json['visit_date'] as String?),
-      lastDateForVaccine: _parseDateSafe(json['last_date_for_vaccine'] as String?),
+      lastDateForVaccine:
+          _parseDateSafe(json['last_date_for_vaccine'] as String?),
       status: json['status'] as int? ?? 0,
       notes: json['notes'] as String?,
       isDelay: json['isDelay'] as bool? ?? false,
@@ -124,7 +129,30 @@ class Vaccine {
   }
 
   // Helper to check if vaccine data has changed
-  bool get hasChanged => status != _originalStatus || notes != _originalNotes || visitDate != _originalVisitDate;
+  bool get hasChanged {
+    // تحسين مقارنة التواريخ لتجنب المشاكل مع المنطقة الزمنية أو الجزء من الثانية إذا كان التاريخ فقط هو المهم
+    bool visitDateIsDifferent = false;
+    if (_originalVisitDate == null && visitDate != null) {
+      visitDateIsDifferent = true;
+    } else if (_originalVisitDate != null && visitDate == null) {
+      visitDateIsDifferent = true;
+    } else if (_originalVisitDate != null && visitDate != null) {
+      // قارن فقط اليوم والشهر والسنة إذا كان هذا هو المطلوب
+      visitDateIsDifferent = !(_originalVisitDate!.year == visitDate!.year &&
+          _originalVisitDate!.month == visitDate!.month &&
+          _originalVisitDate!.day == visitDate!.day);
+    }
+
+    // تطبيع الملاحظات للمقارنة (null مقابل سلسلة فارغة)
+    String? currentNotesNormalized =
+        notes?.trim().isEmpty ?? true ? null : notes!.trim();
+    String? originalNotesNormalized =
+        _originalNotes?.trim().isEmpty ?? true ? null : _originalNotes!.trim();
+
+    return status != _originalStatus ||
+        currentNotesNormalized != originalNotesNormalized ||
+        visitDateIsDifferent;
+  }
 
   // Resets to original values (e.g., if save fails or user cancels)
   void reset() {

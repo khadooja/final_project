@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:new_project/Core/commn_widgets/side_nav/logout_button.dart';
 import 'package:new_project/Core/helpers/extension.dart';
 import 'package:new_project/Core/helpers/shared_pref__keys.dart';
 import 'package:new_project/Core/helpers/shared_pref_helper.dart';
@@ -29,26 +30,25 @@ class _SidebarState extends State<Sidebar> {
     _loadUserData();
   }
 
- Future<void> _loadUserData() async {
-  try {
-    final name = await StorageHelper.getData(SharedPrefKeys.userName, isSecure: true);
-    final role = await StorageHelper.getData(SharedPrefKeys.userRole, isSecure: true);
+  Future<void> _loadUserData() async {
+    try {
+      final name =
+          await StorageHelper.getData(SharedPrefKeys.userName, isSecure: true);
+      final role =
+          await StorageHelper.getData(SharedPrefKeys.userRole, isSecure: true);
 
-    setState(() {
-      userName = name ?? 'زائر';
-      userRole = role ?? 'مستخدم';
-    });
-  } catch (e) {
-    print('Error loading user data: $e');
-    setState(() {
-      userName = 'زائر';
-      userRole = 'مستخدم';
-    });
+      setState(() {
+        userName = name ?? 'زائر';
+        userRole = role ?? 'مستخدم';
+      });
+    } catch (e) {
+      print('Error loading user data: $e');
+      setState(() {
+        userName = 'زائر';
+        userRole = 'مستخدم';
+      });
+    }
   }
-}
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +86,7 @@ class _SidebarState extends State<Sidebar> {
           }).toList(),
 
           const Spacer(),
-          _buildLogoutButton(context),
+          const LogoutButton(),
           const SizedBox(height: 20),
         ],
       ),
@@ -116,7 +116,7 @@ class _SidebarState extends State<Sidebar> {
     );
   }
 
-  Widget _buildLogoutButton(BuildContext context) {
+  /* Widget _buildLogoutButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
         await StorageHelper.removeData(SharedPrefKeys.userToken);
@@ -145,5 +145,5 @@ class _SidebarState extends State<Sidebar> {
         ],
       ),
     );
-  }
+  }*/
 }

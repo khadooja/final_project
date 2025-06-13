@@ -238,7 +238,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                               // عمر موصى به ك Dropdown مع تحديث قيمة ageController.text
                               DropdownButtonFormField<String>(
                                 decoration: const InputDecoration(
-                                    labelText: 'اسم التطعيم'),
+                                    labelText: 'العمر الموصى به '),
                                 value: field['ageController'].text.isEmpty
                                     ? '1'
                                     : field['ageController'].text,
